@@ -1,0 +1,48 @@
+# Script to build protein-protein interaction network from STRING based on information scores of databases
+
+
+# Load libraries
+library(igraph)
+
+if(!dir.exists("Databases/StringDB/")){dir.create("Databases/StringDB", recursive = TRUE)}
+
+
+if(!file.exists("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz")){
+  download.file(url = "https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz",
+                destfile = "Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", method = "wget")
+}
+
+
+
+# Read protein Id mappings
+String_proteins <- read.table("Databases/StringDB/9606.protein.aliases.v11.5.txt.gz", fill = TRUE)
+colnames(String_proteins) <- c("string_protein_id",	"alias",	"source")
+String_proteins <- String_proteins[String_proteins$source == "Ensembl_HGNC_Ensembl_ID(supplied_by_Ensembl)",]
+
+
+
+# Read all PPI in String DB along with scores
+String_ppi <- read.table("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", header = TRUE)
+
+
+# Filter all interactions with scores greater than 0 and sourced from database
+String_ppi <- String_ppi[(String_ppi$database > 0 | String_ppi$experimental > 0), ] #| String_ppi$experimental > 0
+
+
+String_ppi$Node1_ensembl_gene_id <- String_proteins$alias[match(String_ppi$protein1, String_proteins$string_protein_id)]
+String_ppi$Node2_ensembl_gene_id <- String_proteins$alias[match(String_ppi$protein2, String_proteins$string_protein_id)]
+
+
+String_ppi_Net <- na.exclude(String_ppi[, c("Node1_ensembl_gene_id", "Node2_ensembl_gene_id")])
+String_ppi_Net$Node1_type <- "gene"
+String_ppi_Net$Node2_type <- "gene"
+String_ppi_Net$Edge_type <- "undirected"
+String_ppi_Net <- String_ppi_Net[, c("Node1_ensembl_gene_id", "Node1_type", "Node2_ensembl_gene_id", "Node2_type", "Edge_type")]
+
+
+# Convert to graph object
+String_ppi_Net <- graph_from_data_frame(String_ppi_Net[, c("Node1_ensembl_gene_id", "Node2_ensembl_gene_id")], directed = FALSE)
+
+saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.rds")
+
+print(warnings())
