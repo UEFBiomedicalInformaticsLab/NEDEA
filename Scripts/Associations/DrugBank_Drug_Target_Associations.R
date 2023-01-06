@@ -1,6 +1,8 @@
 set.seed(5081)
-
 rm(list = ls())
+
+
+# Drug-Target association from DrugBank
 
 
 # Load libraries
@@ -8,10 +10,6 @@ library(openxlsx)
 library(tidyr)
 library(stringr)
 library(biomaRt)
-
-
-
-### Drug-Target association from DrugBank  ---------------------------------------------- 
 
 # Download the complete DrugBank database as XML and parse it using dbparser
 # Following that the data is saved as CSV files
