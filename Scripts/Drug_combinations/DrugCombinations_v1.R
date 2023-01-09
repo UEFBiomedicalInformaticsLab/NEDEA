@@ -79,7 +79,7 @@ rm(tmp)
 
 # Check if the drugs forming the pairs have reported targets
 effectiveCombinations <- effectiveCombinations[(effectiveCombinations$Drug1_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id 
-                                            & effectiveCombinations$Drug1_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
+                                            & effectiveCombinations$Drug2_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
 
 
 effectiveCombinations_drugs <- unique(c(effectiveCombinations$Drug1_DrugBank_drug_id, effectiveCombinations$Drug2_DrugBank_drug_id))
