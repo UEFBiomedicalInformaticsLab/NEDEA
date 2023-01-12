@@ -3,13 +3,13 @@ rm(list = ls())
 
 
 
-# Drug combinations (version 0)
+# Drug combinations (version 4)
 
 
 
 # Notes:
 # (1) Effective drug combinations: Selected drug pairs from
-#     DrugCombDB that were tested on disease related cell lines
+#     FimmDrugComb that were tested on disease related cell lines
 #     and found synergistic
 # (2) Adverse drug combinations: Selected drug pairs reported in DrugBank
 #     to have risk or severity to adverse effect and containing both as approved drugs for the disease.
@@ -56,6 +56,7 @@ diseaseIds <- switch(disease,
                      "LiverCancer" = c("MONDO_0003243", "EFO_0000182", "MONDO_0002691", "MONDO_0004695", "MONDO_0002397"),
                      "OvaryCancer" = c("MONDO_0008170", "MONDO_0003812", "MONDO_0000548", "EFO_0001075", "EFO_1000416"),
                      "SkinCancer" = c("MONDO_0002898", "EFO_0009259", "MONDO_0002529", "EFO_1001471", "EFO_1000531"),
+                     "KidneyCancer" = c("MONDO_0002367",  "EFO_0002890", "EFO_0003865"),
                      stop(paste("Disease IDs not defined for ", disease)))
 
 cat(paste0("\n\nDisease IDs for ", disease, ": ", paste(diseaseIds, collapse = ", "), "\n\n"))
@@ -76,7 +77,7 @@ Drug_Target_Net <- DrugBank_Drug_Target_Net
 # Retrieve all approved drugs for the disease
 OpenTargets_Drug_Disease_Net <- readRDS("InputFiles/Associations/OpenTargets_Drug_Disease_Net.rds")
 approved_drugs <- OpenTargets_Drug_Disease_Net[(OpenTargets_Drug_Disease_Net$Node2_disease_id %in% diseaseIds 
-                                                           & OpenTargets_Drug_Disease_Net$Drug_Disease_clinical_status == "Approved"), ]
+                                                & OpenTargets_Drug_Disease_Net$Drug_Disease_clinical_status == "Approved"), ]
 approved_drugs <- unique(approved_drugs$Node1_drugbank_drug_id)
 cat(paste0("\n\nNumber of approved drugs for ", disease, ": ", length(unique(approved_drugs)), "\n\n"))
 
@@ -104,9 +105,9 @@ adverseCombinations <- adverseCombinations[(adverseCombinations$Drug1_DrugBank_d
 # Generate effective combinations ----------------------------------------------
 
 
-# Read synergistic drug combinations from DrugCombDb for the specific disease
-DrugCombDb_drugCombs <- readRDS(paste0("InputFiles/ReferenceList/DrugCombDb_", disease, "_drugCombinations.rds"))
-effectiveCombinations <- DrugCombDb_drugCombs$synergy 
+# Read synergistic drug combinations from FimmDrugComb for the specific disease
+FimmDrugComb_drugCombs <- readRDS(paste0("InputFiles/ReferenceList/FimmDrugComb_", disease, "_drugCombinations.rds"))
+effectiveCombinations <- FimmDrugComb_drugCombs$synergy 
 print(paste0("Number of synergy combinations from DrugCombDb: ", nrow(effectiveCombinations)))
 
 effectiveCombinations <- effectiveCombinations[effectiveCombinations$Drug1_DrugBank_drug_id != effectiveCombinations$Drug2_DrugBank_drug_id, ]
@@ -145,10 +146,10 @@ drugCombs$adverseCombinations <- adverseCombinations
 rownames(drugCombs$effectiveCombinations) <- rownames(drugCombs$adverseCombinations) <- NULL
 
 
-if(!dir.exists("InputFiles/DrugCombinations/DrugCombs_v0/")){
-  dir.create("InputFiles/DrugCombinations/DrugCombs_v0/", recursive = TRUE)
+if(!dir.exists("InputFiles/DrugCombinations/DrugCombs_v4/")){
+  dir.create("InputFiles/DrugCombinations/DrugCombs_v4/", recursive = TRUE)
 } 
-saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs_v0//DrugComb_", disease, "_v0.rds"))
+saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs_v4//DrugComb_", disease, "_v4.rds"))
 
 cat(paste0("\n\n\nNumber of drug combinations for ", disease, ":\n"))
 print(lapply(drugCombs, nrow))

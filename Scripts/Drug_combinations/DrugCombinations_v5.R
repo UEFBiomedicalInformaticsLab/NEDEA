@@ -3,15 +3,14 @@ rm(list = ls())
 
 
 
-# Drug combinations (version 1)
+# Drug combinations (version 5)
 
 
 
 # Notes:
-# (1) Effective drug combinations: Synergistic drug combinations from DrugCombDb
+# (1) Effective drug combinations: Synergistic drug combinations from FimmDrugComb
 #     tested on the cell lines for the particular disease. 
-# (2) For the cell lines, check: Scripts/Reference_lists/DrugCombDb_drugCombinations.R
-# (3) Adverse drug combinations: DrugBank drug-drug interaction pairs with 
+# (2) Adverse drug combinations: DrugBank drug-drug interaction pairs with 
 #     risk/severity indications that contain both drugs involved
 #     in forming effective pairs
 
@@ -59,11 +58,13 @@ DrugBank_Drug_Target_Net <- readRDS("InputFiles/Associations/DrugBank_Drug_Targe
 # Generate effective combinations ----------------------------------------------
 
 # Read synergistic drug combinations from DrugCombDb for the specific disease
-DrugCombDb_drugCombs <- readRDS(paste0("InputFiles/ReferenceList/DrugCombDb_", disease, "_drugCombinations.rds"))
-effectiveCombinations <- DrugCombDb_drugCombs$synergy 
+FimmDrugComb_drugCombs <- readRDS(paste0("InputFiles/ReferenceList/FimmDrugComb_", disease, "_drugCombinations.rds"))
+effectiveCombinations <- FimmDrugComb_drugCombs$synergy 
+print(paste0("Number of synergy combinations from DrugCombDb: ", nrow(effectiveCombinations)))
 
 
 effectiveCombinations <- effectiveCombinations[effectiveCombinations$Drug1_DrugBank_drug_id != effectiveCombinations$Drug2_DrugBank_drug_id, ]
+print(paste0("Number of synergy combinations after same drug removal: ", nrow(effectiveCombinations)))
 
 
 # Remove drug pairs that are already reported as adverse pairs in DrugBank
@@ -78,11 +79,13 @@ for(i in 1:nrow(effectiveCombinations)){
 } 
 if(length(remove_index) > 0){effectiveCombinations <- effectiveCombinations[-remove_index,]}
 rm(tmp)
+print(paste0("Number of synergy combinations after adverse pair removal: ", nrow(effectiveCombinations)))
 
 
 # Check if the drugs forming the pairs have reported targets
 effectiveCombinations <- effectiveCombinations[(effectiveCombinations$Drug1_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id 
-                                            & effectiveCombinations$Drug2_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
+                                                & effectiveCombinations$Drug2_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
+print(paste0("Number of synergy combinations after target check: ", nrow(effectiveCombinations)))
 
 
 effectiveCombinations_drugs <- unique(c(effectiveCombinations$Drug1_DrugBank_drug_id, effectiveCombinations$Drug2_DrugBank_drug_id))
