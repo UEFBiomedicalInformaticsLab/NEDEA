@@ -118,6 +118,6 @@ if(!dir.exists(paste0("Analysis/STRING/DrugCombs_v0/", disease, "/"))){
   dir.create(paste0("Analysis/STRING/DrugCombs_v0/", disease, "/"), recursive = TRUE)
 } 
 
-save(drugCombs_rwr_res_final, file = paste0("Analysis/STRING/DrugCombs_v0/", disease, "/dNetRWR050_", disease, "_DrugCombinations.rda"))
+save(drugCombs_rwr_res_final, file = paste0("Analysis/STRING/DrugCombs_v0/", disease, "/dNetRWR050_", disease, ".rda"))
 
 print(warnings())

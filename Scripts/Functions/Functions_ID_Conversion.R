@@ -1,7 +1,33 @@
 # Functions for ID conversions
 
 
+
+#Load libraries
 library(tidyverse)
+
+
+
+
+
+# Function to convert list object to dataframe ----------------------------
+library(tidyr)
+func_list_2_df <- function(query_list){
+  if(is.list(query_list)){
+    df <- as.data.frame(matrix(nrow = length(names(query_list)), ncol = 2))
+    for(i in 1:length(names(query_list))){
+      df[i,1] <- names(query_list[i])
+      df[i,2] <- paste(query_list[[i]], collapse = ";")
+    }
+    df <- as.data.frame(separate_rows(df, V2, sep = ";"))
+    return(df)
+  } else {
+    print("Error: Not a list")
+  }
+}
+
+
+
+
 
 # Function to convert PharmGKB IDs ---------------------------
 # Download required files for mapping
