@@ -7,9 +7,14 @@ rm(list = ls())
 
 
 
+# Load libraries
 library(httr)
 library(jsonlite)
 httr::set_config(config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
+
+
+
+
 
 # Download drug combinations from FIMM DrugComb 
 if(!dir.exists("Databases/FimmDrugComb/"))dir.create("Databases/FimmDrugComb/")
@@ -18,10 +23,37 @@ if(!file.exists("Databases/FimmDrugComb/summary_v_1_5.csv")){
                 destfile = "Databases/FimmDrugComb/summary_v_1_5.csv", method = "wget")
 }
 
+
 # Read the DrugComb data
 FimmDrugComb_drugCombCat <- read.csv("Databases/FimmDrugComb/summary_v_1_5.csv", header = TRUE)
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$drug_row != "NULL", ]
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$drug_col != "NULL", ]
+
+
+# Get cell line information
+FimmDrugComb_cellLine <- GET("https://api.drugcomb.org/cell_lines")
+FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
+
+
+# Download disease IDs from NCI Thesaurus (NCIt) 
+if(!dir.exists("Databases/NCIt/"))dir.create("Databases/NCIt/")
+if(!file.exists("Databases/NCIt/Thesaurus.txt")){
+  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/Thesaurus_22.12d.FLAT.zip",
+                destfile = "Databases/NCIt/Thesaurus_22.12d.FLAT.zip", method = "wget")
+  unzip("Databases/NCIt/Thesaurus_22.12d.FLAT.zip", exdir = "Databases/NCIt/", file = "Thesaurus.txt")
+}
+NCIthesaurus <- read.table("Databases/NCIt/Thesaurus.txt", sep = "\t", header = FALSE, comment.char = "", fill = TRUE, quote = "")
+colnames(NCIthesaurus) <- c("code", "concept IRI", "parents", "synonyms", "definition", "display name", "concept status", "semantic type")
+
+
+# Filter drug combinations tested on cancer related cell lines
+NCIthesaurus <- NCIthesaurus[NCIthesaurus$code %in% FimmDrugComb_cellLine$disease_id, ]
+NCIthesaurus <- NCIthesaurus[grep("cancer|carcinoma|sarcoma|lymphoma|leukemia|melanoma", NCIthesaurus$synonyms, ignore.case = TRUE), ]
+
+FimmDrugComb_cellLine <- FimmDrugComb_cellLine[FimmDrugComb_cellLine$disease_id %in% NCIthesaurus$code, ]
+
+FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$cell_line_name %in% FimmDrugComb_cellLine$name, ]
+
 
 
 # Map drugs to DrugBank drug ID

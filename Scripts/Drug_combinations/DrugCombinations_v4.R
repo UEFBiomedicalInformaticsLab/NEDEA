@@ -10,7 +10,7 @@ rm(list = ls())
 # Notes:
 # (1) Effective drug combinations: Selected drug pairs from
 #     FimmDrugComb that were tested on disease related cell lines
-#     and found synergistic
+#     and found synergistic. Filtered to remove pairs already reported for adverse reactions.
 # (2) Adverse drug combinations: Selected drug pairs reported in DrugBank
 #     to have risk or severity to adverse effect and containing both as approved drugs for the disease.
 # (3) Drug pairs also filtered to keep only those for which there are reported targets

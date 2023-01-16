@@ -42,7 +42,6 @@ func_RWR_seed_from_DTI <- function(rwr_input_network, drugs, drug_target_ixn){
   # Filter to keep targets in the network
   drug_target_ixn <- drug_target_ixn[drug_target_ixn$Node2_ensembl_gene_id %in% V(rwr_input_network)$name, ]
   
-  
   # Create seed matrix
   rwr_seed_matrix <- matrix(data = 0,
                             nrow = vcount(rwr_input_network),
@@ -128,3 +127,140 @@ func_dNetRWR_on_drugCombination <- function(rwr_input_network, drug1, drug2,
 }
 
 
+
+
+
+# Function to perform FGSEA using the ranked genes from RWR --------------------
+# 
+# The number of genes to be used can be defined using quantile_prob
+# 
+# 
+# Test:
+# 
+# 
+# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_", disease, "_lib.rds"))
+# rwr_data <- effectiveComb_rwr
+# enrichment_library <- enrichment_lib
+# minSize = 1
+# maxSize = 200
+# scoreType = "std"
+# verbose = TRUE
+# quantile_prob = 0.9
+
+
+func_fgsea_from_rwr_probCut <- function(enrichment_library, 
+                                        rwr_data, 
+                                        minSize = 1, 
+                                        maxSize = Inf, 
+                                        scoreType = "std", 
+                                        quantile_prob = 0.75, 
+                                        verbose = TRUE){
+  
+  require(fgsea)
+  require(BiocParallel)
+  
+  if(!(quantile_prob > 0 & quantile_prob <= 1)){
+    stop("quantile_prob must be between 0 and 1. Defines the percentage of ranked genes to be used for FGSEA")
+  }
+  
+  count = 0 # For run status
+  total_run <- length(rwr_data) 
+  enrichment_result <- list()
+  
+  p <- bpstart(MulticoreParam(60))
+  for(i in names(rwr_data)){
+    
+    # Rank genes for FGSEA. 
+    ranked_genes <- rwr_data[[i]]$union_seed
+    names(ranked_genes) <- rwr_data[[i]]$node_name
+    ranked_genes <- ranked_genes[order(ranked_genes, decreasing = TRUE)]
+    threshold <- as.numeric(quantile(unique(ranked_genes), prob = quantile_prob))
+    ranked_genes <- ranked_genes[ranked_genes > threshold]
+    
+    
+    if(verbose){
+      # Print running status
+      count <- count+1
+      cat(paste0("\n\n- Running FGSEA for: (", count , "/", total_run, ") ", i))
+      cat(paste0("\n-- Quantile score = ", threshold))
+      cat(paste0("\n-- Number of genes used for enrichment = ", length(ranked_genes), "\n"))
+      print(head(ranked_genes))
+      print(tail(ranked_genes))
+    }
+    
+    # Perform FGSEA
+    enrichment_result[[i]] <- fgsea(pathways = enrichment_library,
+                                    stats = ranked_genes,
+                                    minSize = minSize, maxSize = maxSize, scoreType = scoreType, BPPARAM = p)
+  }
+  bpstop(p)
+  return(enrichment_result)
+}
+
+
+
+
+
+# Function to extract results from FGSEA ---------------------------------------
+# 
+# After getting the complete FGSEA reult using the function func_fgsea_from_rwr_probCut(),
+# use the below function to extract the results as a single dataframe for all combinations
+# NA values replaced by 0
+
+
+func_extract_fgsea_result <- function(enrichment_result, result_type = "NES", enrichment_library, rwr_data){
+  switch (result_type,
+          "NES" = {
+            tmp <- matrix(data = 0, nrow = length(names(enrichment_library)), ncol = length(names(enrichment_result)),
+                          dimnames = list(names(enrichment_library), names(enrichment_result)))
+            for(i in names(enrichment_result)){
+              tmp[enrichment_result[[i]]$pathway, i] <- enrichment_result[[i]]$NES
+            }
+            tmp[is.na(tmp)] <- 0 # Replace NA values by 0. NA due to overestimation.
+            tmp <- as.data.frame(tmp)
+            # tmp$mean <- rowMeans(tmp, na.rm = TRUE)
+            return(tmp)
+          },
+          "pval" = {
+            tmp <- matrix(nrow = length(names(enrichment_library)), ncol = length(names(enrichment_result)),
+                          dimnames = list(names(enrichment_library), names(enrichment_result)))
+            for(i in names(enrichment_result)){
+              tmp[enrichment_result[[i]]$pathway, i] <- enrichment_result[[i]]$pval
+            }
+            tmp <- as.data.frame(tmp)
+            # tmp$mean <- rowMeans(tmp)
+            return(tmp)
+          },
+          "padj" = {
+            tmp <- matrix(nrow = length(names(enrichment_library)), ncol = length(names(enrichment_result)),
+                          dimnames = list(names(enrichment_library), names(enrichment_result)))
+            for(i in names(enrichment_result)){
+              tmp[enrichment_result[[i]]$pathway, i] <- enrichment_result[[i]]$padj
+            }
+            # tmp <- as.data.frame(tmp)
+            # tmp$mean <- rowMeans(tmp)
+            return(tmp)
+          },
+          "size" = {
+            tmp <- matrix(nrow = length(names(enrichment_library)), ncol = length(names(enrichment_result)),
+                          dimnames = list(names(enrichment_library), names(enrichment_result)))
+            for(i in names(enrichment_result)){
+              tmp[enrichment_result[[i]]$pathway, i] <- enrichment_result[[i]]$size
+            }
+            tmp <- as.data.frame(tmp)
+            # tmp$mean <- rowMeans(tmp)
+            return(tmp)
+          },
+          "ES" = {
+            tmp <- matrix(nrow = length(names(enrichment_library)), ncol = length(names(enrichment_result)),
+                          dimnames = list(names(enrichment_library), names(enrichment_result)))
+            for(i in names(enrichment_result)){
+              tmp[enrichment_result[[i]]$pathway, i] <- enrichment_result[[i]]$ES
+            }
+            tmp <- as.data.frame(tmp)
+            # tmp$mean <- rowMeans(tmp)
+            return(tmp)
+          },
+          cat("ERROR: Result type should be either of the following: NES, pval, padj, size, ES")
+  )
+}

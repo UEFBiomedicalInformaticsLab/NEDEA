@@ -9,10 +9,12 @@ rm(list = ls())
 
 # Notes:
 # (1) Effective drug combinations: Synergistic drug combinations from FimmDrugComb
-#     tested on the cell lines for the particular disease. 
-# (2) Adverse drug combinations: DrugBank drug-drug interaction pairs with 
+#     tested on the cell lines for the particular disease.
+# (2) Adverse drug combinations: DrugBank drug-drug interaction pairs with
 #     risk/severity indications that contain both drugs involved
 #     in forming effective pairs
+# (3) Drug pairs also filtered to keep only those for which there are reported targets
+
 
 
 
@@ -50,6 +52,7 @@ DrugBank_drugInteractions <- readRDS("InputFiles/ReferenceList/DrugBank_drugInte
 
 # Read drug target interactions from drug bank
 DrugBank_Drug_Target_Net <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
+Drug_Target_Net <- DrugBank_Drug_Target_Net
 
 
 
@@ -83,12 +86,13 @@ print(paste0("Number of synergy combinations after adverse pair removal: ", nrow
 
 
 # Check if the drugs forming the pairs have reported targets
-effectiveCombinations <- effectiveCombinations[(effectiveCombinations$Drug1_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id 
-                                                & effectiveCombinations$Drug2_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
+effectiveCombinations <- effectiveCombinations[(effectiveCombinations$Drug1_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id 
+                                                & effectiveCombinations$Drug2_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id), ]
 print(paste0("Number of synergy combinations after target check: ", nrow(effectiveCombinations)))
 
 
 effectiveCombinations_drugs <- unique(c(effectiveCombinations$Drug1_DrugBank_drug_id, effectiveCombinations$Drug2_DrugBank_drug_id))
+print(paste0("Number of drugs forming effective combinations: ", length(effectiveCombinations_drugs)))
 
 
 
@@ -104,8 +108,8 @@ adverseCombinations <- DrugBank_drugInteractions[((DrugBank_drugInteractions$Dru
 
 
 # Check if the drugs forming the pairs have reported targets
-adverseCombinations <- adverseCombinations[(adverseCombinations$Drug1_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id 
-                                            & adverseCombinations$Drug2_DrugBank_drug_id %in% DrugBank_Drug_Target_Net$Node1_drugbank_drug_id), ]
+adverseCombinations <- adverseCombinations[(adverseCombinations$Drug1_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id 
+                                            & adverseCombinations$Drug2_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id), ]
 
 
 
@@ -120,10 +124,10 @@ drugCombs$adverseCombinations <- adverseCombinations
 rownames(drugCombs$effectiveCombinations) <- rownames(drugCombs$adverseCombinations) <- NULL
 
 
-if(!dir.exists("InputFiles/DrugCombinations/DrugCombs_v1/")){
-  dir.create("InputFiles/DrugCombinations/DrugCombs_v1/", recursive = TRUE)
+if(!dir.exists("InputFiles/DrugCombinations/DrugCombs_v5/")){
+  dir.create("InputFiles/DrugCombinations/DrugCombs_v5/", recursive = TRUE)
 } 
-saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs_v1//DrugComb_", disease, "_v1.rds"))
+saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs_v5//DrugComb_", disease, "_v5.rds"))
 
 cat(paste0("\n\n\nNumber of drug combinations for ", disease, ":\n"))
 print(lapply(drugCombs, nrow))
