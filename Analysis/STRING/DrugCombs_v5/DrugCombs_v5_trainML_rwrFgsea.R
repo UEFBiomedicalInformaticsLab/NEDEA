@@ -23,7 +23,7 @@ option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
   make_option(c("--data_balance_method"), type = "character", default = "none", 
-              help = "The method to be used to balance imbalanced data. Possible values: SMOTE, downSample, upSample, or none. Default: none"., metavar = "character"),
+              help = "The method to be used to balance imbalanced data. Possible values: SMOTE, downSample, upSample, or none. Default: none.", metavar = "character"),
   make_option(c("--nproc"), type = "numeric", default = NULL, 
               help = "Number of processes to use. Default: NULL", metavar = "numeric")
   
@@ -153,7 +153,7 @@ final_results$SMPDbPath_DrugMet <- SMPDbPath_DrugMet_model$result_summary_tables
 final_results$SMPDbPath_DrugAction <- SMPDbPath_DrugAction_model$result_summary_tables
 final_results$miscGeneSet <- miscGeneSet_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"))
+write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"), overwrite = TRUE)
 
 
 

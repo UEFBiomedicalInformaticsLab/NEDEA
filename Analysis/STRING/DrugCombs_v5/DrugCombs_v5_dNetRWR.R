@@ -11,8 +11,8 @@ rm(list = ls())
 library(optparse)
 library(foreach)
 library(doParallel)
-source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_dNet_RWR_analysis.R")
-source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_parallelprocesses.R")
+source("Scripts/Functions/Functions_dNet_RWR_analysis.R")
+source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
 
