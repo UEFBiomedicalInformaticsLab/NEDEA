@@ -108,8 +108,8 @@ adverseComb_NES <- func_extract_fgsea_result(enrichment_result = adverseComb_enr
                                              result_type = "NES",
                                              enrichment_library = enrichment_lib)
 
-NES_withdrawalAdr2Gene <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
-names(NES_withdrawalAdr2Gene)[1] <- "ADR"
+NES_WithdrawalAdr2Gene <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
+names(NES_WithdrawalAdr2Gene)[1] <- "ADR"
 
 
 
@@ -141,8 +141,8 @@ adverseComb_NES <- func_extract_fgsea_result(enrichment_result = adverseComb_enr
                                              result_type = "NES",
                                              enrichment_library = enrichment_lib)
 
-DiseaseAdr2Gene <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
-names(DiseaseAdr2Gene)[1] <- "Term"
+NES_CombinedDisAdr2Gene <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
+names(NES_CombinedDisAdr2Gene)[1] <- "Term"
 
 
 
@@ -151,9 +151,9 @@ names(DiseaseAdr2Gene)[1] <- "Term"
 # Final results
 fgsea_result <- list()
 fgsea_result$NES_Disease2Gene <- NES_Disease2Gene
-fgsea_result$NES_withdrawalAdr2Gene <- NES_withdrawalAdr2Gene
-fgsea_result$DiseaseAdr2Gene <- DiseaseAdr2Gene
+fgsea_result$NES_WithdrawalAdr2Gene <- NES_WithdrawalAdr2Gene
+fgsea_result$NES_CombinedDisAdr2Gene <- NES_CombinedDisAdr2Gene
 
-saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_", disease, ".rds"))
+saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_EfficacySafety_", disease, ".rds"))
 
 print(warning())

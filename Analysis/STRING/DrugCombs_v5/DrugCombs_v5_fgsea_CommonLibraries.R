@@ -209,10 +209,12 @@ names(NES_miscGeneSet)[1] <- "GeneSet"
 
 # Final results
 fgsea_result <- list()
-fgsea_result$NES_Disease2Gene <- NES_Disease2Gene
-fgsea_result$NES_withdrawalAdr2Gene <- NES_withdrawalAdr2Gene
-fgsea_result$DiseaseAdr2Gene <- DiseaseAdr2Gene
+fgsea_result$NES_keggPath <- NES_keggPath
+fgsea_result$NES_ReactomePath <- NES_ReactomePath
+fgsea_result$NES_SMPDbPath_DrugMet <- NES_SMPDbPath_DrugMet
+fgsea_result$NES_SMPDbPath_DrugAction <- NES_SMPDbPath_DrugAction
+fgsea_result$NES_miscGeneSet <- NES_miscGeneSets
 
-saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_", disease, ".rds"))
+saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_CommonLib_", disease, ".rds"))
 
 print(warning())

@@ -97,7 +97,7 @@ drugCombs_rwr_res2 <- foreach (i=1:nrow(drugCombs$adverseCombinations),
                                }
 
 for(i in 1:length(drugCombs_rwr_res2)){
-  names(drugCombs_rwr_res2)[i] <- paste("Eff", drugCombs$adverseCombinations[i,c("Drug1_DrugBank_drug_id")], 
+  names(drugCombs_rwr_res2)[i] <- paste("Adv", drugCombs$adverseCombinations[i,c("Drug1_DrugBank_drug_id")], 
                                         drugCombs$adverseCombinations[i,c("Drug2_DrugBank_drug_id")], sep = "__")
 }
 
