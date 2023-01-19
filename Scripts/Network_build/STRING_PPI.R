@@ -25,23 +25,23 @@ String_proteins <- String_proteins[String_proteins$source == "Ensembl_HGNC_Ensem
 String_ppi <- read.table("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", header = TRUE)
 
 
-# Filter all interactions with scores greater than 0 and sourced from database
-String_ppi <- String_ppi[(String_ppi$database > 0 | String_ppi$experimental > 0), ] #| String_ppi$experimental > 0
-
+# Filter all interactions with scores greater than 0 and sourced from database/experimets
+String_ppi <- String_ppi[(String_ppi$database > 0 | String_ppi$experimental > 0), ] #
 
 String_ppi$Node1_ensembl_gene_id <- String_proteins$alias[match(String_ppi$protein1, String_proteins$string_protein_id)]
 String_ppi$Node2_ensembl_gene_id <- String_proteins$alias[match(String_ppi$protein2, String_proteins$string_protein_id)]
 
 
-String_ppi_Net <- na.exclude(String_ppi[, c("Node1_ensembl_gene_id", "Node2_ensembl_gene_id")])
+String_ppi_Net <- na.exclude(String_ppi[, c("protein1", "protein2", "Node1_ensembl_gene_id", "Node2_ensembl_gene_id")])
 String_ppi_Net$Node1_type <- "gene"
 String_ppi_Net$Node2_type <- "gene"
 String_ppi_Net$Edge_type <- "undirected"
 String_ppi_Net <- String_ppi_Net[, c("Node1_ensembl_gene_id", "Node1_type", "Node2_ensembl_gene_id", "Node2_type", "Edge_type")]
 
-
 # Convert to graph object
 String_ppi_Net <- graph_from_data_frame(String_ppi_Net[, c("Node1_ensembl_gene_id", "Node2_ensembl_gene_id")], directed = FALSE)
+String_ppi_Net <- simplify(String_ppi_Net, remove.loops = TRUE, remove.multiple	= TRUE) # remove loops and multi-edges
+print(paste("Network size (vertices, edges):", vcount(String_ppi_Net), ecount(String_ppi_Net)))
 
 saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.rds")
 

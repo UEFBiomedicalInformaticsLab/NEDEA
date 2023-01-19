@@ -3,7 +3,7 @@ rm(list = ls())
 
 
 
-# Drug combinations from DrugCombDb
+# Drug combinations from DrugCombDb (http://drugcombdb.denglab.org/main)
 
 
 

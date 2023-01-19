@@ -167,7 +167,7 @@ func_fgsea_from_rwr_probCut <- function(enrichment_library,
   total_run <- length(rwr_data) 
   enrichment_result <- list()
   
-  p <- bpstart(MulticoreParam(60))
+  p <- bpstart(MulticoreParam(10))
   for(i in names(rwr_data)){
     
     # Rank genes for FGSEA. 
@@ -184,8 +184,8 @@ func_fgsea_from_rwr_probCut <- function(enrichment_library,
       cat(paste0("\n\n- Running FGSEA for: (", count , "/", total_run, ") ", i))
       cat(paste0("\n-- Quantile score = ", threshold))
       cat(paste0("\n-- Number of genes used for enrichment = ", length(ranked_genes), "\n"))
-      print(head(ranked_genes))
-      print(tail(ranked_genes))
+      # print(head(ranked_genes))
+      # print(tail(ranked_genes))
     }
     
     # Perform FGSEA

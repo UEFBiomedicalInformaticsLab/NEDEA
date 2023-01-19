@@ -41,10 +41,13 @@ if(!opt$data_balance_method %in% c("SMOTE", "downSample", "upSample", "none")){
   stop("--data_balance_method must be SMOTE, downSample, upSample or none")
 }
 
-if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
-  print_help(opt_parser)
-  stop("--nproc should be be an integer.", call.=FALSE)
+if(!is.null(opt$nproc)){
+  if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
+    print_help(opt_parser)
+    stop("--nproc should be be an integer (if used).", call.=FALSE)
+  }
 }
+
 
 # Define global options for this script 
 disease <- opt$disease
@@ -80,7 +83,7 @@ Disease2Gene_model <- func_repeated_train(feature_matrix = fgsea_result$NES_Dise
                                           nproc = NULL)
 
 cat("\n- Feature: WithdrawalAdr2Gene library\n")
-WithdrawalAdr2Gene_model <- func_repeated_train(feature_matrix = fgsea_result$NES_withdrawalAdr2Gene, 
+WithdrawalAdr2Gene_model <- func_repeated_train(feature_matrix = fgsea_result$NES_WithdrawalAdr2Gene, 
                                           train_test_split = train_test_split, 
                                           data_balance_method = data_balance_method, 
                                           allow_parallel = FALSE, 

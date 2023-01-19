@@ -132,12 +132,12 @@ func_repeated_train <- function(feature_matrix,
            },
            
            "none" = {
-             trainData <- data[train_test_split[[i]]$train$Name , !(colnames(data) %in% c("Class")), drop = FALSE]
-             trainClass <- as.factor(data[train_test_split[[i]]$train$Name, c("Class")])
+             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name , !(colnames(data) %in% c("Class")), drop = FALSE]
+             trainClass <- as.factor(data[row.names(data) %in% train_test_split[[i]]$train$Name, c("Class")])
            })
     
-    testData <- data[train_test_split[[i]]$test$Name, !(colnames(data) %in% c("Class")), drop = FALSE]
-    testClass  <-  as.factor(data[train_test_split[[i]]$test$Name, c("Class")])
+    testData <- data[row.names(data) %in% train_test_split[[i]]$test$Name, !(colnames(data) %in% c("Class")), drop = FALSE]
+    testClass  <-  as.factor(data[row.names(data) %in% train_test_split[[i]]$test$Name, c("Class")])
     
     trainClass_count <- rbind(table(trainClass))
     colnames(trainClass_count) <- paste0("Train_", colnames(trainClass_count))
@@ -147,8 +147,8 @@ func_repeated_train <- function(feature_matrix,
     
     
     
-    
     # Train Random Forest model
+    cat("--- Random Forest\n")
     rf_model <- train_rf_model(x = trainData, y = trainClass)
     rf_predictions <- predict(object = rf_model, newdata = testData, type = "raw")
     rf_predictions_prob <- predict(object = rf_model, newdata = testData, type = "prob") 
@@ -189,8 +189,8 @@ func_repeated_train <- function(feature_matrix,
     
     
     
-    
     # Train glmnet model
+    cat("--- glmnet\n")
     if(ncol(trainData) > 1){
       glmnet_model <- train_glmnet_model(x = trainData, y = trainClass)
       glmnet_predictions <- predict(object = glmnet_model, newdata = testData, type = "raw")
@@ -206,7 +206,8 @@ func_repeated_train <- function(feature_matrix,
                                      Resample = i,
                                      trainClass_count,
                                      testClass_count,
-                                     BestTune_mtry = glmnet_model$bestTune$mtry,
+                                     BestTune_alpha = glmnet_model$bestTune$alpha,
+                                     BestTune_lambda = glmnet_model$bestTune$lambda,
                                      PositiveClass = glmnet_confusionMatrix_test$positive,
                                      ROC_AUC_train = as.numeric(glmnet_rocauc_train),
                                      ROC_AUC_test = as.numeric(glmnet_rocauc_test),
@@ -233,6 +234,7 @@ func_repeated_train <- function(feature_matrix,
       warning("Training data contains only one feature column. Will return NA for glmnet")
       glmnet_model <- NA
       glmnet_predictions <- NA
+      glmnet_predictions_prob <- NA
       glmnet_confusionMatrix_test <- NA
       glmnet_result_table <- NA
     }
@@ -240,8 +242,8 @@ func_repeated_train <- function(feature_matrix,
     
     
     
-    
     # Train Support Vector Machines with Radial Basis Function Kernel model
+    cat("--- Support Vector Machine\n")
     svmRadial_model <- train_svmRadial_model(x = trainData, y = trainClass)
     svmRadial_predictions <- predict(object = svmRadial_model, newdata = testData, type = "raw")
     svmRadial_predictions_prob <- predict(object = svmRadial_model, newdata = testData, type = "prob") 
@@ -256,7 +258,8 @@ func_repeated_train <- function(feature_matrix,
                                       Resample = i,
                                       trainClass_count,
                                       testClass_count,
-                                      BestTune_mtry = svmRadial_model$bestTune$mtry,
+                                      BestTune_sigma = svmRadial_model$bestTune$sigma,
+                                      BestTune_C = svmRadial_model$bestTune$C,
                                       PositiveClass = svmRadial_confusionMatrix_test$positive,
                                       ROC_AUC_train = as.numeric(svmRadial_rocauc_train),
                                       ROC_AUC_test = as.numeric(svmRadial_rocauc_test),
