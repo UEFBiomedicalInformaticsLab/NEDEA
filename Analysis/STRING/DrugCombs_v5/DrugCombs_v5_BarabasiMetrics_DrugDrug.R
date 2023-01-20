@@ -13,6 +13,7 @@ library(foreach)
 library(doParallel)
 library(tidyverse)
 library(openxlsx)
+library(igraph)
 source("Scripts/Functions/Functions_Barabasi_metrics.R")
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
@@ -70,7 +71,13 @@ drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds
 
 # Read the network on which to calculate the proximities
 gene_network <- readRDS("InputFiles/Networks/STRING_PPI_Net_database.rds")
-
+print(paste("Input network size (before clean):", vcount(gene_network), ecount(gene_network)))
+isolated <- names(which(degree(gene_network)==0)) # remove isolated nodes
+gene_network <- delete.vertices(gene_network, isolated)
+cc <- components(gene_network)
+largest_components <- V(gene_network)[cc$membership == which.max(cc$csize)] # remove connected components
+gene_network <- induced_subgraph(gene_network, largest_components)
+print(paste("Input network size (after clean):", vcount(gene_network), ecount(gene_network)))
 
 
 # Using external cluster instead of clustering through each function call
