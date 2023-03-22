@@ -103,7 +103,7 @@ adverseComb_rwr <- adverseComb_rwr[lapply(adverseComb_rwr, ncol) == 7]
 rm(drugCombs_rwr_res_final)
 
 
-cat("\n\nNumbe rof drug combinations: ")
+cat("\n\nNumber of drug combinations: ")
 cat(paste0("\n - Effective combinations = ", length(effectiveComb_rwr)))
 cat(paste0("\n - Adverse combinations = ", length(adverseComb_rwr), "\n\n"))
 
@@ -162,6 +162,9 @@ results <- foreach(i=names(drugCombs), .combine = "rbind", .packages = c("igraph
   
   # Calculate the Steiner tree properties
   network_parameters <- data.frame(drugComb = i,
+                                   number_adr_genes = length(adr_genes),
+                                   number_disease_genes = length(disease_genes),
+                                   number_drugTarget_genes = length(drugTarget_genes),
                                    number_steiner_trees = length(steinertree_res) - 1 ,
                                    number_terminal_nodes = length(selected_genes),
                                    number_steiner_nodes = length(V(subNet)$name[!V(subNet)$name %in% selected_genes]),

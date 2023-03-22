@@ -6,6 +6,7 @@
 # Load libraries
 library(caret)
 library(MLmetrics)
+library(DMwR)
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
@@ -107,14 +108,14 @@ func_repeated_train <- function(feature_matrix,
     # Balance the training data (if used)
     switch(data_balance_method,
            "SMOTE" = {
-             trainData <- data[train_test_split[[i]]$train$Name,]
+             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
              trainData_smote <- SMOTE(Class ~ ., trainData, perc.over = 100, perc.under = 200)
              trainData <- trainData_smote[ , !(colnames(trainData_smote) %in% c("Class")), drop = FALSE]
              trainClass <- as.factor(trainData_smote[, c("Class")])
            },
            
            "downSample" = {
-             trainData <- data[train_test_split[[i]]$train$Name,]
+             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
              trainData_downSample <- downSample(x = trainData[ , !(colnames(trainData) %in% c("Class")), drop = FALSE],
                                                 y = trainData$Class)
              
@@ -123,7 +124,7 @@ func_repeated_train <- function(feature_matrix,
            },
            
            "upSample" = {
-             trainData <- data[train_test_split[[i]]$train$Name,]
+             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
              trainData_upSample <- upSample(x = trainData[ , !(colnames(trainData) %in% c("Class")), drop = FALSE],
                                             y = trainData$Class)
              

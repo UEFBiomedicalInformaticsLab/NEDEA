@@ -17,7 +17,6 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
 
-
 # Get arguments
 option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
