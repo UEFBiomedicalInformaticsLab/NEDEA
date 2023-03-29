@@ -320,7 +320,7 @@ Barabasi_proximity_kernel <- function(gene_network, geneSet1, geneSet2){
       }
       
       geneSet1_transformed_dist <- data.frame()
-      distance_matrix_transformed <- apply(distance_matrix, c(1,2), function(z)transform_matrix(z, length(geneSet2)))
+      distance_matrix_transformed <- apply(distance_matrix, c(1,2), function(z)transform_matrix(z, length(geneSet1)))
       for(gene in row.names(distance_matrix_transformed)){
         transformed_dist <- log(sum(distance_matrix_transformed[gene,], na.rm = TRUE))
         tmp <- data.frame(gene = gene, transformed_dist = transformed_dist)

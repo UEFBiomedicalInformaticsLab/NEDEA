@@ -88,6 +88,8 @@ print(paste0("Number of synergy combinations after adverse pair removal: ", nrow
 # Check if the drugs forming the pairs have reported targets
 effectiveCombinations <- effectiveCombinations[(effectiveCombinations$Drug1_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id 
                                                 & effectiveCombinations$Drug2_DrugBank_drug_id %in% Drug_Target_Net$Node1_drugbank_drug_id), ]
+effectiveCombinations <- unique(effectiveCombinations)
+
 print(paste0("Number of synergy combinations after target check: ", nrow(effectiveCombinations)))
 
 
@@ -105,6 +107,7 @@ print(paste0("Number of drugs forming effective combinations: ", length(effectiv
 adverseCombinations <- DrugBank_drugInteractions[((DrugBank_drugInteractions$Drug1_DrugBank_drug_id %in% effectiveCombinations_drugs) & 
                                                     (DrugBank_drugInteractions$Drug2_DrugBank_drug_id %in% effectiveCombinations_drugs)),
                                                  c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")] 
+adverseCombinations <- unique(adverseCombinations)
 
 
 # Check if the drugs forming the pairs have reported targets

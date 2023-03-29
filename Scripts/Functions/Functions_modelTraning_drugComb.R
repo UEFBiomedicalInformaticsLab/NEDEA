@@ -10,6 +10,16 @@ library(DMwR)
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
+# MLmetrics::AUC (modified function)
+# AUC calcution returns NA due to large value of n_pos * n_neg which cannot be handled by R
+AUC <- function(y_pred, y_true){
+            rank <- rank(y_pred)
+            n_pos <- as.numeric(sum(y_true == 1))
+            n_neg <- as.numeric(sum(y_true == 0))
+            auc <- (sum(rank[y_true == 1]) - n_pos * (n_pos + 1)/2)/(n_pos * n_neg)
+            return(auc)
+}
+
 
 # Parameters to train Random Forest model
 train_rf_model <- function(x, y){
@@ -37,7 +47,7 @@ train_glmnet_model <- function(x, y){
                metric = "F",
                allowParallel = TRUE,
                tuneGrid = expand.grid(alpha = seq(0.1, 1, 0.1),
-                                      lambda = seq(0.001, 0.1, 0.001)),
+                                      lambda = 10^seq(-6, 3, by = 0.5)),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
                                         repeats = 2,
@@ -54,8 +64,8 @@ train_svmRadial_model <- function(x, y){
                method = "svmRadial",
                metric = "F",
                allowParallel = TRUE,
-               tuneGrid = expand.grid(sigma = seq(0.01, 0.1, 0.01),
-                                      C = seq(1, 20, 1)),
+               tuneGrid = expand.grid(sigma = 10^(-4:2),
+                                      C = 10^(-3:3)),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
                                         repeats = 2,
@@ -144,10 +154,15 @@ func_repeated_train <- function(feature_matrix,
     colnames(trainClass_count) <- paste0("Train_", colnames(trainClass_count))
     testClass_count <- rbind(table(testClass))
     colnames(testClass_count) <- paste0("Test_", colnames(testClass_count))
+      
+    # Preprocess the data
+    preProcess <- preProcess(trainData, method = c("zv", "center", "scale"))
+    trainData <- predict(object = preProcess, newdata = trainData)
+    testData <- predict(object = preProcess, newdata = testData)
     
     
-    
-    
+      
+      
     # Train Random Forest model
     cat("--- Random Forest\n")
     rf_model <- train_rf_model(x = trainData, y = trainClass)
@@ -155,9 +170,9 @@ func_repeated_train <- function(feature_matrix,
     rf_predictions_prob <- predict(object = rf_model, newdata = testData, type = "prob") 
     rf_confusionMatrix_train <- confusionMatrix(table(rf_model$pred$pred, rf_model$pred$obs), positive = "Eff")
     rf_confusionMatrix_test <- confusionMatrix(table(rf_predictions, testClass), positive = "Eff")
-    rf_rocauc_train = AUC(y_pred = rf_model$pred$Eff, y_true = ifelse(rf_model$pred$obs == "Eff", 1, 0))
+    rf_rocauc_train = AUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
     rf_rocauc_test = AUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    rf_prauc_train = PRAUC(y_pred = rf_model$pred$Eff, y_true = ifelse(rf_model$pred$obs == "Eff", 1, 0))
+    rf_prauc_train = PRAUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
     rf_prauc_test = PRAUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
     rf_result_table <- rbind(rf_result_table,
                              data.frame(
@@ -198,9 +213,9 @@ func_repeated_train <- function(feature_matrix,
       glmnet_predictions_prob <- predict(object = glmnet_model, newdata = testData, type = "prob") 
       glmnet_confusionMatrix_train <- confusionMatrix(table(glmnet_model$pred$pred, glmnet_model$pred$obs), positive = "Eff")
       glmnet_confusionMatrix_test <- confusionMatrix(table(glmnet_predictions, testClass), positive = "Eff")
-      glmnet_rocauc_train = AUC(y_pred = glmnet_model$pred$Eff, y_true = ifelse(glmnet_model$pred$obs == "Eff", 1, 0))
+      glmnet_rocauc_train = AUC(y_pred = na.exclude(glmnet_model$pred)$Eff, y_true = ifelse(na.exclude(glmnet_model$pred)$obs == "Eff", 1, 0))
       glmnet_rocauc_test = AUC(y_pred = glmnet_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-      glmnet_prauc_train = PRAUC(y_pred = glmnet_model$pred$Eff, y_true = ifelse(glmnet_model$pred$obs == "Eff", 1, 0))
+      glmnet_prauc_train = PRAUC(y_pred = na.exclude(glmnet_model$pred)$Eff, y_true = ifelse(na.exclude(glmnet_model$pred)$obs == "Eff", 1, 0))
       glmnet_prauc_test = PRAUC(y_pred = glmnet_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
       glmnet_result_table <- rbind(glmnet_result_table,
                                    data.frame(
@@ -250,9 +265,9 @@ func_repeated_train <- function(feature_matrix,
     svmRadial_predictions_prob <- predict(object = svmRadial_model, newdata = testData, type = "prob") 
     svmRadial_confusionMatrix_train <- confusionMatrix(table(svmRadial_model$pred$pred, svmRadial_model$pred$obs), positive = "Eff")
     svmRadial_confusionMatrix_test <- confusionMatrix(table(svmRadial_predictions, testClass), positive = "Eff")
-    svmRadial_rocauc_train = AUC(y_pred = svmRadial_model$pred$Eff, y_true = ifelse(svmRadial_model$pred$obs == "Eff", 1, 0))
+    svmRadial_rocauc_train = AUC(y_pred = na.exclude(svmRadial_model$pred)$Eff, y_true = ifelse(na.exclude(svmRadial_model$pred)$obs == "Eff", 1, 0))
     svmRadial_rocauc_test = AUC(y_pred = svmRadial_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    svmRadial_prauc_train = PRAUC(y_pred = svmRadial_model$pred$Eff, y_true = ifelse(svmRadial_model$pred$obs == "Eff", 1, 0))
+    svmRadial_prauc_train = PRAUC(y_pred = na.exclude(svmRadial_model$pred)$Eff, y_true = ifelse(na.exclude(svmRadial_model$pred)$obs == "Eff", 1, 0))
     svmRadial_prauc_test = PRAUC(y_pred = svmRadial_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
     svmRadial_result_table <- rbind(svmRadial_result_table,
                                     data.frame(
