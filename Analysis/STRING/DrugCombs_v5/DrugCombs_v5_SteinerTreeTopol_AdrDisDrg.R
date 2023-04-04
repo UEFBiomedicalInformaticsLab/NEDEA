@@ -1,3 +1,4 @@
+set.seed(5081)
 rm(list = ls())
 
 
@@ -77,19 +78,6 @@ adr_genes <- unique(unlist(adr_genes, use.names = FALSE))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Load RWR results
 load(file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/dNetRWR050_", disease, ".rda"))
 
@@ -160,6 +148,13 @@ results <- foreach(i=names(drugCombs), .combine = "rbind", .packages = c("igraph
   # # Open in cytoscape
   # createNetworkFromIgraph(igraph = subNet, title = i)
   
+  # Write graph to a file
+  if(!dir.exists(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTree_AdrDisDrg/"))){
+      dir.create(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTree_AdrDisDrg/"), recursive = TRUE)
+      } 
+
+  write_graph(graph = subNet, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTree_AdrDisDrg/", i, ".graphml"), format = "graphml")
+  
   # Calculate the Steiner tree properties
   network_parameters <- data.frame(drugComb = i,
                                    number_adr_genes = length(adr_genes),
@@ -192,8 +187,8 @@ print(class(results))
 results <- as.data.frame(t(column_to_rownames(results, "drugComb")))
 results <- rownames_to_column(results, "features")
 
-write.xlsx(results, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
-saveRDS(results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
+# write.xlsx(results, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
+# saveRDS(results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
 
 
 stopCluster(cl)

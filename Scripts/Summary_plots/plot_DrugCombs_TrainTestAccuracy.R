@@ -73,7 +73,7 @@ none_model_stats <- bind_rows(none_model_stats, .id = "model")
 none_model_stats <- separate(none_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 none_model_stats <- none_model_stats[, c("featureType", "model", "Resample", 
-                                           "PR_AUC_train", "PR_AUC_test",
+                                           "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
 none_model_stats$imbalance <- "none"
@@ -106,7 +106,7 @@ smote_model_stats <- bind_rows(smote_model_stats, .id = "model")
 smote_model_stats <- separate(smote_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 smote_model_stats <- smote_model_stats[, c("featureType", "model", "Resample", 
-                                           "PR_AUC_train", "PR_AUC_test",
+                                           "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
 smote_model_stats$imbalance <- "SMOTE"
@@ -139,7 +139,7 @@ upSample_model_stats <- bind_rows(upSample_model_stats, .id = "model")
 upSample_model_stats <- separate(upSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Resample", 
-                                           "PR_AUC_train", "PR_AUC_test",
+                                           "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
 upSample_model_stats$imbalance <- "upSample"
@@ -172,7 +172,7 @@ downSample_model_stats <- bind_rows(downSample_model_stats, .id = "model")
 downSample_model_stats <- separate(downSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Resample", 
-                                           "PR_AUC_train", "PR_AUC_test",
+                                           "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
 downSample_model_stats$imbalance <- "downSample"
@@ -185,12 +185,12 @@ downSample_model_stats$imbalance <- "downSample"
 model_stats <- rbind(none_model_stats, smote_model_stats, upSample_model_stats, downSample_model_stats) 
 
 model_stats <- reshape(model_stats, direction = "long",
-                       varying = c("PR_AUC_train", "F1_train", "BalancedAccuracy_train",
-                                    "PR_AUC_test", "F1_test", "BalancedAccuracy_test"),
+                       varying = c("PRAUC_train", "F1_train", "BalancedAccuracy_train",
+                                    "PRAUC_test", "F1_test", "BalancedAccuracy_test"),
                        v.names = "value",
                        timevar = "scoreType",
-                       times = c("PR_AUC_train", "F1_train", "BalancedAccuracy_train",
-                                 "PR_AUC_test", "F1_test", "BalancedAccuracy_test"))
+                       times = c("PRAUC_train", "F1_train", "BalancedAccuracy_train",
+                                 "PRAUC_test", "F1_test", "BalancedAccuracy_test"))
 
 rownames(model_stats) <- NULL
 model_stats$value <- as.numeric(model_stats$value)
@@ -204,7 +204,7 @@ model_stats <- separate(model_stats, col = "scoreType", into = c("scoreType", "s
 
 
 # Plot train vs test accuracy
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ModelAccuracy_TrainVsTest_",metric, "_", disease, ".svg"), width = 4, height = 4)
+svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ModelAccuracy_TrainVsTest_",metric, "_", disease, ".svg"), width = 7, height = 4)
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "BbsiProx_separation", "SteinerTopol", 
                         "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet")

@@ -32,7 +32,7 @@ func_list_2_df <- function(query_list){
 # Function to convert PharmGKB IDs ---------------------------
 # Download required files for mapping
 
-if(!dir.exists("Databases/PharmGKB/")){dir.create("Databases/PharmGKB/")}
+if(!dir.exists("Databases/PharmGKB/")){dir.create("Databases/PharmGKB/", recursive = TRUE)}
 
 if(!file.exists("Databases/PharmGKB/genes.tsv")){
   download.file(url = "https://api.pharmgkb.org/v1/download/file/data/genes.zip",

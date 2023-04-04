@@ -79,4 +79,19 @@ for(i in colnames(trainIndex)){
   ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
   }
 
+
+
+
+# Creating folds
+fldIndex <- createFolds(y = drugCombs$Class, k = 5, list = TRUE, returnTrain = FALSE)
+
+ML_data_split <- list()
+for(i in 1:length(fldIndex)) {
+  testData <- drugCombs[fldIndex[[i]], ]
+  remainingFolds <- fldIndex[-i]
+  trainData <- drugCombs[Reduce(union, lapply(remainingFolds, unlist)), ]
+  ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
+}
+names(ML_data_split) <- names(fldIndex)
+
 saveRDS(ML_data_split, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ML_dataSplit_", disease, ".rds"))

@@ -182,7 +182,10 @@ model_param <- na.exclude(model_param)
 
 model_param$model <- factor(model_param$model, levels = c("glmnet", "rf", "svmRadial"))
 model_param$parameter <- factor(model_param$parameter, levels = c("BestTune_alpha", "BestTune_lambda", "BestTune_mtry", "BestTune_C", "BestTune_sigma"))
-
+model_param$featureType <- factor(x = model_param$featureType,
+                                            levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
+                                                        "BbsiProx_separation", "SteinerTopol", 
+                                                        "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
 
 
 

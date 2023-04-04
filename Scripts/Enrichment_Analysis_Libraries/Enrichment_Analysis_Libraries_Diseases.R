@@ -228,7 +228,7 @@ spark_disconnect(sc)
 # (a) https://intogen.org/download?file=IntOGen-Drivers-20200201.zip
 # (b) https://intogen.org/download?file=IntOGen-Cohorts-20200201.zip
 
-if(!dir.exists("Databases/Intogen")){dir.create("Databases/Intogen")}
+if(!dir.exists("Databases/Intogen")){dir.create("Databases/Intogen", recursive = TRUE)}
 
 if(!file.exists("Databases/Intogen/Compendium_Cancer_Genes.tsv")){
   download.file(url = "https://intogen.org/download?file=IntOGen-Drivers-20200201.zip",
@@ -282,7 +282,7 @@ saveRDS(Intogen_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Into
 ## Disease gene enrichment library based on Disease_Signatures_from_GEO_2014 (Enrichr)
 
 # Download libraries from Enrichr
-if(!dir.exists("Databases/Enrichr")){dir.create("Databases/Enrichr")}
+if(!dir.exists("Databases/Enrichr")){dir.create("Databases/Enrichr", recursive = TRUE)}
 if(!file.exists("Databases/Enrichr/Disease_Signatures_from_GEO_down_2014.txt")){
   download.file(url = "https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=Disease_Signatures_from_GEO_down_2014",
                 destfile = "Databases/Enrichr/Disease_Signatures_from_GEO_down_2014.txt", method = "wget")
@@ -325,7 +325,7 @@ saveRDS(Enrichr_Disease2Gene_GeoDiseaseSig_lib, "InputFiles/Enrichment_Analysis_
 
 
 # Enrichment of PharmGKB diseases ---------------------------------------------------------
-if(!dir.exists("Databases/PharmGKB/")){dir.create("Databases/PharmGKB/")}
+if(!dir.exists("Databases/PharmGKB/")){dir.create("Databases/PharmGKB/", recursive = TRUE)}
 if(!file.exists("Databases/PharmGKB/relationships.tsv")){
   download.file(url = "https://api.pharmgkb.org/v1/download/file/data/relationships.zip",
                 destfile = "Databases/PharmGKB/relationships.zip", method = "wget")
