@@ -75,7 +75,40 @@ train_svmRadial_model <- function(x, y){
 }
 
 
+# Parameters to train Naive Bayes model
+train_nb_model <- function(x, y){
+  caret::train(x = x,
+               y = y,
+               method = "naive_bayes",
+               metric = "F",
+               allowParallel = TRUE,
+               tuneGrid = expand.grid(laplace = seq(0, 10, 0.1), 
+                                      adjust = seq(0, 1, 0.1),
+                                     usekernel = TRUE),
+               trControl = trainControl(method = "repeatedcv",
+                                        number = 5,
+                                        repeats = 2,
+                                        summaryFunction = prSummary,
+                                        classProbs = TRUE,
+                                        savePredictions = TRUE))
+}
 
+
+
+# Parameters to train k-Nearest Neighbors model
+train_knn_model <- function(x, y){
+  caret::train(x = x,
+               y = y,
+               method = "knn",
+               metric = "F",
+               tuneGrid = expand.grid(k = seq(1, 100, 2)),
+               trControl = trainControl(method = "repeatedcv",
+                                        number = 5,
+                                        repeats = 2,
+                                        summaryFunction = prSummary,
+                                        classProbs = TRUE,
+                                        savePredictions = TRUE))
+}
 
 
 # Function to train all models
@@ -100,7 +133,7 @@ func_repeated_train <- function(feature_matrix,
   } 
   
   
-  rf_result_table <- glmnet_result_table <- svmRadial_result_table <- data.frame()
+  rf_result_table <- glmnet_result_table <- svmRadial_result_table <- nb_result_table <- knn_result_table <- data.frame()
   modelling_results <- list()
   
   
@@ -300,6 +333,91 @@ func_repeated_train <- function(feature_matrix,
     
     
     
+    
+    # Train Naive Bayes model
+    cat("--- Naive Bayes\n")
+    nb_model <- train_nb_model(x = trainData, y = trainClass)
+    nb_predictions <- predict(object = nb_model, newdata = testData, type = "raw")
+    nb_predictions_prob <- predict(object = nb_model, newdata = testData, type = "prob") 
+    nb_confusionMatrix_train <- confusionMatrix(table(nb_model$pred$pred, nb_model$pred$obs), positive = "Eff")
+    nb_confusionMatrix_test <- confusionMatrix(table(nb_predictions, testClass), positive = "Eff")
+    nb_rocauc_train = AUC(y_pred = na.exclude(nb_model$pred)$Eff, y_true = ifelse(na.exclude(nb_model$pred)$obs == "Eff", 1, 0))
+    nb_rocauc_test = AUC(y_pred = nb_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    nb_prauc_train = PRAUC(y_pred = na.exclude(nb_model$pred)$Eff, y_true = ifelse(na.exclude(nb_model$pred)$obs == "Eff", 1, 0))
+    nb_prauc_test = PRAUC(y_pred = nb_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    nb_result_table <- rbind(nb_result_table,
+                             data.frame(
+                               Fold = i,
+                               trainClass_count,
+                               testClass_count,
+                               BestTune_laplace = nb_model$bestTune$laplace,
+                               BestTune_adjust = nb_model$bestTune$adjust,
+                               BestTune_usekernel = nb_model$bestTune$usekernel,
+                               PositiveClass = nb_confusionMatrix_test$positive,
+                               ROCAUC_train = as.numeric(nb_rocauc_train),
+                               ROCAUC_test = as.numeric(nb_rocauc_test),
+                               PRAUC_train = as.numeric(nb_prauc_train),
+                               PRAUC_test = as.numeric(nb_prauc_test),
+                               Accuracy_train =  unname (nb_confusionMatrix_train$overall["Accuracy"]),
+                               Accuracy_test =  unname (nb_confusionMatrix_test$overall["Accuracy"]),
+                               Kappa_train =  unname (nb_confusionMatrix_train$overall["Kappa"]),
+                               Kappa_test =  unname (nb_confusionMatrix_test$overall["Kappa"]),
+                               Sensitivity_train =  unname (nb_confusionMatrix_train$byClass["Sensitivity"]),
+                               Sensitivity_test =  unname (nb_confusionMatrix_test$byClass["Sensitivity"]),
+                               Specificity_train =  unname (nb_confusionMatrix_train$byClass["Specificity"]),
+                               Specificity_test =  unname (nb_confusionMatrix_test$byClass["Specificity"]),
+                               Precision_train =  unname (nb_confusionMatrix_train$byClass["Precision"]),
+                               Precision_test =  unname (nb_confusionMatrix_test$byClass["Precision"]),
+                               Recall_train =  unname (nb_confusionMatrix_train$byClass["Recall"]),
+                               Recall_test =  unname (nb_confusionMatrix_test$byClass["Recall"]),
+                               F1_train =  unname (nb_confusionMatrix_train$byClass["F1"]),
+                               F1_test =  unname (nb_confusionMatrix_test$byClass["F1"]),
+                               BalancedAccuracy_train =  unname (nb_confusionMatrix_train$byClass["Balanced Accuracy"]),
+                               BalancedAccuracy_test =  unname (unname (nb_confusionMatrix_test$byClass["Balanced Accuracy"]))))
+    
+    
+    
+    
+    # Train k-Nearest Neighbors model
+    cat("--- k-Nearest Neighbors\n")
+    knn_model <- train_knn_model(x = trainData, y = trainClass)
+    knn_predictions <- predict(object = knn_model, newdata = testData, type = "raw")
+    knn_predictions_prob <- predict(object = knn_model, newdata = testData, type = "prob") 
+    knn_confusionMatrix_train <- confusionMatrix(table(knn_model$pred$pred, knn_model$pred$obs), positive = "Eff")
+    knn_confusionMatrix_test <- confusionMatrix(table(knn_predictions, testClass), positive = "Eff")
+    knn_rocauc_train = AUC(y_pred = na.exclude(knn_model$pred)$Eff, y_true = ifelse(na.exclude(knn_model$pred)$obs == "Eff", 1, 0))
+    knn_rocauc_test = AUC(y_pred = knn_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    knn_prauc_train = PRAUC(y_pred = na.exclude(knn_model$pred)$Eff, y_true = ifelse(na.exclude(knn_model$pred)$obs == "Eff", 1, 0))
+    knn_prauc_test = PRAUC(y_pred = knn_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    knn_result_table <- rbind(knn_result_table,
+                             data.frame(
+                               Fold = i,
+                               trainClass_count,
+                               testClass_count,
+                               BestTune_k = knn_model$bestTune$k,
+                               PositiveClass = knn_confusionMatrix_test$positive,
+                               ROCAUC_train = as.numeric(knn_rocauc_train),
+                               ROCAUC_test = as.numeric(knn_rocauc_test),
+                               PRAUC_train = as.numeric(knn_prauc_train),
+                               PRAUC_test = as.numeric(knn_prauc_test),
+                               Accuracy_train =  unname (knn_confusionMatrix_train$overall["Accuracy"]),
+                               Accuracy_test =  unname (knn_confusionMatrix_test$overall["Accuracy"]),
+                               Kappa_train =  unname (knn_confusionMatrix_train$overall["Kappa"]),
+                               Kappa_test =  unname (knn_confusionMatrix_test$overall["Kappa"]),
+                               Sensitivity_train =  unname (knn_confusionMatrix_train$byClass["Sensitivity"]),
+                               Sensitivity_test =  unname (knn_confusionMatrix_test$byClass["Sensitivity"]),
+                               Specificity_train =  unname (knn_confusionMatrix_train$byClass["Specificity"]),
+                               Specificity_test =  unname (knn_confusionMatrix_test$byClass["Specificity"]),
+                               Precision_train =  unname (knn_confusionMatrix_train$byClass["Precision"]),
+                               Precision_test =  unname (knn_confusionMatrix_test$byClass["Precision"]),
+                               Recall_train =  unname (knn_confusionMatrix_train$byClass["Recall"]),
+                               Recall_test =  unname (knn_confusionMatrix_test$byClass["Recall"]),
+                               F1_train =  unname (knn_confusionMatrix_train$byClass["F1"]),
+                               F1_test =  unname (knn_confusionMatrix_test$byClass["F1"]),
+                               BalancedAccuracy_train =  unname (knn_confusionMatrix_train$byClass["Balanced Accuracy"]),
+                               BalancedAccuracy_test =  unname (unname (knn_confusionMatrix_test$byClass["Balanced Accuracy"]))))
+    
+    
     # Compile results
     tmp <- list(rf = list(model = rf_model, 
                           test_predictions = rf_predictions, 
@@ -312,7 +430,15 @@ func_repeated_train <- function(feature_matrix,
                 svmRadial = list(model = svmRadial_model, 
                                  test_predictions = svmRadial_predictions, 
                                  test_probabilities = svmRadial_predictions_prob, 
-                                 test_confusionMatrix = svmRadial_confusionMatrix_test))
+                                 test_confusionMatrix = svmRadial_confusionMatrix_test),
+                 nb = list(model = nb_model, 
+                           test_predictions = nb_predictions, 
+                           test_probabilities = nb_predictions_prob, 
+                           test_confusionMatrix = nb_confusionMatrix_test),
+                 knn = list(model = knn_model, 
+                            test_predictions = knn_predictions, 
+                            test_probabilities = knn_predictions_prob, 
+                            test_confusionMatrix = knn_confusionMatrix_test))
     
     modelling_results[[i]] <- tmp
     
@@ -322,7 +448,9 @@ func_repeated_train <- function(feature_matrix,
   
   result_summary_tables <- list(rf = rf_result_table,
                                 glmnet = glmnet_result_table,
-                                svmRadial = svmRadial_result_table)
+                                svmRadial = svmRadial_result_table,
+                                nb = nb_result_table,
+                                knn = knn_result_table,)
   
   
   return(list(result_summary_tables = result_summary_tables, 
