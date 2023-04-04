@@ -68,16 +68,16 @@ drugCombs$Name <- paste(drugCombs$Class, drugCombs$Drug1_DrugBank_drug_id, drugC
 row.names(drugCombs) <- NULL
 
 
-trainIndex <- createDataPartition(y = drugCombs$Class  , p = train_perc/100, list = FALSE, times = splits)
+# trainIndex <- createDataPartition(y = drugCombs$Class  , p = train_perc/100, list = FALSE, times = splits)
 
 
-ML_data_split <- list()
-for(i in colnames(trainIndex)){
-  trainData <- drugCombs[trainIndex[, i], ]
-  testData <- drugCombs[-trainIndex[, i], ]
+# ML_data_split <- list()
+# for(i in colnames(trainIndex)){
+#   trainData <- drugCombs[trainIndex[, i], ]
+#   testData <- drugCombs[-trainIndex[, i], ]
   
-  ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
-  }
+#   ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
+#   }
 
 
 
