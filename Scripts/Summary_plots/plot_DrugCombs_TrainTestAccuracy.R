@@ -1,4 +1,3 @@
-set.seed(5081)
 rm(list = ls())
 
 
@@ -65,6 +64,11 @@ for(file in files){
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     none_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
+  if(grepl(pattern = "BarabasiProx", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
+    names(none_model_stats[[tmp]]) <- paste(prox_comp, names(none_model_stats[[tmp]]), sep = "_")
+  }
 }
 rm(tmp)
 
@@ -72,7 +76,7 @@ none_model_stats <- unlist(none_model_stats, recursive = FALSE)
 none_model_stats <- bind_rows(none_model_stats, .id = "model")
 none_model_stats <- separate(none_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
-none_model_stats <- none_model_stats[, c("featureType", "model", "Resample", 
+none_model_stats <- none_model_stats[, c("featureType", "model", "Fold", 
                                            "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
@@ -98,6 +102,11 @@ for(file in files){
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     smote_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
+  if(grepl(pattern = "BarabasiProx", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
+    names(smote_model_stats[[tmp]]) <- paste(prox_comp, names(smote_model_stats[[tmp]]), sep = "_")
+  }
 }
 rm(tmp)
 
@@ -105,7 +114,7 @@ smote_model_stats <- unlist(smote_model_stats, recursive = FALSE)
 smote_model_stats <- bind_rows(smote_model_stats, .id = "model")
 smote_model_stats <- separate(smote_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
-smote_model_stats <- smote_model_stats[, c("featureType", "model", "Resample", 
+smote_model_stats <- smote_model_stats[, c("featureType", "model", "Fold", 
                                            "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
@@ -131,6 +140,11 @@ for(file in files){
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     upSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
+  if(grepl(pattern = "BarabasiProx", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
+    names(upSample_model_stats[[tmp]]) <- paste(prox_comp, names(upSample_model_stats[[tmp]]), sep = "_")
+  }
 }
 rm(tmp)
 
@@ -138,7 +152,7 @@ upSample_model_stats <- unlist(upSample_model_stats, recursive = FALSE)
 upSample_model_stats <- bind_rows(upSample_model_stats, .id = "model")
 upSample_model_stats <- separate(upSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
-upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Resample", 
+upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Fold", 
                                            "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
@@ -164,6 +178,11 @@ for(file in files){
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     downSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
+  if(grepl(pattern = "BarabasiProx", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
+    names(downSample_model_stats[[tmp]]) <- paste(prox_comp, names(downSample_model_stats[[tmp]]), sep = "_")
+  }
 }
 rm(tmp)
 
@@ -171,7 +190,7 @@ downSample_model_stats <- unlist(downSample_model_stats, recursive = FALSE)
 downSample_model_stats <- bind_rows(downSample_model_stats, .id = "model")
 downSample_model_stats <- separate(downSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
-downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Resample", 
+downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Fold", 
                                            "PRAUC_train", "PRAUC_test",
                                             "F1_train", "F1_test", 
                                             "BalancedAccuracy_train", "BalancedAccuracy_test")]
