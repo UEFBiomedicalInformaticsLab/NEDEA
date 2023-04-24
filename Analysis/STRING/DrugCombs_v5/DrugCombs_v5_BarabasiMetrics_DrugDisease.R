@@ -2,7 +2,7 @@ rm(list = ls())
 
 
 
-# Calculate different Barabasi metrics between targets of two drugs
+# Calculate different Barabasi metrics between targets of the two drugs and the disease related genes
 
 
 
@@ -69,6 +69,14 @@ row.names(drugCombs) <- NULL
 drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
 
 
+# Get the disease gene list
+# Removing list from sources which have too high number of genes
+disease_genes <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_", disease, "_lib.rds"))
+disease_genes <- disease_genes[grep(pattern = "literature|RNA|Enrichr", x = names(disease_genes), invert = TRUE)]
+disease_genes <- unique(unlist(disease_genes, use.names = FALSE))
+# disease_net <- subgraph(graph = gene_network, v = V(gene_network)[V(gene_network)$name %in% disease_genes])
+
+
 
 # Read the network on which to calculate the proximities
 gene_network <- readRDS("InputFiles/Networks/STRING_PPI_Net_database.rds")
@@ -100,18 +108,20 @@ proximity_matrix  <- foreach(i=1:nrow(drugCombs),
                                # Retrieve the targets for the two drugs
                                drug1_targets <- drug_target_ixn[drug_target_ixn$Node1_drugbank_drug_id == drug1, "Node2_ensembl_gene_id"]
                                drug2_targets <- drug_target_ixn[drug_target_ixn$Node1_drugbank_drug_id == drug2, "Node2_ensembl_gene_id"]
-                               
+                               drug_targets <- unique(c(drug1_targets, drug2_targets))
+  
                                # Calculate the proximities
-                               proximity_closest <- Barabasi_proximity_closest(gene_network, drug1_targets, drug2_targets)
-                               proximity_shortest <- Barabasi_proximity_shortest(gene_network, drug1_targets, drug2_targets)
-                               proximity_centre <- Barabasi_proximity_centre(gene_network, drug1_targets, drug2_targets)
-                               proximity_kernel <- Barabasi_proximity_kernel(gene_network, drug1_targets, drug2_targets)
-                               proximity_separation <- Barabasi_proximity_separation(gene_network, drug1_targets, drug2_targets)
+                               proximity_closest <- Barabasi_proximity_closest(gene_network, drug_targets, disease_genes)
+                               proximity_shortest <- Barabasi_proximity_shortest(gene_network, drug_targets, disease_genes)
+                               proximity_centre <- Barabasi_proximity_centre(gene_network, drug_targets, disease_genes)
+                               proximity_kernel <- Barabasi_proximity_kernel(gene_network, drug_targets, disease_genes)
+                               proximity_separation <- Barabasi_proximity_separation(gene_network, drug_targets, disease_genes)
                                
                                # Prepare for export as dataframe
                                tmp <- data.frame(drugComb = paste(drugCombs[i,"Class"], drug1, drug2, sep = "__"),
                                                  drug1_target_number = length(drug1_targets),
                                                  drug2_target_number = length(drug2_targets),
+                                                 disease_gene_number = length(disease_genes),
                                                  proximity_closest = proximity_closest,
                                                  proximity_shortest = proximity_shortest,
                                                  proximity_centre = proximity_centre,
@@ -131,8 +141,8 @@ proximity_matrix <- as.data.frame(t(proximity_matrix))
 proximity_matrix <- rownames_to_column(proximity_matrix, "features")
 
 
-saveRDS(proximity_matrix, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugDrug_", disease, ".rds"))
-write.xlsx(proximity_matrix, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugDrug_", disease, ".xlsx"), overwrite = TRUE)
+saveRDS(proximity_matrix, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
+write.xlsx(proximity_matrix, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugDisease_", disease, ".xlsx"), overwrite = TRUE)
 
 
 print(warnings())
