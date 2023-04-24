@@ -81,7 +81,6 @@ train_nb_model <- function(x, y){
                y = y,
                method = "naive_bayes",
                metric = "F",
-               allowParallel = TRUE,
                tuneGrid = expand.grid(laplace = seq(0, 10, 0.1), 
                                       adjust = seq(0, 1, 0.1),
                                      usekernel = TRUE),
@@ -99,9 +98,11 @@ train_nb_model <- function(x, y){
 train_knn_model <- function(x, y){
   caret::train(x = x,
                y = y,
-               method = "knn",
+               method = "kknn",
                metric = "F",
-               tuneGrid = expand.grid(k = seq(1, 100, 2)),
+               tuneGrid = expand.grid(kmax = seq(0, 25, 5),
+                                     distance = seq(1, 10, 1),
+                                     kernel = c("triangular", "rectangular", "epanechnikov", "optimal")),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
                                         repeats = 2,
@@ -394,7 +395,9 @@ func_repeated_train <- function(feature_matrix,
                                Fold = i,
                                trainClass_count,
                                testClass_count,
-                               BestTune_k = knn_model$bestTune$k,
+                               BestTune_kmax = knn_model$bestTune$kmax,
+                               BestTune_distance = knn_model$bestTune$distance,
+                               BestTune_kernel = knn_model$bestTune$kernel,
                                PositiveClass = knn_confusionMatrix_test$positive,
                                ROCAUC_train = as.numeric(knn_rocauc_train),
                                ROCAUC_test = as.numeric(knn_rocauc_test),
@@ -443,14 +446,12 @@ func_repeated_train <- function(feature_matrix,
     modelling_results[[i]] <- tmp
     
   }
-  
-  
-  
+
   result_summary_tables <- list(rf = rf_result_table,
                                 glmnet = glmnet_result_table,
                                 svmRadial = svmRadial_result_table,
                                 nb = nb_result_table,
-                                knn = knn_result_table,)
+                                knn = knn_result_table)
   
   
   return(list(result_summary_tables = result_summary_tables, 
