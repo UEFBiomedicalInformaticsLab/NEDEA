@@ -10,12 +10,10 @@ rm(list = ls())
 # Load libraries
 library(optparse)
 library(openxlsx)
-library(svglite)
 library(caret)
 library(openxlsx)
 library(pheatmap)
 library(tidyverse)
-library(svglite)
 
 
 
@@ -46,19 +44,11 @@ if(is.null(opt$model)){
   print_help(opt_parser)
   stop("--model argument needed", call.=FALSE)
 }
-# if(is.null(opt$feature_type)){
-#   print_help(opt_parser)
-#   stop("--feature_type argument needed", call.=FALSE)
-# }
 
 if(!opt$model %in% c("rf", "glmnet", "svmRadial", "knn", "nb")){
   print_help(opt_parser)
   stop("Possible values for --model: rf, glmnet, svmRadial, knn, nb", call.=FALSE)
 }
-# if(!opt$feature_type %in% c("BarabasiProx_DrugDrug", "rwrFgsea", "SteinerTopol_AdrDisDrg")){
-#   print_help(opt_parser)
-#   stop("Possible values for --feature_type: BarabasiProx_DrugDrug, rwrFgsea, SteinerTopol_AdrDisDrg", call.=FALSE)
-# }
 
 if(!opt$data_balance_method %in% c("SMOTE", "downSample", "upSample", "none")){
   stop("--data_balance_method must be SMOTE, downSample, upSample or none")
@@ -74,7 +64,6 @@ if(!is.null(opt$nproc)){
 # Define global options for this script 
 disease <- opt$disease
 model <- opt$model
-# feature_type <- opt$feature_type
 data_balance_method <- opt$data_balance_method
 nproc <- opt$nproc
 
@@ -97,11 +86,9 @@ files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
 
 
 
-print("A")
 # Extract feature importance
 variable_importance <- list()
 for(file in files){
-  print(file)
   tmp1 <- strsplit(x = file, split = "\\/")[[1]][5]
   tmp1 <- strsplit(x = tmp1, split = "\\.")[[1]][1]
   
@@ -110,7 +97,6 @@ for(file in files){
     for(fold in names(model[[featureType]])) {
       for(select_model in names(model[[featureType]][[fold]])){
         
-        print(paste(featureType, fold, select_model, sep = " - "))
         tmp2 <- model[[featureType]][[fold]][[select_model]][["model"]] 
         if(!is.na(tmp2)){
           tmp3 <- varImp(tmp2)
@@ -136,7 +122,6 @@ rm(list = c("tmp1", "tmp2", "tmp3", "tmp4"))
 variable_importance <- unlist(variable_importance, recursive = FALSE)
 
 
-print("B")
 
 # Turn variable importance into data frame
 variable_importance_df <- list()
@@ -157,7 +142,6 @@ rm(list = c("tmp1", "tmp2"))
 
 
 
-print("C")
 
 # Export to xlsx file
 tmp <- unlist(variable_importance_df, recursive = FALSE)
@@ -176,12 +160,11 @@ write.xlsx(tmp, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/featureImport
 rm(tmp)
 
 
-print("D")
 
 # Create heatmaps
 for(featureType in names(variable_importance_df)){
   for (select_model in names(variable_importance_df[[featureType]])){
-    print(paste(disease, featureType, select_model, data_balance_method, sep = " - "))
+    # print(paste(disease, featureType, select_model, data_balance_method, sep = " - "))
     tmp1 <- variable_importance_df[[featureType]][[select_model]]
     tmp1 <- tmp1[!rowSums(is.na(tmp1)) >= length(colnames(tmp1)[grep("^Fold", colnames(tmp1))]), ]
     if(nrow(tmp1) != 0){
