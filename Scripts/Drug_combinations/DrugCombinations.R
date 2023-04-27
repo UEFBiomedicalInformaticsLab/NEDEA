@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Drug combinations (version 5 // final version)
 
 
@@ -127,10 +122,10 @@ drugCombs$adverseCombinations <- adverseCombinations
 rownames(drugCombs$effectiveCombinations) <- rownames(drugCombs$adverseCombinations) <- NULL
 
 
-if(!dir.exists("InputFiles/DrugCombinations/DrugCombs_v5/")){
-  dir.create("InputFiles/DrugCombinations/DrugCombs_v5/", recursive = TRUE)
+if(!dir.exists("InputFiles/DrugCombinations/DrugCombs/")){
+  dir.create("InputFiles/DrugCombinations/DrugCombs/", recursive = TRUE)
 } 
-saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs_v5//DrugComb_", disease, "_v5.rds"))
+saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs//DrugComb_", disease, ".rds"))
 
 cat(paste0("\n\n\nNumber of drug combinations for ", disease, ":\n"))
 print(lapply(drugCombs, nrow))
