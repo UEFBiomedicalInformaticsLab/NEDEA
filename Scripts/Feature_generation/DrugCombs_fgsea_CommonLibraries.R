@@ -1,8 +1,7 @@
-rm(list = ls())
-
-
-
 # Perform FGSEA on drug combinations based on the RWR results (version 5)
+
+
+
 
 
 # Load libraries
@@ -38,7 +37,7 @@ cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
 # Load RWR results
-load(file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/dNetRWR050_", disease, ".rda"))
+load(file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease, ".rda"))
 
 
 effectiveComb_rwr <- drugCombs_rwr_res_final$effectiveCombinations
@@ -58,9 +57,9 @@ cat(paste0("\n - Adverse combinations = ", length(adverseComb_rwr), "\n\n"))
 
 
 
-# Run FGSEA on msigdb_keggPath2Gene_lib
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/msigdb_keggPath2Gene_lib.rds"))
-cat("\n\n\n- Executing FGSEA for msigdb_keggPath2Gene_lib\n")
+# Run FGSEA on CHG_keggPath2Gene_lib
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/CHG_keggPath2Gene_lib.rds"))
+cat("\n\n\n- Executing FGSEA for CHG_keggPath2Gene_lib\n")
 
 
 effectiveComb_enrichment <- func_fgsea_from_rwr_probCut(enrichment_library = enrichment_lib, 
@@ -214,6 +213,8 @@ fgsea_result$NES_SMPDbPath_DrugMet <- NES_SMPDbPath_DrugMet
 fgsea_result$NES_SMPDbPath_DrugAction <- NES_SMPDbPath_DrugAction
 fgsea_result$NES_miscGeneSet <- NES_miscGeneSet
 
-saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_CommonLib_", disease, ".rds"))
+saveRDS(fgsea_result, file = paste0("OutputFiles/Model_train/", disease, "/fgseaProbCut_CommonLib_", disease, ".rds"))
+
+
 
 print(warning())

@@ -1,9 +1,6 @@
-set.seed(5081)
-rm(list = ls())
+# dNET RWR on Drug Combinations
 
 
-
-# dNET RWR on Drug Combinations (version 5)
 
 
 
@@ -40,7 +37,7 @@ cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
 # Read the drug combinations
-drugCombs <- readRDS(paste0("InputFiles/DrugCombinations/DrugCombs_v5/DrugComb_", disease, "_v5.rds"))
+drugCombs <- readRDS(paste0("InputFiles/DrugCombinations/DrugComb_", disease, ".rds"))
 cat("\n\nNumber of drug combinations:\n")
 lapply(drugCombs, nrow)
 
@@ -114,10 +111,12 @@ drugCombs_rwr_res_final <- list()
 drugCombs_rwr_res_final$effectiveCombinations <- drugCombs_rwr_res1
 drugCombs_rwr_res_final$adverseCombinations <- drugCombs_rwr_res2
 
-if(!dir.exists(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/"))){
-  dir.create(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/"), recursive = TRUE)
+if(!dir.exists(paste0("OutputFiles/Model_train/", disease, "/"))){
+  dir.create(paste0("OutputFiles/Model_train/", disease, "/"), recursive = TRUE)
 } 
 
-save(drugCombs_rwr_res_final, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/dNetRWR050_", disease, ".rda"))
+save(drugCombs_rwr_res_final, file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease, ".rda"))
+
+
 
 print(warnings())

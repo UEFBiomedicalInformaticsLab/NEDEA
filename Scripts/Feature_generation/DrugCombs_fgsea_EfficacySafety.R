@@ -1,9 +1,7 @@
-set.seed(5081)
-rm(list = ls())
+# Perform FGSEA on drug combinations based on the RWR results
 
 
 
-# Perform FGSEA on drug combinations based on the RWR results (version 5)
 
 
 # Load libraries
@@ -39,7 +37,7 @@ cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
 # Load RWR results
-load(file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/dNetRWR050_", disease, ".rda"))
+load(file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease, ".rda"))
 
 
 effectiveComb_rwr <- drugCombs_rwr_res_final$effectiveCombinations
@@ -154,6 +152,8 @@ fgsea_result$NES_Disease2Gene <- NES_Disease2Gene
 fgsea_result$NES_WithdrawalAdr2Gene <- NES_WithdrawalAdr2Gene
 fgsea_result$NES_CombinedDisAdr2Gene <- NES_CombinedDisAdr2Gene
 
-saveRDS(fgsea_result, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_EfficacySafety_", disease, ".rds"))
+saveRDS(fgsea_result, file = paste0("OutputFiles/Model_train/", disease, "/fgseaProbCut_EfficacySafety_", disease, ".rds"))
+
+
 
 print(warning())

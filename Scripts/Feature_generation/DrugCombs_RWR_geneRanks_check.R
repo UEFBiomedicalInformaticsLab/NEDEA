@@ -1,8 +1,7 @@
-rm(list = ls())
-
-
-
 # Script to compare similarity between selected genes from RWR using dynamic quartile probability thresholding (version 5)
+
+
+
 
 
 # Load libraries
@@ -50,7 +49,7 @@ cat(paste0("\n\nCalculating similarity for: ", disease, "\n\n"))
 
 
 # Load RWR results
-load(file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/dNetRWR050_", disease, ".rda"))
+load(file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease, ".rda"))
 
 
 effectiveComb_rwr <- drugCombs_rwr_res_final$effectiveCombinations
@@ -119,7 +118,7 @@ colnames(similarity_matrix) <- gsub("drugComb_1", "drugComb", colnames(similarit
 tmp2 <- list("similarity_matrix" = similarity_matrix,
              "similarity_df" = similarity_df)
 
-write.xlsx(tmp2, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/rwrGeneRank_probCut_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(tmp2, file = paste0("OutputFiles/Model_train/", disease, "/rwrGeneRank_probCut_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
@@ -129,7 +128,7 @@ write.xlsx(tmp2, file = paste0("Analysis/STRING/DrugCombs_v5/", disease, "/rwrGe
 row.names(similarity_matrix) <- NULL
 similarity_matrix <- column_to_rownames(similarity_matrix, var = "drugComb")
 
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/rwrSimMat_probCut_", disease, ".svg"), width = 10, height = 10)
+svglite(paste0("OutputFiles/Model_train/", disease, "/rwrSimMat_probCut_", disease, ".svg"), width = 10, height = 10)
 col_annot <- HeatmapAnnotation(Class = substring(colnames(similarity_matrix), 1, 3),
                                col = list(Class = c("Adv" = "Orange", "Eff" = "Green")))
 Heatmap(as.matrix(similarity_matrix),
@@ -140,6 +139,7 @@ Heatmap(as.matrix(similarity_matrix),
         show_column_names = FALSE, 
         top_annotation = col_annot)
 dev.off()
+
 
 
 print(warnings())
