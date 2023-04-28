@@ -93,11 +93,9 @@ GenAge_genes <- as.vector(na.exclude(GenAge_genes$ensembl_gene_id))
 if(!dir.exists("Databases/HOCdb/")){dir.create("Databases/HOCdb/", recursive = TRUE)}
 
 # Manually download supplementary file from https://doi.org/10.1093/database/baaa045
-# if(!file.exists("Databases/HOCdb/suppl_data_baaa045.zip")){
-#   download.file(url = "",
-#                 destfile = "Databases/HOCdb/suppl_data_baaa045.zip", method = "wget")
-#   unzip("Databases/HOCdb/suppl_data_baaa045.zip", exdir = "Databases/HOCdb/", file = "Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx")
-# }
+if(!file.exists("Databases/HOCdb/suppl_data_baaa045.zip")){
+    warning(paste0("Download supplementary file: Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx"))
+}
 unzip("Databases/HOCdb/suppl_data_baaa045.zip", exdir = "Databases/HOCdb/", file = "Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx")
 
 HOC_genes <- read.xlsx("Databases/HOCdb/Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx", sheet = "HP-gene")

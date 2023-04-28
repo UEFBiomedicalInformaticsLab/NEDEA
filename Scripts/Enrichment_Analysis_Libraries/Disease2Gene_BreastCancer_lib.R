@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Enrichment analysis libraries for BreastCancer
 
 
@@ -19,8 +14,14 @@ rm(list = ls())
 
 
 
+
+
 # Load libraries
 library(org.Hs.eg.db)
+
+
+
+
 
 # Create gene ID mappings
 entrezId_2_ensemblId <- as.data.frame(org.Hs.egENSEMBL)
@@ -97,7 +98,7 @@ names(PharmGKB_BreastCancer2Gene_lib) <- paste0(names(PharmGKB_BreastCancer2Gene
 
 ## ThETA
 library(ThETA)
-source("ExternalTools/ThETA/Corrected_Functions.R")
+source("Scripts/ThETA/Corrected_Functions.R")
 data(gtexv7_zscore)
 data(ppi_strdb_700)
 data(dis_vrnts)

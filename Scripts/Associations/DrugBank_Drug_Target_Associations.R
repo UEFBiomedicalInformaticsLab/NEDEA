@@ -1,8 +1,5 @@
-set.seed(5081)
-rm(list = ls())
-
-
 # Drug-Target association from DrugBank
+
 
 
 # Load libraries
@@ -10,19 +7,24 @@ library(openxlsx)
 library(tidyr)
 library(stringr)
 library(biomaRt)
+library(dbparser)
+
+
+
+
 
 # Download the complete DrugBank database as XML and parse it using dbparser
 # Following that the data is saved as CSV files
 
 if(!dir.exists("Databases/DrugBank")){dir.create("Databases/DrugBank/", recursive = TRUE)} 
-if(!file.exists("Databases/DrugBank/drugbank_all_full_database.xml.zip")){
+if(!file.exists("Databases/DrugBank/drugbank_all_full_database.xml.zip")){ 
   warning(paste0("ERROR: DrugBank database file not found !!! \n", 
                  "Download file in terminal using:\n", 
                  "\t curl -Lfv -o filename.zip -u EMAIL:PASSWORD https://go.drugbank.com/releases/5-1-8/downloads/all-full-database"))
 }
 
 if(!file.exists("Databases/DrugBank/drug.csv")){
-  library(dbparser)
+  require(dbparser)
   read_drugbank_xml_db("Databases/DrugBank/drugbank_all_full_database.xml.zip")
   targets <- targets(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
   drugs <- drugs(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)

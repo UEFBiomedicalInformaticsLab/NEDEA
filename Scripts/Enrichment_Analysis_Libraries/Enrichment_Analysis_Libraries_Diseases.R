@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Libraries for enrichment analysis of diseases
 
 
@@ -16,6 +11,8 @@ library(tidyverse)
 library(sparklyr)
 library(sparklyr.nested)
 source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_ID_Conversion.R")
+
+
 
 
 

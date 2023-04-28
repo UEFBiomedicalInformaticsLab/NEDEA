@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Enrichment libraries based on common ADRs related to drug withrawal
 # 
 # Primary terms include: hepatotoxicity, immune-related reaction, cardiotoxicity, 

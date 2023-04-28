@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Libraries for enrichment analysis of side-effects
 
 

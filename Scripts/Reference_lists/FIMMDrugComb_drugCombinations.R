@@ -1,9 +1,6 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Drug combinations from FIMM DrugComb (https://drugcomb.fimm.fi/)
+
+
 
 
 
@@ -38,7 +35,7 @@ FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
 # Download disease IDs from NCI Thesaurus (NCIt) 
 if(!dir.exists("Databases/NCIt/"))dir.create("Databases/NCIt/")
 if(!file.exists("Databases/NCIt/Thesaurus.txt")){
-  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/Thesaurus_22.12d.FLAT.zip",
+  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/archive/22.12d_Release/Thesaurus_22.12d.FLAT.zip",
                 destfile = "Databases/NCIt/Thesaurus_22.12d.FLAT.zip", method = "wget")
   unzip("Databases/NCIt/Thesaurus_22.12d.FLAT.zip", exdir = "Databases/NCIt/", file = "Thesaurus.txt")
 }
@@ -91,7 +88,7 @@ FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$synergy_class_sum == -4, "drug
 FimmDrugComb_drugCombCat <- split(FimmDrugComb_drugCombCat, f = FimmDrugComb_drugCombCat$tissue_name)
 FimmDrugComb_drugCombCat <- lapply(FimmDrugComb_drugCombCat, function(x){split(x, f = x$drug_class)})
 
-
+if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/")
 saveRDS(FimmDrugComb_drugCombCat, "InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
 
 

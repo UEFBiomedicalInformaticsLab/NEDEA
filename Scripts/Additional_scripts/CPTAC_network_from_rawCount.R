@@ -8,6 +8,10 @@ library(DESeq2)
 library(WGCNA)
 library(igraph)
 
+
+
+
+
 disease <- "LungCancer"
 
 
@@ -68,3 +72,7 @@ network <- graph_from_adjacency_matrix(adjacency_unweight, mode = "undirected")
 
 if(!dir.exists("InputFiles/Networks")){dir.create("InputFiles/Networks", recursive = TRUE)} 
 saveRDS(network, paste0("InputFiles/Networks/CPTAC_rawCount_", disease, "_unweighted.rds"))
+
+
+
+print(warnings())

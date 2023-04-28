@@ -4,19 +4,27 @@
 # Load libraries
 library(igraph)
 
-if(!dir.exists("Databases/StringDB/")){dir.create("Databases/StringDB", recursive = TRUE)}
 
+
+
+
+if(!dir.exists("Databases/StringDB/")){dir.create("Databases/StringDB", recursive = TRUE)}
 
 if(!file.exists("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz")){
   download.file(url = "https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz",
                 destfile = "Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", method = "wget")
 }
 
+if(!file.exists("Databases/StringDB/9606.protein.aliases.v11.5.txt.gz")){
+  download.file(url = "https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.aliases.v11.5.txt.gz",
+                destfile = "Databases/StringDB/9606.protein.aliases.v11.5.txt.gz", method = "wget")
+}
+
 
 
 # Read protein Id mappings
-String_proteins <- read.table("Databases/StringDB/9606.protein.aliases.v11.5.txt.gz", fill = TRUE)
-colnames(String_proteins) <- c("string_protein_id",	"alias",	"source")
+String_proteins <- read.table("Databases/StringDB/9606.protein.aliases.v11.5.txt.gz", fill = TRUE, sep = "\t")
+colnames(String_proteins) <- c("string_protein_id", "alias", "source")
 String_proteins <- String_proteins[String_proteins$source == "Ensembl_HGNC_Ensembl_ID(supplied_by_Ensembl)",]
 
 
@@ -43,6 +51,7 @@ String_ppi_Net <- graph_from_data_frame(String_ppi_Net[, c("Node1_ensembl_gene_i
 String_ppi_Net <- simplify(String_ppi_Net, remove.loops = TRUE, remove.multiple	= TRUE) # remove loops and multi-edges
 print(paste("Network size (vertices, edges):", vcount(String_ppi_Net), ecount(String_ppi_Net)))
 
+if(!dir.exists("InputFiles/Networks/")){dir.create("InputFiles/Networks/", recursive = TRUE)}
 saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.rds")
 
 print(warnings())

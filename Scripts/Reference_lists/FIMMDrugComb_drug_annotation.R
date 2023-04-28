@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Drug combinations from FIMM DrugComb (https://drugcomb.fimm.fi/)
 
 
@@ -12,6 +7,8 @@ rm(list = ls())
 # Load libraries
 library(unixtools)
 source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_ID_Conversion.R")
+
+
 
 
 
@@ -126,6 +123,7 @@ FimmDrugComb_drugs_idMap <- unique(rbind(map1, map2, map3, map4))
 FimmDrugComb_drugs_idMap <- rbind(FimmDrugComb_drugs_idMap_old, FimmDrugComb_drugs_idMap)
 row.names(FimmDrugComb_drugs_idMap) <- NULL
 
+if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/")
 saveRDS(FimmDrugComb_drugs_idMap, "InputFiles/ReferenceList/FimmDrugComb_drugs_idMap.rds")
 
 

@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Libraries for enrichment analysis of pathways
 
 
@@ -14,6 +9,8 @@ library(unixtools)
 library(org.Hs.eg.db)
 library(msigdbr)
 library(httr)
+
+
 
 
 
