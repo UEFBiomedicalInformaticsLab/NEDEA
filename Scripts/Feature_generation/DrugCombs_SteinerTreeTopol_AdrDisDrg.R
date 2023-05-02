@@ -1,9 +1,4 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
-# Extract Steiner tree from adr, disease and drug combination related genes and calculate its topological properties (version 5)
+# Extract Steiner tree from adr, disease and drug combination related genes and calculate its topological properties
 
 
 # Load libraries
@@ -194,5 +189,6 @@ results <- rownames_to_column(results, "features")
 stopCluster(cl)
 unregister_dopar()
 
+                             
 
 print(warnings())

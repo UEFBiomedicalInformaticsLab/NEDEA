@@ -115,7 +115,7 @@ for(pathway in CHG_pathways){
   CHG_keggPath2Gene_lib[[tmp]] <- sort(na.exclude(unique(response$ensembl_gene_id)))
 }
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(msigdb_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CHG_keggPath2Gene_lib.rds")
+saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CHG_keggPath2Gene_lib.rds")
 
 
 

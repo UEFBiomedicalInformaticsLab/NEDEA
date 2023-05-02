@@ -52,7 +52,7 @@ cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
 # Read the drug combinations
-drugCombs <- readRDS(paste0("InputFiles/DrugCombinations/DrugComb_", disease, "_v5.rds"))
+drugCombs <- readRDS(paste0("InputFiles/DrugCombinations/DrugComb_", disease, ".rds"))
 cat("\n\nNumber of drug combinations:\n")
 lapply(drugCombs, nrow)
 
@@ -133,6 +133,7 @@ proximity_matrix <- rownames_to_column(proximity_matrix, "features")
 
 saveRDS(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDrug_", disease, ".rds"))
 write.xlsx(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDrug_", disease, ".xlsx"), overwrite = TRUE)
+
 
 
 print(warnings())

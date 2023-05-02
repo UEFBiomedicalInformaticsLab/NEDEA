@@ -144,4 +144,5 @@ saveRDS(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/B
 write.xlsx(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugAdr_", disease, ".xlsx"), overwrite = TRUE)
 
 
+
 print(warnings())
