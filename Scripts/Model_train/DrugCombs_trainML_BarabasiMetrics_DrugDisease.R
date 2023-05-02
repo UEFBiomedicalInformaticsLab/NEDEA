@@ -1,8 +1,6 @@
-rm(list = ls())
-
-
-
 # Train ML models using Barabasi metrics between targets of the two drugs and the disease related genes
+
+
 
 
 
@@ -59,7 +57,7 @@ cat(paste0("\nData balance method: ", data_balance_method, "\n"))
 
 
 # Read the train-test split
-train_test_split <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ML_dataSplit_", disease, ".rds"))
+train_test_split <- readRDS(paste0("OutputFiles/Model_train/", disease, "/ML_dataSplit_", disease, ".rds"))
 
 
 # Using external cluster instead of clustering through each function call
@@ -72,10 +70,9 @@ registerDoParallel(cl)
 
 
 # Read the Barabasi metrics for drug-disease genes
-proximity_matrix <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
-proximity_matrix[proximity_matrix == "Inf"] <- NaN
-proximity_matrix <- proximity_matrix[, !colSums(proximity_matrix == "NaN")>0]
-
+proximity_matrix <- readRDS(paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
+proximity_matrix[proximity_matrix == "Inf"] <- NA
+proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 
 
@@ -143,7 +140,7 @@ final_results$BbsiProx_centre <- BarabasiProx_centre_model$modelling_results
 final_results$BbsiProx_kernel <- BarabasiProx_kernel_model$modelling_results
 final_results$BbsiProx_separation <- BarabasiProx_separation_model$modelling_results
 
-saveRDS(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDisease_", disease, ".rds"))
+saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDisease_", disease, ".rds"))
 
 
 final_results <- list()
@@ -154,12 +151,14 @@ final_results$BbsiProx_centre <- BarabasiProx_centre_model$result_summary_tables
 final_results$BbsiProx_kernel <- BarabasiProx_kernel_model$result_summary_tables
 final_results$BbsiProx_separation <- BarabasiProx_separation_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDisease_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDisease_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
 stopCluster(cl)
 unregister_dopar()
 Sys.sleep(60)
+
+
 
 print(warnings())

@@ -1,8 +1,6 @@
-rm(list = ls())
+# Train ML models using Barabasi metrics between drug-pairs as features 
 
 
-
-# Train ML models using Barabasi metrics between targets of the two drugs and the ADR related genes
 
 
 
@@ -59,7 +57,7 @@ cat(paste0("\nData balance method: ", data_balance_method, "\n"))
 
 
 # Read the train-test split
-train_test_split <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ML_dataSplit_", disease, ".rds"))
+train_test_split <- readRDS(paste0("OutputFiles/Model_train/", disease, "/ML_dataSplit_", disease, ".rds"))
 
 
 # Using external cluster instead of clustering through each function call
@@ -71,15 +69,14 @@ registerDoParallel(cl)
 
 
 
-# Read the Barabasi metrics for drug-ADR genes
-proximity_matrix <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/BarabasiProx_DrugAdr_", disease, ".rds"))
-proximity_matrix[proximity_matrix == "Inf"] <- NaN
-proximity_matrix <- proximity_matrix[, !colSums(proximity_matrix == "NaN")>0]
+# Read the Barabasi metrics for drug pairs
+proximity_matrix <- readRDS(paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDrug_", disease, ".rds"))
+proximity_matrix[proximity_matrix == "Inf"] <- NA
+proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 
 
-
-cat("\n- Feature: all Barabasi Proximities (Drug-ADR)\n")
+cat("\n- Feature: all Barabasi Proximities (Drug-Drug)\n")
 BarabasiProx_all_model <- func_repeated_train(feature_matrix = proximity_matrix, 
                                              train_test_split = train_test_split, 
                                              data_balance_method = data_balance_method, 
@@ -87,7 +84,7 @@ BarabasiProx_all_model <- func_repeated_train(feature_matrix = proximity_matrix,
                                              nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (Closest) (Drug-ADR)\n")
+cat("\n- Feature: Barabasi Proximity (Closest) (Drug-Drug)\n")
 proximity_closest <- proximity_matrix[proximity_matrix$features == "proximity_closest", ]
 BarabasiProx_closest_model <- func_repeated_train(feature_matrix = proximity_closest, 
                                               train_test_split = train_test_split, 
@@ -96,7 +93,7 @@ BarabasiProx_closest_model <- func_repeated_train(feature_matrix = proximity_clo
                                               nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (Shortest) (Drug-ADR)\n")
+cat("\n- Feature: Barabasi Proximity (Shortest) (Drug-Drug)\n")
 proximity_shortest <- proximity_matrix[proximity_matrix$features == "proximity_shortest", ]
 BarabasiProx_shortest_model <- func_repeated_train(feature_matrix = proximity_shortest, 
                                               train_test_split = train_test_split, 
@@ -105,7 +102,7 @@ BarabasiProx_shortest_model <- func_repeated_train(feature_matrix = proximity_sh
                                               nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (proximity_centre) (Drug-ADR)\n")
+cat("\n- Feature: Barabasi Proximity (proximity_centre) (Drug-Drug)\n")
 proximity_centre <- proximity_matrix[proximity_matrix$features == "proximity_centre", ]
 BarabasiProx_centre_model <- func_repeated_train(feature_matrix = proximity_centre, 
                                                    train_test_split = train_test_split, 
@@ -114,7 +111,7 @@ BarabasiProx_centre_model <- func_repeated_train(feature_matrix = proximity_cent
                                                    nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (proximity_kernel) (Drug-ADR)\n")
+cat("\n- Feature: Barabasi Proximity (proximity_kernel) (Drug-Drug)\n")
 proximity_kernel <- proximity_matrix[proximity_matrix$features == "proximity_kernel", ]
 BarabasiProx_kernel_model <- func_repeated_train(feature_matrix = proximity_kernel, 
                                                  train_test_split = train_test_split, 
@@ -123,7 +120,7 @@ BarabasiProx_kernel_model <- func_repeated_train(feature_matrix = proximity_kern
                                                  nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (proximity_separation) (Drug-ADR)\n")
+cat("\n- Feature: Barabasi Proximity (proximity_separation) (Drug-Drug)\n")
 proximity_separation <- proximity_matrix[proximity_matrix$features == "proximity_separation", ]
 BarabasiProx_separation_model <- func_repeated_train(feature_matrix = proximity_separation, 
                                                  train_test_split = train_test_split, 
@@ -143,7 +140,7 @@ final_results$BbsiProx_centre <- BarabasiProx_centre_model$modelling_results
 final_results$BbsiProx_kernel <- BarabasiProx_kernel_model$modelling_results
 final_results$BbsiProx_separation <- BarabasiProx_separation_model$modelling_results
 
-saveRDS(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugAdr_", disease, ".rds"))
+saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDrug_", disease, ".rds"))
 
 
 final_results <- list()
@@ -154,12 +151,14 @@ final_results$BbsiProx_centre <- BarabasiProx_centre_model$result_summary_tables
 final_results$BbsiProx_kernel <- BarabasiProx_kernel_model$result_summary_tables
 final_results$BbsiProx_separation <- BarabasiProx_separation_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugAdr_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_BarabasiProx_DrugDrug_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
 stopCluster(cl)
 unregister_dopar()
 Sys.sleep(60)
+
+
 
 print(warnings())

@@ -1,8 +1,5 @@
-rm(list = ls())
+# Train ML models using RWR-FGSEA results as features 
 
-
-
-# Train ML models using RWR-FGSEA results as features (version 5)
 
 
 
@@ -60,7 +57,7 @@ cat(paste0("\nData balance method: ", data_balance_method, "\n"))
 
 
 # Read the train-test split
-train_test_split <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ML_dataSplit_", disease, ".rds"))
+train_test_split <- readRDS(paste0("OutputFiles/Model_train/", disease, "/ML_dataSplit_", disease, ".rds"))
 
 
 # Using external cluster instead of clustering through each function call
@@ -73,7 +70,7 @@ registerDoParallel(cl)
 
 
 # Read the FGSEA results (Efficacy-Safety library)
-fgsea_result <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_EfficacySafety_", disease, ".rds"))
+fgsea_result <- readRDS(paste0("OutputFiles/Model_train/", disease, "/fgseaProbCut_EfficacySafety_", disease, ".rds"))
 
 cat("\n- Feature: Disease2Gene library\n")
 Disease2Gene_model <- func_repeated_train(feature_matrix = fgsea_result$NES_Disease2Gene, 
@@ -101,7 +98,7 @@ CombinedDisAdr2Gene_model <- func_repeated_train(feature_matrix = fgsea_result$N
 
 
 # Read the FGSEA results (Common library)
-fgsea_result <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/fgseaProbCut_CommonLib_", disease, ".rds"))
+fgsea_result <- readRDS(paste0("OutputFiles/Model_train/", disease, "/fgseaProbCut_CommonLib_", disease, ".rds"))
 
 cat("\n- Feature: keggPath library\n")
 keggPath_model <- func_repeated_train(feature_matrix = fgsea_result$NES_keggPath, 
@@ -144,7 +141,7 @@ final_results$keggPath <- keggPath_model$modelling_results
 final_results$SMPDbPath_DrugMet <- SMPDbPath_DrugMet_model$modelling_results
 final_results$SMPDbPath_DrugAction <- SMPDbPath_DrugAction_model$modelling_results
 final_results$miscGeneSet <- miscGeneSet_model$modelling_results
-saveRDS(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".rds"))
+saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".rds"))
 
 
 final_results <- list()
@@ -156,12 +153,14 @@ final_results$SMPDbPath_DrugMet <- SMPDbPath_DrugMet_model$result_summary_tables
 final_results$SMPDbPath_DrugAction <- SMPDbPath_DrugAction_model$result_summary_tables
 final_results$miscGeneSet <- miscGeneSet_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
 stopCluster(cl)
 unregister_dopar()
 Sys.sleep(60)
+
+
 
 print(warnings())

@@ -1,8 +1,4 @@
-rm(list = ls())
-
-
-
-# Train ML models using topology of Steiner tree of ADR, disease and drug target related genes (version 5)
+# Train ML models using topology of Steiner tree of ADR, disease and drug target related genes
 
 
 
@@ -60,7 +56,7 @@ cat(paste0("\nData balance method: ", data_balance_method, "\n"))
 
 
 # Read the train-test split
-train_test_split <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ML_dataSplit_", disease, ".rds"))
+train_test_split <- readRDS(paste0("OutputFiles/Model_train/", disease, "/ML_dataSplit_", disease, ".rds"))
 
 
 # Using external cluster instead of clustering through each function call
@@ -73,9 +69,17 @@ registerDoParallel(cl)
 
 
 # Read the FGSEA results (Efficacy-Safety library)
-net_topol <- readRDS(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
+net_topol <- readRDS(paste0("OutputFiles/Model_train/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
 
+features_to_use <- c("number_terminal_nodes", 
+                     "number_steiner_nodes",
+                     "subNet_diameter",
+                     "subNet_averagePathLength",
+                     "subNet_clusteringCoefficient",
+                     "subNet_density")
 
+net_topol <- net_topol[net_topol$features %in% features_to_use, ]
+row.names(net_topol) <- NULL
 
 cat("\n- Feature: Steiner Tree topology (ADR-Disease-DrugTarget)\n")
 SteinerTopol_model <- func_repeated_train(feature_matrix = net_topol, 
@@ -91,18 +95,20 @@ SteinerTopol_model <- func_repeated_train(feature_matrix = net_topol,
 # Save the results
 final_results <- list()
 final_results$SteinerTopol <- SteinerTopol_model$modelling_results
-saveRDS(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_SteinerTopol_AdrDisDrg_", disease, ".rds"))
+saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_SteinerTopol_AdrDisDrg_", disease, ".rds"))
 
 
 final_results <- list()
 final_results$SteinerTopol <- SteinerTopol_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-write.xlsx(final_results, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/models_", data_balance_method, "_SteinerTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_SteinerTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
 stopCluster(cl)
 unregister_dopar()
 Sys.sleep(60)
+
+
 
 print(warnings())

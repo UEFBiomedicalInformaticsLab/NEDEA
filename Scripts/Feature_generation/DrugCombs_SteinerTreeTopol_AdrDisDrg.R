@@ -182,8 +182,8 @@ print(class(results))
 results <- as.data.frame(t(column_to_rownames(results, "drugComb")))
 results <- rownames_to_column(results, "features")
 
-# write.xlsx(results, file = paste0("OutputFiles/Model_train/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
-# saveRDS(results, paste0("OutputFiles/Model_train/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
+write.xlsx(results, file = paste0("OutputFiles/Model_train/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".xlsx"), overwrite = TRUE)
+saveRDS(results, paste0("OutputFiles/Model_train/", disease, "/SteinerTreeTopol_AdrDisDrg_", disease, ".rds"))
 
 
 stopCluster(cl)
