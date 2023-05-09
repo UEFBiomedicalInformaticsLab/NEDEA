@@ -1,13 +1,8 @@
-rm(list = ls())
-
-
-
 # Script for plotting the model accuracy 
 
 
 
 # Load libraries
-library(optparse)
 library(openxlsx)
 library(tidyverse)
 library(svglite)
@@ -22,7 +17,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     cat(paste0("\nReading data for: ", disease, "\n"))
 
     # Get the statistics for unbalanced models
-    files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+    files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                         pattern = "^models_none_[a-zA-Z_]+.xlsx", 
                         ignore.case = TRUE, full.names = TRUE)
 
@@ -60,7 +55,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 
     # Get the statistics for SMOTE models
-    files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+    files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                         pattern = "^models_SMOTE_[a-zA-Z_]+.xlsx", 
                         ignore.case = TRUE, full.names = TRUE)
 
@@ -98,7 +93,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 
     # Get the statistics for upSample models
-    files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+    files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                         pattern = "^models_upSample_[a-zA-Z_]+.xlsx", 
                         ignore.case = TRUE, full.names = TRUE)
 
@@ -136,7 +131,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 
     # Get the statistics for downSample models
-    files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+    files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                         pattern = "^models_downSample_[a-zA-Z_]+.xlsx", 
                         ignore.case = TRUE, full.names = TRUE)
 
@@ -199,7 +194,7 @@ model_stats <- separate(model_stats, col = "scoreType", into = c("scoreType", "s
 
 # Plot the model test accuracy for selected features [F1]
 
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", "panCancer_ModelAccuracy_Test_F1", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_F1", ".svg"), width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
@@ -248,7 +243,7 @@ dev.off()
 
 # Plot the model test accuracy for selected features [PRAUC]
 
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", "panCancer_ModelAccuracy_Test_PRAUC", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_PRAUC", ".svg"), width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
@@ -298,7 +293,7 @@ dev.off()
 
 # Plot the model test accuracy for selected features [BalancedAccuracy]
 
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", "panCancer_ModelAccuracy_Test_BalancedAccuracy", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_BalancedAccuracy", ".svg"), width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 

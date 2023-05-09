@@ -16,7 +16,6 @@
 **/*.ipynb_checkpoints/
 Databases/
 logs/
-sampo/
 tmp_dir/
 Trash/
 Trash*/

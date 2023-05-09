@@ -1,7 +1,3 @@
-rm(list = ls())
-
-
-
 # Script for plotting the model accuracy 
 
 
@@ -41,7 +37,7 @@ cat(paste0("\n\nPlotting accuracy for: ", disease, "\n\n"))
 
 
 # Get the statistics for unbalanced models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_none_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -79,7 +75,7 @@ none_model_stats$imbalance <- "none"
 
 
 # Get the statistics for SMOTE models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_SMOTE_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -117,7 +113,7 @@ smote_model_stats$imbalance <- "SMOTE"
 
 
 # Get the statistics for upSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_upSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -155,7 +151,7 @@ upSample_model_stats$imbalance <- "upSample"
 
 
 # Get the statistics for downSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_downSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -215,7 +211,7 @@ model_stats <- separate(model_stats, col = "scoreType", into = c("scoreType", "s
 
 
 # Plot the model test accuracy for selected features
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ModelAccuracy_Test_", disease, ".svg"), width = 10, height = 4)
+svglite(paste0("OutputFiles/Model_train/", disease, "/ModelAccuracy_Test_", disease, ".svg"), width = 10, height = 4)
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
                         "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet")

@@ -122,10 +122,10 @@ drugCombs$adverseCombinations <- adverseCombinations
 rownames(drugCombs$effectiveCombinations) <- rownames(drugCombs$adverseCombinations) <- NULL
 
 
-if(!dir.exists("InputFiles/DrugCombinations/DrugCombs/")){
-  dir.create("InputFiles/DrugCombinations/DrugCombs/", recursive = TRUE)
+if(!dir.exists("InputFiles/DrugCombinations/")){
+  dir.create("InputFiles/DrugCombinations/", recursive = TRUE)
 } 
-saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugCombs//DrugComb_", disease, ".rds"))
+saveRDS(drugCombs, paste0("InputFiles/DrugCombinations/DrugComb_", disease, ".rds"))
 
 cat(paste0("\n\n\nNumber of drug combinations for ", disease, ":\n"))
 print(lapply(drugCombs, nrow))

@@ -1,7 +1,3 @@
-rm(list = ls())
-
-
-
 # Script for plotting the model parameters across resampling
 
 
@@ -43,7 +39,7 @@ cat(paste0("\n\nPlotting parameters for: ", disease, "\n\n"))
 
 
 # Get the parameters for unbalanced models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_none_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -79,7 +75,7 @@ none_model_param$imbalance <- "none"
 
 
 # Get the parameters for SMOTE models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_SMOTE_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -115,7 +111,7 @@ smote_model_param$imbalance <- "SMOTE"
 
 
 # Get the parameters for upSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_upSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -151,7 +147,7 @@ upSample_model_param$imbalance <- "upSample"
 
 
 # Get the parameters for downSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_downSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -216,7 +212,7 @@ model_param$featureType <- factor(x = model_param$featureType,
 
 
 # Plot the results
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ModelParameters_", disease, ".svg"), width = 15, height = 3)
+svglite(paste0("OutputFiles/Model_train/", disease, "/ModelParameters_", disease, ".svg"), width = 15, height = 3)
 labels <- unique(model_param[, c("model", "parameter")])
 labels$plot_label <- paste0(labels$parameter, " (", labels$model, ")")
 plot_label <- labels$plot_label

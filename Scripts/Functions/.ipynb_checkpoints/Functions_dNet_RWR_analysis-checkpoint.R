@@ -150,8 +150,8 @@ func_dNetRWR_on_drugCombination <- function(rwr_input_network, drug1, drug2,
 
 func_fgsea_from_rwr_probCut <- function(enrichment_library, 
                                         rwr_data, 
-                                        minSize = 1, 
-                                        maxSize = Inf, 
+                                        minSize = 5, 
+                                        maxSize = 500, 
                                         scoreType = "std", 
                                         quantile_prob = 0.75, 
                                         verbose = TRUE){
@@ -191,7 +191,10 @@ func_fgsea_from_rwr_probCut <- function(enrichment_library,
     # Perform FGSEA
     enrichment_result[[i]] <- fgsea(pathways = enrichment_library,
                                     stats = ranked_genes,
-                                    minSize = minSize, maxSize = maxSize, scoreType = scoreType, BPPARAM = p)
+                                    minSize = minSize, 
+                                    maxSize = maxSize, 
+                                    scoreType = scoreType, 
+                                    BPPARAM = p)
   }
   bpstop(p)
   return(enrichment_result)

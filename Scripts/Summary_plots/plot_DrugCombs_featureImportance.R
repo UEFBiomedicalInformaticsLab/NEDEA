@@ -1,8 +1,3 @@
-set.seed(5081)
-rm(list = ls())
-
-
-
 # Script for plotting the variable importance of the model
 
 
@@ -74,7 +69,7 @@ cat(paste0("\n\nExtracting feature importance for: ", disease, "-", model, "-", 
 
 
 # Read models files
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = paste0("models_", data_balance_method, "_[a-zA-Z_]+.rds"), 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -151,11 +146,11 @@ names(tmp) <- gsub("DrugDisease", "DrgDis", names(tmp))
 names(tmp) <- gsub("DrugAdr", "DrgAdr", names(tmp))
 names(tmp) <- gsub("svmRadial", "svmRd", names(tmp))
 
-if(!dir.exists(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/featureImportance/"))){
-  dir.create(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/featureImportance/"), recursive = TRUE)
+if(!dir.exists(paste0("OutputFiles/Model_train/", disease, "/featureImportance/"))){
+  dir.create(paste0("OutputFiles/Model_train/", disease, "/featureImportance/"), recursive = TRUE)
 }
 
-write.xlsx(tmp, paste0("Analysis/STRING/DrugCombs_v5/", disease, "/featureImportance/varImp_models_", data_balance_method, "_", disease, ".xlsx"), 
+write.xlsx(tmp, paste0("OutputFiles/Model_train/", disease, "/featureImportance/varImp_models_", data_balance_method, "_", disease, ".xlsx"), 
            overwrite = TRUE)
 rm(tmp)
 
@@ -173,7 +168,7 @@ for(featureType in names(variable_importance_df)){
                cluster_rows = FALSE,
                cluster_cols = FALSE,
                main = paste(disease, featureType, select_model, data_balance_method, sep = " - "),
-               filename = paste0("Analysis/STRING/DrugCombs_v5/", disease, 
+               filename = paste0("OutputFiles/Model_train/", disease, 
                                  "/featureImportance/varImp_models_",  
                                  disease, "_", featureType, "_", select_model, "_", data_balance_method, ".pdf"),
               width = 15,
