@@ -62,11 +62,22 @@ metric_list=("BalancedAccuracy" "F1" "PRAUC")
 
 
 
-# Plot train vs test accuracy
+# # Plot train vs test accuracy
+# for disease in ${disease_list[@]}
+# do
+#   for metric in ${metric_list[@]}
+#   do
+#     sbatch --job-name=plot_trainTestAcc_$disease\_$metric --output=plot_trainTestAcc_$disease\_$metric.out --export=disease=$disease,metric=$metric sampo/19_sampo_Rscript.sh $disease $metric
+#   done
+# done
+
+
+
+# Plot feature importance
 for disease in ${disease_list[@]}
 do
-  for metric in ${metric_list[@]}
+  for balance in ${data_balance_method[@]}
   do
-    sbatch --job-name=plot_trainTestAcc_$disease\_$metric --output=plot_trainTestAcc_$disease\_$metric.out --export=disease=$disease,metric=$metric sampo/19_sampo_Rscript.sh $disease $metric
+    sbatch --job-name=plotVarImp_$disease\_$balance --output=plotVarImp_$disease\_$balance.out --export=disease=$disease,balance=$balance, sampo/16_sampo_Rscript.sh $disease $balance
   done
 done

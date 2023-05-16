@@ -56,12 +56,12 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_none){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     none_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(none_model_stats[[tmp]]) <- paste(prox_comp, names(none_model_stats[[tmp]]), sep = "_")
   }
@@ -94,12 +94,12 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_smote){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     smote_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(smote_model_stats[[tmp]]) <- paste(prox_comp, names(smote_model_stats[[tmp]]), sep = "_")
   }
@@ -132,12 +132,12 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_upSample){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     upSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(upSample_model_stats[[tmp]]) <- paste(prox_comp, names(upSample_model_stats[[tmp]]), sep = "_")
   }
@@ -170,12 +170,12 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_downSample){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     downSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(downSample_model_stats[[tmp]]) <- paste(prox_comp, names(downSample_model_stats[[tmp]]), sep = "_")
   }
@@ -219,7 +219,12 @@ model_stats <- separate(model_stats, col = "scoreType", into = c("scoreType", "s
 
 
 # Plot train vs test accuracy
-svglite(paste0("OutputFiles/Model_train/", disease, "/ModelAccuracy_TrainVsTest_",metric, "_", disease, ".svg"), width = 7, height = 4)
+
+if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
+  dir.create(paste0("OutputFiles/Plots/", disease), recursive = TRUE)
+}
+
+svglite(paste0("OutputFiles/Plots/", disease, "/ModelAccuracy_TrainVsTest_",metric, "_", disease, ".svg"), width = 7, height = 4)
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "BbsiProx_separation", "SteinerTopol", 
                         "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet")

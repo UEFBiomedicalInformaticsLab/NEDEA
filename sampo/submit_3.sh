@@ -21,4 +21,4 @@ done
   
   
 # Plot pan cancer accuracy
-sbatch --job-name=plotPanCancer --output=plotPanCancer.out sampo/20_sampo_Rscript.sh 
+# sbatch --job-name=plotPanCancer --output=plotPanCancer.out sampo/20_sampo_Rscript.sh 

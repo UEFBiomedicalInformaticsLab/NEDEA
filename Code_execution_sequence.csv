@@ -31,11 +31,11 @@
 31,Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDisease.R,0,1,1,1,1,1,1
 32,Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDrug.R,0,1,1,1,1,1,1
 33,Scripts/Model_train/DrugCombs_trainML_SteinerTopol_AdrDisDrg.R,0,1,1,1,1,1,1
-34,,,,,,,,
-35,,,,,,,,
-36,,,,,,,,
-37,,,,,,,,
-38,,,,,,,,
+34,Scripts/Summary_plots/plot_DrugCombs_featureImportance.R,0,,,,,,
+35,Scripts/Summary_plots/plot_DrugCombs_ModelAccuracy.R,0,,,,,,
+36,Scripts/Summary_plots/plot_DrugCombs_ModelParameters.R,0,,,,,,
+37,Scripts/Summary_plots/plot_DrugCombs_TrainTestAccuracy.R,0,,,,,,
+38,Scripts/Summary_plots/plot_panCancer_DrugCombs_ModelAccuracy.R,1,,,,,,
 39,,,,,,,,
 40,,,,,,,,
 41,,,,,,,,

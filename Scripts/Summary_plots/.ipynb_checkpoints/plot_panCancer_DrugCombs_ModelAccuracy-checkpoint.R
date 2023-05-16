@@ -28,12 +28,12 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
       ## Read files
       for(name in sheet_names_none){
-        tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+        tmp <- strsplit(x = file, split = "\\/")[[1]][4]
         tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
         none_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
       }
       if(grepl(pattern = "BarabasiProx", x = file)){
-        prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+        prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
         prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
         names(none_model_stats[[tmp]]) <- paste(prox_comp, names(none_model_stats[[tmp]]), sep = "_")
       }
@@ -66,12 +66,12 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
       ## Read files
       for(name in sheet_names_smote){
-        tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+        tmp <- strsplit(x = file, split = "\\/")[[1]][4]
         tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
         smote_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
       }
       if(grepl(pattern = "BarabasiProx", x = file)){
-        prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+        prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
         prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
         names(smote_model_stats[[tmp]]) <- paste(prox_comp, names(smote_model_stats[[tmp]]), sep = "_")
       }
@@ -104,12 +104,12 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
       ## Read files
       for(name in sheet_names_upSample){
-        tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+        tmp <- strsplit(x = file, split = "\\/")[[1]][4]
         tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
         upSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
       }
       if(grepl(pattern = "BarabasiProx", x = file)){
-        prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+        prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
         prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
         names(upSample_model_stats[[tmp]]) <- paste(prox_comp, names(upSample_model_stats[[tmp]]), sep = "_")
       }
@@ -142,12 +142,12 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
       ## Read files
       for(name in sheet_names_downSample){
-        tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+        tmp <- strsplit(x = file, split = "\\/")[[1]][4]
         tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
         downSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
       }
       if(grepl(pattern = "BarabasiProx", x = file)){
-        prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+        prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
         prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
         names(downSample_model_stats[[tmp]]) <- paste(prox_comp, names(downSample_model_stats[[tmp]]), sep = "_")
       }
@@ -194,7 +194,11 @@ model_stats <- separate(model_stats, col = "scoreType", into = c("scoreType", "s
 
 # Plot the model test accuracy for selected features [F1]
 
-svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_F1", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
+  dir.create(paste0("OutputFiles/Plots/", disease), recursive = TRUE)
+}
+
+svglite("OutputFiles/Plots/panCancer_ModelAccuracy_Test_F1.svg", width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
@@ -230,7 +234,7 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
         legend.box.spacing = unit(0.1, 'cm'),
         legend.box.background = element_rect(colour = "black", size = 0.1)) +
   scale_fill_manual(values = c("#ff7f50", "#06b8b9", "#9a6324", "#911eb4")) +
-  ggtitle(paste0("Model test accuracy (F1) for ", disease, " drug combinations")) +
+  ggtitle(paste0("Model test accuracy (F1) for drug combinations")) +
   xlab("Models") + ylab("F1-scores") +
   labs(colour = "Imbalance : ") +
   facet_grid(rows = vars(disease), cols = vars(featureType))
@@ -243,7 +247,11 @@ dev.off()
 
 # Plot the model test accuracy for selected features [PRAUC]
 
-svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_PRAUC", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
+  dir.create(paste0("OutputFiles/Plots/", disease), recursive = TRUE)
+}
+
+svglite("OutputFiles/Plots/panCancer_ModelAccuracy_Test_PRAUC.svg", width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
@@ -280,7 +288,7 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
         legend.box.spacing = unit(0.1, 'cm'),
         legend.box.background = element_rect(colour = "black", size = 0.1)) +
   scale_fill_manual(values = c("#ff7f50", "#06b8b9", "#9a6324", "#911eb4")) +
-  ggtitle(paste0("Model test accuracy (PRAUC) for ", disease, " drug combinations")) +
+  ggtitle(paste0("Model test accuracy (PRAUC) for drug combinations")) +
   xlab("Models") + ylab("PRAUC") +
   labs(colour = "Imbalance : ") +
   facet_grid(rows = vars(disease), cols = vars(featureType))
@@ -293,7 +301,11 @@ dev.off()
 
 # Plot the model test accuracy for selected features [BalancedAccuracy]
 
-svglite(paste0("OutputFiles/Model_train/", "panCancer_ModelAccuracy_Test_BalancedAccuracy", ".svg"), width = 12, height = length(unique(model_stats$disease)))
+if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
+  dir.create(paste0("OutputFiles/Plots/", disease), recursive = TRUE)
+}
+
+svglite("OutputFiles/Plots/panCancer_ModelAccuracy_Test_BalancedAccuracy.svg", width = 12, height = length(unique(model_stats$disease)))
 
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
                         "DrugDrug_BbsiProx_separation", "SteinerTopol", 
@@ -330,7 +342,7 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
         legend.box.spacing = unit(0.1, 'cm'),
         legend.box.background = element_rect(colour = "black", size = 0.1)) +
   scale_fill_manual(values = c("#ff7f50", "#06b8b9", "#9a6324", "#911eb4")) +
-  ggtitle(paste0("Model test accuracy (BalancedAccuracy) for ", disease, " drug combinations")) +
+  ggtitle(paste0("Model test accuracy (BalancedAccuracy) for drug combinations")) +
   xlab("Models") + ylab("BalancedAccuracy") +
   labs(colour = "Imbalance : ") +
   facet_grid(rows = vars(disease), cols = vars(featureType))

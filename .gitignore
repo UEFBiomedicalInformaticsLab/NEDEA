@@ -19,7 +19,6 @@ logs/
 tmp_dir/
 Trash/
 Trash*/
-*_sampo_Rscript.sh
 derby.log
 !**/*.R
 !/Databases/Directory_Structure_Databases.txt
