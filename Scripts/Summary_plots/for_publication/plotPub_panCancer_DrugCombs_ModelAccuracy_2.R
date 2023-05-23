@@ -6,6 +6,7 @@
 library(openxlsx)
 library(tidyverse)
 library(svglite)
+library(RColorBrewer)
 
 
 
@@ -46,7 +47,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     none_model_stats <- none_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                "F1_train", "F1_test")]
+    none_model_stats <- none_model_stats[none_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]
     none_model_stats$imbalance <- "none"
 
 
@@ -83,7 +85,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     smote_model_stats <- smote_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                "F1_train", "F1_test")]
+    smote_model_stats <- smote_model_stats[smote_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]  
     smote_model_stats$imbalance <- "SMOTE"
 
 
@@ -120,7 +123,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                "F1_train", "F1_test")]
+    upSample_model_stats <- upSample_model_stats[upSample_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]    
     upSample_model_stats$imbalance <- "upSample"
 
 
@@ -157,7 +161,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                "F1_train", "F1_test")]
+    downSample_model_stats <- downSample_model_stats[downSample_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ] 
     downSample_model_stats$imbalance <- "downSample"
 
 
@@ -173,14 +178,16 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 saveRDS(model_stats, "Scripts/Summary_plots/for_publication/model_stats_2.rds")
 # model_stats <- readRDS("Scripts/Summary_plots/for_publication/model_stats_2.rds")
 
-
+model_stats <- model_stats[, !colnames(model_stats) %in% c("BalancedAccuracy_train", "BalancedAccuracy_test", 
+                                                          "Precision_train", "Precision_test", 
+                                                          "Recall_train", "Recall_test")]
 model_stats <- reshape(model_stats, direction = "long",
-                       varying = c("PRAUC_train", "BalancedAccuracy_train",
-                                    "PRAUC_test", "BalancedAccuracy_test"),
+                       varying = c("PRAUC_train", "F1_train",
+                                    "PRAUC_test", "F1_test"),
                        v.names = "value",
                        timevar = "scoreType",
-                       times = c("PRAUC_train", "BalancedAccuracy_train",
-                                 "PRAUC_test", "BalancedAccuracy_test"))
+                       times = c("PRAUC_train", "F1_train",
+                                 "PRAUC_test", "F1_test"))
 
 model_stats <- model_stats[model_stats$imbalance == "none", ]
 
@@ -204,7 +211,7 @@ features_to_plot <- unique(model_stats$featureType)
 features_to_plot <- features_to_plot[grep("_BbsiProx_separation$", features_to_plot)]
 features_to_plot <- c("CombDisAdr2Gene", features_to_plot)
 select_model_stats <- model_stats[(model_stats$scoreType_class == "test"),]
-select_model_stats <- select_model_stats[(select_model_stats$value > 0.5 ),] # removing insignificant scores
+# select_model_stats <- select_model_stats[(select_model_stats$value > 0.5 ),] # removing insignificant scores
 select_model_stats <- select_model_stats[(select_model_stats$featureType %in% features_to_plot),]
 
 
@@ -228,33 +235,33 @@ select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if whi
 
 # svglite("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test.svg", width = 6, height = length(unique(model_stats$disease)))
 tiff("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test_2.tiff", 
-     width = 15, height = length(features_to_plot) * 2, 
+     width = 17, height = length(features_to_plot) * 4, 
      units = "cm", compression = "lzw", res = 1200)
 
 ggplot(select_model_stats, aes(x = disease, y = value, fill = model)) + 
-  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge(preserve = "single")) +
-  theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
+  geom_boxplot(lwd = 0.2, outlier.shape = NA, position = position_dodge(preserve = "single")) +
+  theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
-        strip.background = element_rect(color = "black", size = 0.1,),
+        strip.background = element_rect(color = "black", size = 0.25,),
         strip.text = element_text(margin = margin(1,1,1,1)),
-        text = element_text(size = 3), 
+        text = element_text(size = 8), 
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5), 
-        axis.ticks = element_line(colour = "black", size = 0.1),
+        axis.ticks = element_line(colour = "black", size = 0.2),
         legend.position = "bottom",
         legend.key = element_blank(),
-        legend.key.size = unit(0.2, 'cm'),
-        legend.text = element_text(size = 2),
+        legend.key.size = unit(0.5, 'cm'),
+        legend.text = element_text(size = 4),
         legend.margin = margin(1,1,1,1),
         legend.box.spacing = unit(0.1, 'cm'),
-        legend.box.background = element_rect(colour = "black", size = 0.1)) +
-  scale_fill_manual(values = c("#008080", "#ffa500", "#00ff7f", "#00bfff", "#deb887")) + 
+        legend.box.background = element_rect(colour = "black", size = 0.25)) +
+  scale_fill_manual(values = brewer.pal(4, "Set2")) + 
   # ggtitle(paste0("Model test accuracy for drug combinations")) +
   xlab("Cancers") + ylab("Accuracy scores") + 
   labs(colour = "Models : ") +
   facet_grid(cols = vars(scoreType), rows = vars(featureType)) +
-  geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.05)
+  geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.1)
 dev.off()
 
 

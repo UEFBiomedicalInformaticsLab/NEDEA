@@ -147,7 +147,7 @@ dis_drugCombs$Class <- "Eff"
 
 # Generate combinations based on drugs targeting ADR genes
 adr_drugs <- unique(drug_target_ixn[drug_target_ixn$Node2_ensembl_gene_id %in% unique(distance_table$adr), "Node1_drugbank_drug_id"])
-cat(paste0("\ADR drugs: ", length(adr_drugs)))
+cat(paste0("\nDR drugs: ", length(adr_drugs)))
 adr_drugCombs <- expand.grid(adr_drugs, adr_drugs)
 adr_drugCombs <- adr_drugCombs[adr_drugCombs$Var1 != adr_drugCombs$Var2, ]
 colnames(adr_drugCombs) <- c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")
@@ -155,8 +155,8 @@ adr_drugCombs$Class <- "Adv"
 
 
 # Randomly select n combinations from each category for analysis
-dis_drugCombs <- dis_drugCombs[sample(1:nrow(dis_drugCombs), 100, replace = FALSE),]
-adr_drugCombs <- adr_drugCombs[sample(1:nrow(adr_drugCombs), 100, replace = FALSE),]
+dis_drugCombs <- dis_drugCombs[sample(1:nrow(dis_drugCombs), 250, replace = FALSE),]
+adr_drugCombs <- adr_drugCombs[sample(1:nrow(adr_drugCombs), 250, replace = FALSE),]
 drugCombs <- rbind(dis_drugCombs, adr_drugCombs)
 
 
@@ -233,8 +233,10 @@ model <- readRDS(paste0("OutputFiles/Final_model/FinalModel_", disease, "_rf_non
 
 # Prepare the input data
 data <- as.data.frame(t(drugComb_NES))
-# preProcess <- preProcess(data, method = c("zv", "center", "scale"))
-# data <- predict(object = preProcess, newdata = data)
+print(dim(data))
+# data <- data[, colnames(data) %in% colnames(model$trainingData)]
+preProcess <- preProcess(data, method = c("zv", "center", "scale"))
+data <- predict(object = preProcess, newdata = data)
 
 # Predict
 predictions <- predict(object = model, newdata = data, type = "prob") 
