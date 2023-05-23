@@ -114,14 +114,14 @@ SMPDbPath_DrugMet_model <- func_repeated_train(feature_matrix = fgsea_result$NES
                                                allow_parallel = FALSE, 
                                                nproc = NULL)
 
-cat("\n- Feature: NES_SMPDbPath_DrugAction library\n")
+cat("\n- Feature: SMPDbPath_DrugAction library\n")
 SMPDbPath_DrugAction_model <- func_repeated_train(feature_matrix = fgsea_result$NES_SMPDbPath_DrugAction, 
                                                       train_test_split = train_test_split, 
                                                       data_balance_method = data_balance_method, 
                                                       allow_parallel = FALSE, 
                                                       nproc = NULL)
 
-cat("\n- Feature: NES_miscGeneSet library\n")
+cat("\n- Feature: miscGeneSet library\n")
 miscGeneSet_model <- func_repeated_train(feature_matrix = fgsea_result$NES_miscGeneSet, 
                                              train_test_split = train_test_split, 
                                              data_balance_method = data_balance_method, 

@@ -218,7 +218,7 @@ select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
 
 ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
-  geom_boxplot(width = 0.5, lwd = 0.1, outlier.shape = NA) +
+  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge2(preserve = "single")) +
   theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
         panel.grid = element_blank(),
         strip.background = element_rect(color = "black", size = 0.1,),
@@ -237,8 +237,8 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
   ggtitle(paste0("Model test accuracy (F1) for drug combinations")) +
   xlab("Models") + ylab("F1-scores") +
   labs(colour = "Imbalance : ") +
-  facet_grid(rows = vars(disease), cols = vars(featureType))
-
+  facet_grid(rows = vars(disease), cols = vars(featureType)) +
+  geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.05)
 dev.off()
 
 
@@ -272,7 +272,7 @@ select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
 
 ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
-  geom_boxplot(width = 0.5, lwd = 0.1, outlier.shape = NA) +
+  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge2(preserve = "single")) +
   theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
         panel.grid = element_blank(),
         strip.background = element_rect(color = "black", size = 0.1,),
@@ -291,8 +291,8 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
   ggtitle(paste0("Model test accuracy (PRAUC) for drug combinations")) +
   xlab("Models") + ylab("PRAUC") +
   labs(colour = "Imbalance : ") +
-  facet_grid(rows = vars(disease), cols = vars(featureType))
-
+  facet_grid(rows = vars(disease), cols = vars(featureType)) +
+  geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.05)
 dev.off()
 
 
@@ -326,7 +326,7 @@ select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
 
 ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
-  geom_boxplot(width = 0.5, lwd = 0.1, outlier.shape = NA) +
+  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge2(preserve = "single")) +
   theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
         panel.grid = element_blank(),
         strip.background = element_rect(color = "black", size = 0.1,),
@@ -345,7 +345,10 @@ ggplot(select_model_stats, aes(x = model, y = value, fill = imbalance)) +
   ggtitle(paste0("Model test accuracy (BalancedAccuracy) for drug combinations")) +
   xlab("Models") + ylab("BalancedAccuracy") +
   labs(colour = "Imbalance : ") +
-  facet_grid(rows = vars(disease), cols = vars(featureType))
-
+  facet_grid(rows = vars(disease), cols = vars(featureType)) +
+  geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.05)
 dev.off()
+
+
+
 print(warnings())

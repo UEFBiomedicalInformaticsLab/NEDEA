@@ -20,12 +20,8 @@ library(TopKLists)
 option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
-  # make_option(c("--model"), type = "character", default = NULL, 
-  #             help = "The model for which to plot feature importance. Possible values: rf, glmnet, svmRadial, knn, nb", metavar = "character"),
   make_option(c("--data_balance_method"), type = "character", default = "none", 
-              help = "The method to be used to balance imbalanced data. Possible values: SMOTE, downSample, upSample, or none. Default: none.", metavar = "character"),
-  make_option(c("--nproc"), type = "numeric", default = NULL, 
-              help = "Number of processes to use. Default: NULL", metavar = "numeric")
+              help = "The method to be used to balance imbalanced data. Possible values: SMOTE, downSample, upSample, or none. Default: none.", metavar = "character")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -36,32 +32,14 @@ if(is.null(opt$disease)){
   stop("--disease argument needed", call.=FALSE)
 }
 
-# if(is.null(opt$model)){
-#   print_help(opt_parser)
-#   stop("--model argument needed", call.=FALSE)
-# }
-
-# if(!opt$model %in% c("rf", "glmnet", "svmRadial", "knn", "nb")){
-#   print_help(opt_parser)
-#   stop("Possible values for --model: rf, glmnet, svmRadial, knn, nb", call.=FALSE)
-# }
-
 if(!opt$data_balance_method %in% c("SMOTE", "downSample", "upSample", "none")){
   stop("--data_balance_method must be SMOTE, downSample, upSample or none")
 }
 
-if(!is.null(opt$nproc)){
-  if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
-    print_help(opt_parser)
-    stop("--nproc should be be an integer (if used).", call.=FALSE)
-  }
-}
 
 # Define global options for this script 
 disease <- opt$disease
-# model <- opt$model
 data_balance_method <- opt$data_balance_method
-nproc <- opt$nproc
 
 
 
@@ -104,6 +82,7 @@ for(file in files){
           if(ncol(tmp3$importance) == 1){
             variable_importance[[tmp1]][[tmp4]][[select_model]][[fold]] <- tmp3$importance
           }else{
+            variable_importance[[tmp1]][[tmp4]][[select_model]][[fold]] <- tmp3$importance[, "Eff", drop = FALSE]
           }
         }
       }

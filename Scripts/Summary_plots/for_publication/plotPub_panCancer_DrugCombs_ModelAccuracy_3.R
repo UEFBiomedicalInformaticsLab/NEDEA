@@ -170,7 +170,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     model_stats <- rbind(model_stats, tmp)
   
 }
-# model_stats <- readRDS("Scripts/Summary_plots/for_publication/model_stats.rds")
+saveRDS(model_stats, "Scripts/Summary_plots/for_publication/model_stats_3.rds")
+# model_stats <- readRDS("Scripts/Summary_plots/for_publication/model_stats_3.rds")
 
 
 model_stats <- reshape(model_stats, direction = "long",

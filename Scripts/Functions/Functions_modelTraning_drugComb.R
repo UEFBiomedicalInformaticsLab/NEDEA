@@ -204,10 +204,10 @@ func_repeated_train <- function(feature_matrix,
     rf_predictions_prob <- predict(object = rf_model, newdata = testData, type = "prob") 
     rf_confusionMatrix_train <- confusionMatrix(table(rf_model$pred$pred, rf_model$pred$obs), positive = "Eff")
     rf_confusionMatrix_test <- confusionMatrix(table(rf_predictions, testClass), positive = "Eff")
-    rf_rocauc_train = AUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
-    rf_rocauc_test = AUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    rf_prauc_train = PRAUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
-    rf_prauc_test = PRAUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    rf_rocauc_train <- AUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
+    rf_rocauc_test <- AUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    rf_prauc_train <- PRAUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
+    rf_prauc_test <- PRAUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
     rf_result_table <- rbind(rf_result_table,
                              data.frame(
                                Fold = i,

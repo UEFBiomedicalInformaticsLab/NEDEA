@@ -194,7 +194,7 @@ model_stats <- reshape(model_stats, direction = "long",
                        times = c("PRAUC_train", "BalancedAccuracy_train", "Precision_train", "Recall_train", "F1_train",
                                     "PRAUC_test", "BalancedAccuracy_test", "Precision_test", "Recall_test", "F1_test"))
 
-model_stats <- model_stats[model_stats$imbalance == "none", ]
+model_stats <- model_stats[model_stats$imbalance == "SMOTE", ]
 
 rownames(model_stats) <- NULL
 model_stats$value <- as.numeric(model_stats$value)

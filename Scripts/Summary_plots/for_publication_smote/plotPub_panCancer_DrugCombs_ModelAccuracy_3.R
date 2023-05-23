@@ -46,10 +46,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     none_model_stats <- none_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test",
-                                                "Precision_train", "Precision_test",
-                                                "Recall_train", "Recall_test",
-                                                "F1_train", "F1_test")]
+                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
     none_model_stats$imbalance <- "none"
 
 
@@ -86,10 +83,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     smote_model_stats <- smote_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test",
-                                                "Precision_train", "Precision_test",
-                                                "Recall_train", "Recall_test",
-                                                "F1_train", "F1_test")]
+                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
     smote_model_stats$imbalance <- "SMOTE"
 
 
@@ -126,10 +120,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test",
-                                                "Precision_train", "Precision_test",
-                                                "Recall_train", "Recall_test",
-                                                "F1_train", "F1_test")]
+                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
     upSample_model_stats$imbalance <- "upSample"
 
 
@@ -166,10 +157,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
     downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Fold", 
                                                "PRAUC_train", "PRAUC_test",
-                                                "BalancedAccuracy_train", "BalancedAccuracy_test",
-                                                "Precision_train", "Precision_test",
-                                                "Recall_train", "Recall_test",
-                                                "F1_train", "F1_test")]
+                                                "BalancedAccuracy_train", "BalancedAccuracy_test")]
     downSample_model_stats$imbalance <- "downSample"
 
 
@@ -187,14 +175,14 @@ saveRDS(model_stats, "Scripts/Summary_plots/for_publication/model_stats_3.rds")
 
 
 model_stats <- reshape(model_stats, direction = "long",
-                       varying = c("PRAUC_train", "BalancedAccuracy_train", "Precision_train", "Recall_train", "F1_train",
-                                    "PRAUC_test", "BalancedAccuracy_test", "Precision_test", "Recall_test", "F1_test"),
+                       varying = c("PRAUC_train", "BalancedAccuracy_train",
+                                    "PRAUC_test", "BalancedAccuracy_test"),
                        v.names = "value",
                        timevar = "scoreType",
-                       times = c("PRAUC_train", "BalancedAccuracy_train", "Precision_train", "Recall_train", "F1_train",
-                                    "PRAUC_test", "BalancedAccuracy_test", "Precision_test", "Recall_test", "F1_test"))
+                       times = c("PRAUC_train", "BalancedAccuracy_train",
+                                 "PRAUC_test", "BalancedAccuracy_test"))
 
-model_stats <- model_stats[model_stats$imbalance == "none", ]
+model_stats <- model_stats[model_stats$imbalance == "SMOTE", ]
 
 rownames(model_stats) <- NULL
 model_stats$value <- as.numeric(model_stats$value)
@@ -241,13 +229,13 @@ select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if whi
 
 
 # svglite("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test.svg", width = 6, height = length(unique(model_stats$disease)))
-tiff("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test_3a.tiff", 
-     width = 15, height = 10, 
+tiff("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test_3.tiff", 
+     width = 15, height = length(features_to_plot) * 2, 
      units = "cm", compression = "lzw", res = 1200)
 
 
 ggplot(select_model_stats, aes(x = disease, y = value, fill = model)) + #
-  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge2(preserve = "single")) +
+  geom_boxplot(lwd = 0.1, outlier.shape = NA, position = position_dodge(preserve = "single")) +
   theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
@@ -268,7 +256,7 @@ ggplot(select_model_stats, aes(x = disease, y = value, fill = model)) + #
   # ggtitle(paste0("Model test accuracy for drug combinations")) +
   xlab("Cancers") + ylab("Accuracy scores") + #
   labs(colour = "Models : ") +
-  facet_grid(rows = vars(scoreType), cols = vars(featureType)) +
+  facet_grid(cols = vars(scoreType), rows = vars(featureType)) +
   geom_hline(yintercept = 0.8, linetype = "dotted", color = "red", size = 0.05)
 dev.off()
 
