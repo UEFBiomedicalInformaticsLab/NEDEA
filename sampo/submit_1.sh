@@ -84,16 +84,32 @@ disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "Kidney
 
 
 
-# Model accuracy
+# # Model accuracy
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
+#   done
+  
+  
+  
+# # Model hyperparameters
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=plot_hyperParam_$disease --output=plot_hyperParam_$disease.out --export=disease=$disease sampo/18_sampo_Rscript.sh $disease
+#   done
+  
+
+
+# # Final model training
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=finalModel_$disease --output=finalModel_$disease.out --export=disease=$disease sampo/21_sampo_Rscript.sh $disease 
+#   done
+
+
+
+# Validation random 1 drug combs
 for disease in ${disease_list[@]}
   do
-    sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
-  done
-  
-  
-  
-# Model hyperparameters
-for disease in ${disease_list[@]}
-  do
-    sbatch --job-name=plot_hyperParam_$disease --output=plot_hyperParam_$disease.out --export=disease=$disease sampo/18_sampo_Rscript.sh $disease
+    sbatch --job-name=val_random1_$disease --output=val_random1_$disease.out --export=disease=$disease sampo/22_sampo_Rscript.sh $disease 
   done
