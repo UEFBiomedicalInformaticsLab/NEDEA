@@ -59,6 +59,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(none_model_param[[tmp]]) <- paste(prox_comp, names(none_model_param[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(none_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                           replacement = paste0("_", prox_comp, "."), 
+                                           x = names(none_model_param[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -94,6 +102,14 @@ for(file in files){
     prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(smote_model_param[[tmp]]) <- paste(prox_comp, names(smote_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(smote_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                            replacement = paste0("_", prox_comp, "."), 
+                                            x = names(smote_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -131,6 +147,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(upSample_model_param[[tmp]]) <- paste(prox_comp, names(upSample_model_param[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(upSample_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                               replacement = paste0("_", prox_comp, "."), 
+                                               x = names(upSample_model_param[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -166,6 +190,14 @@ for(file in files){
     prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(downSample_model_param[[tmp]]) <- paste(prox_comp, names(downSample_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(downSample_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                                 replacement = paste0("_", prox_comp, "."), 
+                                                 x = names(downSample_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -204,9 +236,9 @@ model_param$parameter <- factor(model_param$parameter, levels = c("BestTune_alph
                                                                   "BestTune_adjust", "BestTune_laplace", "BestTune_usekernel",
                                                                   "BestTune_kmax", "BestTune_distance", "BestTune_kernel"))
 model_param$featureType <- factor(x = model_param$featureType,
-                                            levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
-                                                        "BbsiProx_separation", "SteinerTopol", 
-                                                        "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
+                                  levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
+                                             "BbsiProx_separation", "SteinerTopol", 
+                                             "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
 
 
 

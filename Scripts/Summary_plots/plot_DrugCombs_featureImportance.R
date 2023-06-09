@@ -55,7 +55,9 @@ files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
 files <- files[grep("SteinerTopol", files, invert = TRUE)] # To be removed in final version
 
 
-
+# featureType <- "BbsiProx"
+# fold <- "Fold1"
+# select_model <- "rf"
 
 
 # Extract feature importance
@@ -72,7 +74,13 @@ for(file in files){
         tmp2 <- model[[featureType]][[fold]][[select_model]][["model"]] 
         if(class(tmp2) == "train"){
           tmp3 <- varImp(tmp2)
-          if(grepl("BarabasiProx", file)){
+          if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+            tmp4 <- strsplit(x = file, split = "\\/")[[1]][4]
+            tmp5 <- strsplit(x = tmp4, split = "\\_")[[1]][4]
+            tmp4 <- strsplit(x = tmp4, split = "\\_")[[1]][6]
+            tmp4 <- strsplit(x = tmp4, split = "\\.")[[1]][1]
+            tmp4 <- paste(tmp5, featureType, tmp4, sep = "_")
+          }else if(grepl("BarabasiProx", file)){
             tmp4 <- strsplit(x = file, split = "\\/")[[1]][4]
             tmp4 <- strsplit(x = tmp4, split = "\\_")[[1]][4]
             tmp4 <- paste(tmp4, featureType, sep = "_")
@@ -89,7 +97,7 @@ for(file in files){
     }
   }
 }
-rm(list = c("tmp1", "tmp2", "tmp3", "tmp4"))
+rm(list = c("tmp1", "tmp2", "tmp3", "tmp4", "tmp5"))
 
 variable_importance <- unlist(variable_importance, recursive = FALSE)
 
@@ -118,6 +126,12 @@ names(tmp) <- gsub("DrugDrug", "DrgDrg", names(tmp))
 names(tmp) <- gsub("DrugDisease", "DrgDis", names(tmp))
 names(tmp) <- gsub("DrugAdr", "DrgAdr", names(tmp))
 names(tmp) <- gsub("svmRadial", "svmRd", names(tmp))
+names(tmp) <- gsub("closest", "clo", names(tmp))
+names(tmp) <- gsub("centre", "cen", names(tmp))
+names(tmp) <- gsub("kernel", "ker", names(tmp))
+names(tmp) <- gsub("separation", "sep", names(tmp))
+names(tmp) <- gsub("shortest", "sho", names(tmp))
+
 
 if(!dir.exists(paste0("OutputFiles/Tables/", disease, "/featureImportance/"))){
   dir.create(paste0("OutputFiles/Tables/", disease, "/featureImportance/"), recursive = TRUE)
@@ -156,6 +170,11 @@ names(tmp) <- gsub("DrugDrug", "DrgDrg", names(tmp))
 names(tmp) <- gsub("DrugDisease", "DrgDis", names(tmp))
 names(tmp) <- gsub("DrugAdr", "DrgAdr", names(tmp))
 names(tmp) <- gsub("svmRadial", "svmRd", names(tmp))
+names(tmp) <- gsub("closest", "clo", names(tmp))
+names(tmp) <- gsub("centre", "cen", names(tmp))
+names(tmp) <- gsub("kernel", "ker", names(tmp))
+names(tmp) <- gsub("separation", "sep", names(tmp))
+names(tmp) <- gsub("shortest", "sho", names(tmp))
 
 if(!dir.exists(paste0("OutputFiles/Tables/", disease, "/featureImportance/"))){
   dir.create(paste0("OutputFiles/Tables/", disease, "/featureImportance/"), recursive = TRUE)
@@ -179,15 +198,15 @@ for(featureType in names(variable_importance_df)){
     if(nrow(tmp1) != 0){
       row.names(tmp1) <- NULL
       tmp1 <- column_to_rownames(tmp1, "Features")
-         pheatmap(mat = as.matrix(tmp1), 
+      pheatmap(mat = as.matrix(tmp1), 
                cluster_rows = FALSE,
                cluster_cols = FALSE,
                main = paste(disease, featureType, select_model, data_balance_method, sep = " - "),
                filename = paste0("OutputFiles/Plots/", disease, 
                                  "/featureImportance/varImp_models_",  
                                  disease, "_", featureType, "_", select_model, "_", data_balance_method, ".pdf"),
-              width = 15,
-              height = nrow(tmp1) * 0.5)
+               width = 15,
+               height = nrow(tmp1) * 0.5)
     }
     
   }

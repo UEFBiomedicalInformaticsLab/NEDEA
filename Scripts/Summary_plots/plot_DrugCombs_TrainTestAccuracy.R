@@ -17,7 +17,7 @@ library(svglite)
 option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
-    make_option(c("--metric"), type = "character", default = "F1", 
+  make_option(c("--metric"), type = "character", default = "F1", 
               help = "The accuracy metric to be plotted. Options: BalancedAccuracy, F1, PRAUC. Default: F1.", metavar = "character")
 )
 
@@ -65,6 +65,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(none_model_stats[[tmp]]) <- paste(prox_comp, names(none_model_stats[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(none_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
+                                           replacement = paste0("_", prox_comp, "."), 
+                                           x = names(none_model_stats[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -73,9 +81,9 @@ none_model_stats <- bind_rows(none_model_stats, .id = "model")
 none_model_stats <- separate(none_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 none_model_stats <- none_model_stats[, c("featureType", "model", "Fold", 
-                                           "PRAUC_train", "PRAUC_test",
-                                            "F1_train", "F1_test", 
-                                            "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                         "PRAUC_train", "PRAUC_test",
+                                         "F1_train", "F1_test", 
+                                         "BalancedAccuracy_train", "BalancedAccuracy_test")]
 none_model_stats$imbalance <- "none"
 
 
@@ -103,6 +111,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(smote_model_stats[[tmp]]) <- paste(prox_comp, names(smote_model_stats[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(smote_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
+                                            replacement = paste0("_", prox_comp, "."), 
+                                            x = names(smote_model_stats[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -112,8 +128,8 @@ smote_model_stats <- separate(smote_model_stats, col = "model", into = c("file",
 
 smote_model_stats <- smote_model_stats[, c("featureType", "model", "Fold", 
                                            "PRAUC_train", "PRAUC_test",
-                                            "F1_train", "F1_test", 
-                                            "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                           "F1_train", "F1_test", 
+                                           "BalancedAccuracy_train", "BalancedAccuracy_test")]
 smote_model_stats$imbalance <- "SMOTE"
 
 
@@ -141,6 +157,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(upSample_model_stats[[tmp]]) <- paste(prox_comp, names(upSample_model_stats[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(upSample_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
+                                               replacement = paste0("_", prox_comp, "."), 
+                                               x = names(upSample_model_stats[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -149,9 +173,9 @@ upSample_model_stats <- bind_rows(upSample_model_stats, .id = "model")
 upSample_model_stats <- separate(upSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Fold", 
-                                           "PRAUC_train", "PRAUC_test",
-                                            "F1_train", "F1_test", 
-                                            "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                 "PRAUC_train", "PRAUC_test",
+                                                 "F1_train", "F1_test", 
+                                                 "BalancedAccuracy_train", "BalancedAccuracy_test")]
 upSample_model_stats$imbalance <- "upSample"
 
 
@@ -179,6 +203,14 @@ for(file in files){
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(downSample_model_stats[[tmp]]) <- paste(prox_comp, names(downSample_model_stats[[tmp]]), sep = "_")
   }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(downSample_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
+                                                 replacement = paste0("_", prox_comp, "."), 
+                                                 x = names(downSample_model_stats[[tmp]]), )
+  }
 }
 rm(tmp)
 
@@ -187,9 +219,9 @@ downSample_model_stats <- bind_rows(downSample_model_stats, .id = "model")
 downSample_model_stats <- separate(downSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
 
 downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Fold", 
-                                           "PRAUC_train", "PRAUC_test",
-                                            "F1_train", "F1_test", 
-                                            "BalancedAccuracy_train", "BalancedAccuracy_test")]
+                                                     "PRAUC_train", "PRAUC_test",
+                                                     "F1_train", "F1_test", 
+                                                     "BalancedAccuracy_train", "BalancedAccuracy_test")]
 downSample_model_stats$imbalance <- "downSample"
 
 
@@ -201,7 +233,7 @@ model_stats <- rbind(none_model_stats, smote_model_stats, upSample_model_stats, 
 
 model_stats <- reshape(model_stats, direction = "long",
                        varying = c("PRAUC_train", "F1_train", "BalancedAccuracy_train",
-                                    "PRAUC_test", "F1_test", "BalancedAccuracy_test"),
+                                   "PRAUC_test", "F1_test", "BalancedAccuracy_test"),
                        v.names = "value",
                        timevar = "scoreType",
                        times = c("PRAUC_train", "F1_train", "BalancedAccuracy_train",
@@ -226,16 +258,16 @@ if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
 
 svglite(paste0("OutputFiles/Plots/", disease, "/ModelAccuracy_TrainVsTest_",metric, "_", disease, ".svg"), width = 7, height = 4)
 features_to_plot <- c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
-                        "BbsiProx_separation", "SteinerTopol", 
-                        "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet")
+                      "BbsiProx_separation", "SteinerTopol", 
+                      "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet")
 select_model_stats <- model_stats[(model_stats$scoreType == metric),]
 select_model_stats <- select_model_stats[(select_model_stats$featureType %in% features_to_plot),]
 select_model_stats$featureType <- factor(x = select_model_stats$featureType,
-                                            levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
-                                                        "BbsiProx_separation", "SteinerTopol", 
-                                                        "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
+                                         levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
+                                                    "BbsiProx_separation", "SteinerTopol", 
+                                                    "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
 select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
-                                            levels = c("none", "SMOTE", "upSample", "downSample"))
+                                       levels = c("none", "SMOTE", "upSample", "downSample"))
 select_model_stats$scoreType_class <- factor(select_model_stats$scoreType_class, levels = c("train", "test"))
 
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
