@@ -25,4 +25,4 @@ grep -c ^processor /proc/cpuinfo
 
 echo "Train final model ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/Final_trainML.R --disease $1 --data_balance_method none --model rf --feature_type CombinedDisAdr2Gene --nproc 20
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/Final_trainML.R --disease $1 --data_balance_method $2 --model $3 --feature_type $4 --nproc 20

@@ -19,9 +19,9 @@ metric_list=("BalancedAccuracy" "F1" "PRAUC")
   
   
 # # ML BBSI Drug-ADR
-# for disease in ${disease_list[@]}
+# for balance in ${data_balance_method[@]}
 # do
-#   for balance in ${data_balance_method[@]}
+#   for disease in ${disease_list[@]}
 #   do
 #     sbatch --job-name=ML_BBSI_DrgAdr_$disease\_$balance --output=ML_BBSI_DrgAdr_$disease\_$balance.out --export=disease=$disease,balance=$balance sampo/12_sampo_Rscript.sh $disease $balance
 #   done
@@ -30,9 +30,9 @@ metric_list=("BalancedAccuracy" "F1" "PRAUC")
 
 
 # # ML BBSI Drug-Disease
-# for disease in ${disease_list[@]}
+# for balance in ${data_balance_method[@]}
 # do
-#   for balance in ${data_balance_method[@]}
+#   for disease in ${disease_list[@]}
 #   do
 #     sbatch --job-name=ML_BBSI_DrgDis_$disease\_$balance --output=ML_BBSI_DrgDis_$disease\_$balance.out --export=disease=$disease,balance=$balance sampo/13_sampo_Rscript.sh $disease $balance
 #   done
@@ -51,7 +51,7 @@ metric_list=("BalancedAccuracy" "F1" "PRAUC")
 
 
 
-# # ML ML Steiner Tree Topology (ADR-Disease-Drug)
+# # ML Steiner Tree Topology (ADR-Disease-Drug)
 # for disease in ${disease_list[@]}
 # do
 #   for balance in ${data_balance_method[@]}

@@ -8,8 +8,8 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 40   # Number of task
-#SBATCH --time 1-00:00:00   # Runtime
+#SBATCH --ntasks 20   # Number of task
+#SBATCH --time 0-06:00:00   # Runtime
 #SBATCH --mem=50000   # Reserve 50 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
 #SBATCH --mail-user arindam.ghosh@uef.fi      # this is the email you wish to be notified at
@@ -19,10 +19,10 @@
 
 
 
-~/miniconda3/envs/interactome/bin/R --version
-~/miniconda3/envs/interactome/bin/Rscript --version
+# ~/miniconda3/envs/interactome/bin/R --version
+# ~/miniconda3/envs/interactome/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
-echo "BBSI_DrgAdr " $1 " ---------------------"
+echo "Plot feature importance: " $1 " - " $2 " - " $3 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugAdr.R --disease $1
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDiseaseAdr.R --disease $1 --data_balance_method $2 --proximity $3 --nproc 20
