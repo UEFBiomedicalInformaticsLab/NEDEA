@@ -8,6 +8,7 @@
 library(httr)
 library(jsonlite)
 httr::set_config(config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
+source("Scripts/Functions/Functions_ID_Conversion.R")
 
 
 
@@ -182,4 +183,18 @@ saveRDS(tmp, "InputFiles/ReferenceList/FimmDrugComb_SkinCancer_drugCombinations.
 
 
 
+# Print the cell lines considered for each cancer types              
+drugCombs <- readRDS("InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
+cell_lines <- lapply(drugCombs, function(x){lapply(x, function(y){unique(y$cell_line_name)})})
+cell_lines <- unlist(cell_lines, recursive = FALSE)
+cell_lines <- cell_lines[grep("synergy", names(cell_lines))]
+
+cell_lines <- cell_lines[grep("breast|kidney|lung|ovary|prostate|skin", ignore.case = TRUE, names(cell_lines))]
+names(cell_lines) <- gsub(".synergy$", "", names(cell_lines))
+tmp <- do.call(cbind.fill, cell_lines)
+colnames(tmp) <- names(cell_lines)
+write.csv(tmp, "OutputFiles/Tables/DrugComb_cellLines_training.csv")
+              
+              
+              
 print(warnings())
