@@ -8,7 +8,7 @@
 library(openxlsx)
 library(tidyverse)
 
-source("Scripts/Functions/Functions_ID_Conversion.R")
+source("Scripts/Functions/Functions_data_manipulation.R")
 
 
 
@@ -39,7 +39,7 @@ for(file in files){
 }
 rm(list = c("tmp1", "tmp2", "tmp3", "tmp4"))
 
-
+feature_list <- unique(unlist(lapply(strsplit(x = names(consensusVarImp), split = "\\."), function(x)x[3])))
 
 
 
@@ -48,13 +48,14 @@ if(!dir.exists(paste0("OutputFiles/Tables/featureImportance_xDis/"))){
 }
 
 
-featureType <- "Dis2Gene"
-data_balance_method <- "none"
-model <- "svmRd"
+# featureType <- "DrgDisAdr"
+# data_balance_method <- "none"
+# model <- "rf"
 
-# Dis2Gene__SMOTE__svmRadial
+
 # Compile the feature importace per feature type, model, data balance method
-for(featureType in c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene", "keggPath")){
+# for(featureType in c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene", "keggPath")){
+for(featureType in feature_list){
   for(data_balance_method in c("SMOTE", "downSample", "upSample", "none")){
     for(model in c("rf", "glmnet", "svmRd", "knn", "nb")){
       
@@ -63,20 +64,23 @@ for(featureType in c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene", "keggPath"))
       selected_consensusVarImp <- names(consensusVarImp)[grep(featureType, names(consensusVarImp))]
       selected_consensusVarImp <- selected_consensusVarImp[grep(data_balance_method, selected_consensusVarImp)]
       selected_consensusVarImp <- selected_consensusVarImp[grep(model, selected_consensusVarImp)]
-      selected_consensusVarImp <- consensusVarImp[selected_consensusVarImp]
-      selected_consensusVarImp <- lapply(selected_consensusVarImp, function(x){x[,grep("_median$", colnames(x))]})
-      selected_consensusVarImp <- lapply(selected_consensusVarImp, function(x){x[order(x$Scores_median),]})
-      names(selected_consensusVarImp) <- sapply(names(selected_consensusVarImp), function(x){strsplit(x, split = "\\.")[[1]][2]})
+      if(length(selected_consensusVarImp) != 0){
+              selected_consensusVarImp <- consensusVarImp[selected_consensusVarImp]
+              selected_consensusVarImp <- lapply(selected_consensusVarImp, function(x){x[,grep("_median$", colnames(x))]})
+              selected_consensusVarImp <- lapply(selected_consensusVarImp, function(x){x[order(x$Scores_median),]})
+              names(selected_consensusVarImp) <- sapply(names(selected_consensusVarImp), function(x){strsplit(x, split = "\\.")[[1]][2]})
 
-      for(disease in names(selected_consensusVarImp)){
-        colnames(selected_consensusVarImp[[disease]]) <- paste(disease, colnames(selected_consensusVarImp[[disease]]), sep = ".")
+              for(disease in names(selected_consensusVarImp)){
+                colnames(selected_consensusVarImp[[disease]]) <- paste(disease, colnames(selected_consensusVarImp[[disease]]), sep = ".")
+              }
+
+              selected_consensusVarImp <- do.call(cbind.fill, selected_consensusVarImp)
+
+              write.table(selected_consensusVarImp, 
+                          paste0("OutputFiles/Tables/featureImportance_xDis/", featureType, "_", model, "_", data_balance_method, ".tsv"), 
+                          sep = "\t", row.names = FALSE)
       }
 
-      selected_consensusVarImp <- do.call(cbind.fill, selected_consensusVarImp)
-
-      write.table(selected_consensusVarImp, 
-                  paste0("OutputFiles/Tables/featureImportance_xDis/", featureType, "_", model, "_", data_balance_method, ".tsv"), 
-                  sep = "\t", row.names = FALSE)
     }
   }
 }

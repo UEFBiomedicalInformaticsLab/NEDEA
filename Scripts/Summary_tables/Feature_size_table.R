@@ -60,8 +60,17 @@ library_size[["SMPDB_DrugAction"]] <- size
 
 
 
+# Compile miscelleneous library
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/miscellaneous_gene_lib.rds"))
+size <- as.data.frame(lengths(enrichment_lib))
+colnames(size) <- "Size"
+size <- rownames_to_column(size, "Description")
+library_size[["miscellaneous"]] <- size
+
+
+
 # Export to file
-if(!dir.exists(paste0("OutputFiles/Tables/", disease, "/featureImportance/"))){
-  dir.create(paste0("OutputFiles/Tables/", disease, "/featureImportance/"), recursive = TRUE)
+if(!dir.exists("OutputFiles/Tables/")){
+  dir.create("OutputFiles/Tables/", recursive = TRUE)
 }
 write.xlsx(library_size, "OutputFiles/Tables/Enrichment_lib_size.xlsx")
