@@ -1,7 +1,3 @@
-rm(list = ls())
-
-
-
 # Calculate different Barabasi metrics between targets of the two drugs and the disease related genes
 
 
@@ -38,9 +34,9 @@ if(is.null(opt$disease)){
 
 if(!is.null(opt$nproc)){
   if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
-  print_help(opt_parser)
-  stop("--nproc should be be an integer.", call.=FALSE)
-}
+    print_help(opt_parser)
+    stop("--nproc should be be an integer.", call.=FALSE)
+  }
 }
 
 # Define global options for this script 
@@ -70,11 +66,7 @@ drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds
 
 
 # Get the disease gene list
-# Removing list from sources which have too high number of genes
 disease_genes <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_", disease, "_lib.rds"))
-disease_genes <- disease_genes[grep(pattern = "literature|RNA|Enrichr", x = names(disease_genes), invert = TRUE)]
-disease_genes <- unique(unlist(disease_genes, use.names = FALSE))
-# disease_net <- subgraph(graph = gene_network, v = V(gene_network)[V(gene_network)$name %in% disease_genes])
 
 
 
@@ -89,15 +81,17 @@ gene_network <- induced_subgraph(gene_network, largest_components)
 print(paste("Input network size (after clean):", vcount(gene_network), ecount(gene_network)))
 
 
+
 # Using external cluster instead of clustering through each function call
 if(is.null(nproc)){nproc <- detectCores()/2} #Check the number of cores. Use only half of available
 cl <- makeCluster(nproc)
 registerDoParallel(cl) 
 
 
+
 proximity_matrix  <- foreach(i=1:nrow(drugCombs),
                              .combine = rbind,
-                             .packages = c("igraph", "tidyr")) %dopar%  {
+                             .packages = c("igraph", "tidyr", "tidyverse")) %dopar%  {
                                
                                drug1 <- drugCombs[i, "Drug1_DrugBank_drug_id"]
                                drug2 <- drugCombs[i, "Drug2_DrugBank_drug_id"]
@@ -109,24 +103,32 @@ proximity_matrix  <- foreach(i=1:nrow(drugCombs),
                                drug1_targets <- drug_target_ixn[drug_target_ixn$Node1_drugbank_drug_id == drug1, "Node2_ensembl_gene_id"]
                                drug2_targets <- drug_target_ixn[drug_target_ixn$Node1_drugbank_drug_id == drug2, "Node2_ensembl_gene_id"]
                                drug_targets <- unique(c(drug1_targets, drug2_targets))
-  
-                               # Calculate the proximities
-                               proximity_closest <- Barabasi_proximity_closest(gene_network, drug_targets, disease_genes)
-                               proximity_shortest <- Barabasi_proximity_shortest(gene_network, drug_targets, disease_genes)
-                               proximity_centre <- Barabasi_proximity_centre(gene_network, drug_targets, disease_genes)
-                               proximity_kernel <- Barabasi_proximity_kernel(gene_network, drug_targets, disease_genes)
-                               proximity_separation <- Barabasi_proximity_separation(gene_network, drug_targets, disease_genes)
                                
-                               # Prepare for export as dataframe
-                               tmp <- data.frame(drugComb = paste(drugCombs[i,"Class"], drug1, drug2, sep = "__"),
-                                                 drug1_target_number = length(drug1_targets),
-                                                 drug2_target_number = length(drug2_targets),
-                                                 disease_gene_number = length(disease_genes),
-                                                 proximity_closest = proximity_closest,
-                                                 proximity_shortest = proximity_shortest,
-                                                 proximity_centre = proximity_centre,
-                                                 proximity_kernel = proximity_kernel,
-                                                 proximity_separation = proximity_separation)
+                               # Calculate the proximities for each disease geneset separately
+                               proximity_tmp <- list()
+                               for(geneset in names(disease_genes)){
+                                 disease_genes_select <- disease_genes[[geneset]]
+                                 
+                                 proximity_closest <- Barabasi_proximity_closest(gene_network, drug_targets, disease_genes_select)
+                                 proximity_shortest <- Barabasi_proximity_shortest(gene_network, drug_targets, disease_genes_select)
+                                 proximity_centre <- Barabasi_proximity_centre(gene_network, drug_targets, disease_genes_select)
+                                 proximity_kernel <- Barabasi_proximity_kernel(gene_network, drug_targets, disease_genes_select)
+                                 proximity_separation <- Barabasi_proximity_separation(gene_network, drug_targets, disease_genes_select)
+                                 
+                                 
+                                 # Prepare for export as dataframe
+                                 proximity_tmp[[geneset]] <- data.frame(drugComb = paste(drugCombs[i,"Class"], drug1, drug2, sep = "__"),
+                                                                        drug1_target_number = length(drug1_targets),
+                                                                        drug2_target_number = length(drug2_targets),
+                                                                        disease_gene_number = length(disease_genes_select),
+                                                                        proximity_closest = proximity_closest,
+                                                                        proximity_shortest = proximity_shortest,
+                                                                        proximity_centre = proximity_centre,
+                                                                        proximity_kernel = proximity_kernel,
+                                                                        proximity_separation = proximity_separation)
+                               }
+                               tmp <- do.call(rbind, proximity_tmp)
+                               tmp <- rownames_to_column(tmp, "features")
                                tmp
                              }
 
@@ -135,14 +137,26 @@ unregister_dopar()
 
 
 
-rownames(proximity_matrix) <- proximity_matrix[, "drugComb"]
-proximity_matrix <- proximity_matrix[,!colnames(proximity_matrix) %in% "drugComb"]
-proximity_matrix <- as.data.frame(t(proximity_matrix))
-proximity_matrix <- rownames_to_column(proximity_matrix, "features")
+proximity_matrix_final <- list()
+for(proximity in colnames(proximity_matrix)[grep("^proximity", colnames(proximity_matrix))]){
+  proximity_matrix_select <- proximity_matrix[, c("features", "drugComb", proximity)]
+  proximity_matrix_select <- reshape(proximity_matrix_select,
+                                     idvar = "features",
+                                     timevar = "drugComb",
+                                     v.names = proximity,
+                                     direction = "wide")
+  
+  colnames(proximity_matrix_select) <- gsub(pattern = proximity, replacement = "", x = colnames(proximity_matrix_select))
+  colnames(proximity_matrix_select) <- gsub(pattern = "\\.", replacement = "", x = colnames(proximity_matrix_select))
+  proximity_matrix_final[[proximity]] <- proximity_matrix_select
+}
 
 
-saveRDS(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
-write.xlsx(proximity_matrix, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".xlsx"), overwrite = TRUE)
+
+
+
+saveRDS(proximity_matrix_final, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
+write.xlsx(proximity_matrix_final, file = paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
