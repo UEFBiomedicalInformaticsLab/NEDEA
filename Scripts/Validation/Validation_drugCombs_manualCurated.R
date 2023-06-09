@@ -1,11 +1,4 @@
-# Validation using the CDCDB drug combinations (RX/OTC type)
-
-# Notes:
-# (1) The two drug combinations from FDA Orange Book in C-DCDC  
-# (2) Remove drug combinations that contain at least one drug already in 
-#     the training set across all cancers.
-# (3) Removed drug combinations that do not contain any reported drug targets
-# (4) Run RWR-FGSEA and then use the selected model to predict
+# Validation using manually curated (collected) drug combinations in cancer
 
 
 
@@ -19,6 +12,8 @@ library(openxlsx)
 library(tidyverse)
 source("Scripts/Functions/Functions_dNet_RWR_analysis.R")
 source("Scripts/Functions/Functions_parallelprocesses.R")
+source("Scripts/Functions/Functions_data_manipulation.R")
+
 
 
 
@@ -39,12 +34,25 @@ drugs_training <- unique(c(drugCombs_training$Drug1_DrugBank_drug_id, drugCombs_
 
 
 
-# Read the Orange Book drug combinations from CDCDB
-drugCombs <- readRDS("InputFiles/ReferenceList/CDCDB_drugCombinations_OrangeBook_rxotc.rds")
+
+
+# Read the manually curated list of drug combinations
+drugCombs <- read.xlsx("InputFiles/DrugCombinations/Drug_combinations_manualCurated.xlsx")
+
+tmp1 <- unique(c(drugCombs$Drug1_DrugBank_drug_id, drugCombs$Drug2_DrugBank_drug_id))
+tmp2 <- unique(drugCombs$Disease)
+
+cat(paste0("\nNumber of drug combinations: ", nrow(drugCombs), "\n"))
+cat(paste0("\nNumber of unique drugs forming the combinations: ", length(tmp1), "\n"))
+cat(paste0("\nNumber of unique cancers: ", length(tmp2), "\n"))
+
+drugCombs <- unique(drugCombs[, c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")])
+cat(paste0("\nNumber of unique drug combinations: ", nrow(drugCombs), "\n"))
 
 
 
-# Remove combinations that contain atleast one drug participating in training
+
+# Remove combinations that are participating in training
 remove_index <- c()
 for(i in 1:nrow(drugCombs)){
   drug1 <- drugCombs[i, "Drug1_DrugBank_drug_id"]
@@ -67,7 +75,6 @@ drugCombs <- drugCombs[(drugCombs$Drug1_DrugBank_drug_id %in% drug_target_ixn$No
                                                 & drugCombs$Drug2_DrugBank_drug_id %in% drug_target_ixn$Node1_drugbank_drug_id), ]
 drugCombs <- unique(drugCombs)
 row.names(drugCombs) <- NULL
-
 
 
 # Read the network on which to run RWR
@@ -105,9 +112,14 @@ unregister_dopar()
 
 
 
+# Read the manually curated list of drug combinations
+drugCombs_main <- read.xlsx("InputFiles/DrugCombinations/Drug_combinations_manualCurated.xlsx")
+drugCombs_main$name <- paste("Unk", drugCombs_main$Drug1_DrugBank_drug_id, drugCombs_main$Drug2_DrugBank_drug_id, sep = "__")
+drugCombs_main <- drugCombs_main %>% group_by(name) %>% summarise_all(toString)
+drugCombs_main <- as.data.frame(lapply(drugCombs_main, function(x) sapply(x, extract_unique)))
 
-
-
+                                       
+                                       
 # Create predictions using the six cancer models
 
 validation_predictions <- list()
@@ -147,6 +159,7 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
   predictions$Class <- predict(object = model, newdata = data, type = "raw")
   predictions <- rownames_to_column(predictions, "drugCombs")
   predictions <- predictions[order(predictions$Eff, decreasing = TRUE),]
+  predictions <- merge(predictions, drugCombs_main, by.x = "drugCombs", by.y = "name", all.x = TRUE, all.y = FALSE)
   validation_predictions[[disease]] <- predictions
   validation_predictions[["Summary"]] <- rbind(validation_predictions[["Summary"]], 
                                                 data.frame(Disease = disease,
@@ -156,49 +169,47 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
 
 
 # Save as file
-if(!dir.exists("OutputFiles/Validation/CDCDB/")){
-  dir.create("OutputFiles/Validation/CDCDB/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Validation/ManualCurated/")){
+  dir.create("OutputFiles/Validation/ManualCurated/", recursive = TRUE)
 }                          
-write.xlsx(validation_predictions, "OutputFiles/Validation/CDCDB/validation_CDCDB_OrangeBook_rxotc.xlsx", rowNames = FALSE, overwrite = TRUE)
-
-
-
+write.xlsx(validation_predictions, "OutputFiles/Validation/ManualCurated/validation_drugCombs_manualCurated.xlsx", rowNames = FALSE, overwrite = TRUE)
 
 
 
 # Create box plots for efficacy scores
 validation_predictions <- validation_predictions[names(validation_predictions) != c("Summary")]
 validation_predictions <- do.call(rbind, validation_predictions)
-validation_predictions <- rownames_to_column(validation_predictions, "Disease")
-validation_predictions$Disease <- gsub("\\.[0-9]+$", "", validation_predictions$Disease)
+validation_predictions <- rownames_to_column(validation_predictions, "Cancer")
+validation_predictions$Cancer <- gsub("\\.[0-9]+$", "", validation_predictions$Cancer)
 
 
 
 
-tiff("OutputFiles/Validation/CDCDB/validation_CDCDB_OrangeBook_rxotc.tiff", 
+
+tiff("OutputFiles/Validation/ManualCurated/validation_drugCombs_manualCurated.tiff", 
      width = 6, height = 5, 
      units = "cm", compression = "lzw", res = 1200)
 
-ggplot(validation_predictions, aes(x = Disease, y = Eff, fill = Class)) + #
+ggplot(validation_predictions, aes(x = Cancer, y = Eff, fill = Class)) + #
   geom_violin(lwd = 0.1) +
-  theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.1, linetype = NULL),
+  theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.1, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
-        strip.background = element_rect(color = "black", linewidth = 0.1,),
+        strip.background = element_rect(color = "black", size = 0.1,),
         strip.text = element_text(margin = margin(1,1,1,1)),
-        text = element_text(linewidth = 2.5), 
+        text = element_text(size = 2.5), 
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5), 
-        axis.ticks = element_line(colour = "black", linewidth = 0.1),
+        axis.ticks = element_line(colour = "black", size = 0.1),
         legend.position = "bottom",
         legend.key = element_blank(),
         legend.key.size = unit(0.2, 'cm'),
-        legend.text = element_text(linewidth = 1.5),
+        legend.text = element_text(size = 1.5),
         legend.margin = margin(1,1,1,1),
         legend.box.spacing = unit(0.1, 'cm'),
-        legend.box.background = element_rect(colour = "black", linewidth = 0.1)) +
+        legend.box.background = element_rect(colour = "black", size = 0.1)) +
   # scale_fill_manual(values = c("#008080", "#ffa500", "#00ff7f", "#00bfff", "#deb887")) + 
-  ggtitle(paste0("Predictions for C-DCDB drug combinations (Orange Book, RX/OTC)")) +
+  ggtitle(paste0("Predictions for manually curated drug combinations")) +
   xlab("Cancers") + ylab("Efficacy scores") + #
   labs(colour = "Class : ")
 
