@@ -9,6 +9,7 @@ library(optparse)
 library(foreach)
 library(doParallel)
 library(openxlsx)
+library(tidyverse)
 source("Scripts/Functions/Functions_modelTraning_drugComb.R")
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
@@ -71,13 +72,20 @@ registerDoParallel(cl)
 
 # Read the Barabasi metrics for drug-disease genes
 proximity_matrix <- readRDS(paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDisease_", disease, ".rds"))
-proximity_matrix[proximity_matrix == "Inf"] <- NA
-proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
+# proximity_matrix[proximity_matrix == "Inf"] <- NA
+# proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 
 
 cat("\n- Feature: all Barabasi Proximities (Drug-Disease)\n")
-BarabasiProx_all_model <- func_repeated_train(feature_matrix = proximity_matrix, 
+proximity_all <- bind_rows(proximity_matrix, .id = "proximity")
+proximity_all$features <- paste0("[", proximity_all$proximity, "] ", proximity_all$features)
+proximity_all <- proximity_all[, -1]
+# proximity_all[proximity_all == "Inf"] <- NA
+proximity_all[sapply(proximity_all, is.infinite)] <- NA
+proximity_all <- proximity_all[!rowSums(is.na(proximity_all)) == ncol(proximity_all)-1 ,]
+proximity_all <- proximity_all[, !colSums(is.na(proximity_all)) > 0]
+BarabasiProx_all_model <- func_repeated_train(feature_matrix = proximity_all, 
                                              train_test_split = train_test_split, 
                                              data_balance_method = data_balance_method, 
                                              allow_parallel = FALSE, 
@@ -85,7 +93,11 @@ BarabasiProx_all_model <- func_repeated_train(feature_matrix = proximity_matrix,
 
 
 cat("\n- Feature: Barabasi Proximity (Closest) (Drug-Disease)\n")
-proximity_closest <- proximity_matrix[proximity_matrix$features == "proximity_closest", ]
+proximity_closest <- proximity_matrix[["proximity_closest"]]
+# proximity_closest[proximity_closest == "Inf"] <- NA
+proximity_closest[sapply(proximity_closest, is.infinite)] <- NA
+proximity_closest <- proximity_closest[!rowSums(is.na(proximity_closest)) == ncol(proximity_closest)-1 ,]
+proximity_closest <- proximity_closest[, !colSums(is.na(proximity_closest)) > 0]
 BarabasiProx_closest_model <- func_repeated_train(feature_matrix = proximity_closest, 
                                               train_test_split = train_test_split, 
                                               data_balance_method = data_balance_method, 
@@ -94,7 +106,11 @@ BarabasiProx_closest_model <- func_repeated_train(feature_matrix = proximity_clo
 
 
 cat("\n- Feature: Barabasi Proximity (Shortest) (Drug-Disease)\n")
-proximity_shortest <- proximity_matrix[proximity_matrix$features == "proximity_shortest", ]
+proximity_shortest <- proximity_matrix[["proximity_shortest"]]
+# proximity_shortest[proximity_shortest == "Inf"] <- NA
+proximity_shortest[sapply(proximity_shortest, is.infinite)] <- NA
+proximity_shortest <- proximity_shortest[!rowSums(is.na(proximity_shortest)) == ncol(proximity_shortest)-1 ,]
+proximity_shortest <- proximity_shortest[, !colSums(is.na(proximity_shortest)) > 0]
 BarabasiProx_shortest_model <- func_repeated_train(feature_matrix = proximity_shortest, 
                                               train_test_split = train_test_split, 
                                               data_balance_method = data_balance_method, 
@@ -103,7 +119,11 @@ BarabasiProx_shortest_model <- func_repeated_train(feature_matrix = proximity_sh
 
 
 cat("\n- Feature: Barabasi Proximity (proximity_centre) (Drug-Disease)\n")
-proximity_centre <- proximity_matrix[proximity_matrix$features == "proximity_centre", ]
+proximity_centre <- proximity_matrix[["proximity_centre"]]
+# proximity_centre[proximity_centre == "Inf"] <- NA
+proximity_centre[sapply(proximity_centre, is.infinite)] <- NA
+proximity_centre <- proximity_centre[!rowSums(is.na(proximity_centre)) == ncol(proximity_centre)-1 ,]
+proximity_centre <- proximity_centre[, !colSums(is.na(proximity_centre)) > 0]
 BarabasiProx_centre_model <- func_repeated_train(feature_matrix = proximity_centre, 
                                                    train_test_split = train_test_split, 
                                                    data_balance_method = data_balance_method, 
@@ -112,7 +132,11 @@ BarabasiProx_centre_model <- func_repeated_train(feature_matrix = proximity_cent
 
 
 cat("\n- Feature: Barabasi Proximity (proximity_kernel) (Drug-Disease)\n")
-proximity_kernel <- proximity_matrix[proximity_matrix$features == "proximity_kernel", ]
+proximity_kernel <- proximity_matrix[["proximity_kernel"]]
+# proximity_kernel[proximity_kernel == "Inf"] <- NA
+proximity_kernel[sapply(proximity_kernel, is.infinite)] <- NA
+proximity_kernel <- proximity_kernel[!rowSums(is.na(proximity_kernel)) == ncol(proximity_kernel)-1 ,]
+proximity_kernel <- proximity_kernel[, !colSums(is.na(proximity_kernel)) > 0]
 BarabasiProx_kernel_model <- func_repeated_train(feature_matrix = proximity_kernel, 
                                                  train_test_split = train_test_split, 
                                                  data_balance_method = data_balance_method, 
@@ -121,7 +145,11 @@ BarabasiProx_kernel_model <- func_repeated_train(feature_matrix = proximity_kern
 
 
 cat("\n- Feature: Barabasi Proximity (proximity_separation) (Drug-Disease)\n")
-proximity_separation <- proximity_matrix[proximity_matrix$features == "proximity_separation", ]
+proximity_separation <- proximity_matrix[["proximity_separation"]]
+# proximity_separation[proximity_separation == "Inf"] <- NA
+proximity_separation[sapply(proximity_separation, is.infinite)] <- NA
+proximity_separation <- proximity_separation[!rowSums(is.na(proximity_separation)) == ncol(proximity_separation)-1 ,]
+proximity_separation <- proximity_separation[, !colSums(is.na(proximity_separation)) > 0]
 BarabasiProx_separation_model <- func_repeated_train(feature_matrix = proximity_separation, 
                                                  train_test_split = train_test_split, 
                                                  data_balance_method = data_balance_method, 
