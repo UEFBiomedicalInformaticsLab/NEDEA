@@ -77,8 +77,8 @@ FimmDrugComb_drugCombCat$synergy_hsa_class <- ifelse(FimmDrugComb_drugCombCat$sy
 FimmDrugComb_drugCombCat$synergy_bliss_class <- ifelse(FimmDrugComb_drugCombCat$synergy_bliss > 0, 1, ifelse(FimmDrugComb_drugCombCat$synergy_bliss < 0, -1, 0))
 
 FimmDrugComb_drugCombCat$synergy_class_sum <- rowSums(FimmDrugComb_drugCombCat[, 
-                                                      c("synergy_zip_class", "synergy_loewe_class", 
-                                                        "synergy_hsa_class", "synergy_bliss_class")], na.rm = TRUE)
+                                                                               c("synergy_zip_class", "synergy_loewe_class", 
+                                                                                 "synergy_hsa_class", "synergy_bliss_class")], na.rm = TRUE)
 
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[abs(FimmDrugComb_drugCombCat$synergy_class_sum) == 4, ]
 FimmDrugComb_drugCombCat$drug_class <- NULL
@@ -109,7 +109,7 @@ tmp <- lapply(tmp, function(x){
   x <- unique(x[, c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")])
   row.names(x) <- NULL
   x
-  })
+})
 saveRDS(tmp, "InputFiles/ReferenceList/FimmDrugComb_LungCancer_drugCombinations.rds")
 
 
@@ -191,7 +191,7 @@ tmp <- do.call(cbind.fill, cell_lines)
 colnames(tmp) <- names(cell_lines)
 if(!dir.exists("OutputFiles/Tables/"))dir.create("OutputFiles/Tables/", recursive = TRUE)
 write.csv(tmp, "OutputFiles/Tables/DrugComb_cellLines_training.csv")
-              
-              
-              
+
+
+
 print(warnings())

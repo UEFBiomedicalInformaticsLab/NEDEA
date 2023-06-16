@@ -87,6 +87,6 @@ rownames(OpenTargets_Drug_Disease_Net) <- NULL
 if(!dir.exists("InputFiles/Associations/")){dir.create("InputFiles/Associations/", recursive = TRUE)} 
 saveRDS(OpenTargets_Drug_Disease_Net, "InputFiles/Associations/OpenTargets_Drug_Disease_Net.rds")
 
-         
-         
+
+
 print(warnings())

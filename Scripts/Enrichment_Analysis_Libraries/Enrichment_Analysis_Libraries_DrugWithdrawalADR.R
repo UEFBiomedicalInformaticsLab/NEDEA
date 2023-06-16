@@ -130,8 +130,8 @@ lib_term_similarity <- lib_term_similarity[order(lib_term_similarity$Jaccard, de
 
 if(!dir.exists("OutputFiles/Tables/")){ dir.create("OutputFiles/Tables/", recursive = TRUE) }
 write.xlsx(list(Library_size = lib_size,
-               Library_term_similarity = lib_term_similarity), 
-               "OutputFiles/Tables/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
+                Library_term_similarity = lib_term_similarity), 
+           "OutputFiles/Tables/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
 
 
 

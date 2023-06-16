@@ -75,24 +75,24 @@ fgsea_result <- readRDS(paste0("OutputFiles/Model_train/", disease, "/fgseaProbC
 
 cat("\n- Feature: Disease2Gene library\n")
 Disease2Gene_model <- func_train_model(feature_matrix = fgsea_result$NES_Disease2Gene, 
-                                          train_test_split = train_test_split, 
-                                          data_balance_method = data_balance_method, 
-                                          allow_parallel = FALSE, 
-                                          nproc = NULL)
+                                       train_test_split = train_test_split, 
+                                       data_balance_method = data_balance_method, 
+                                       allow_parallel = FALSE, 
+                                       nproc = NULL)
 
 cat("\n- Feature: WithdrawalAdr2Gene library\n")
 WithdrawalAdr2Gene_model <- func_train_model(feature_matrix = fgsea_result$NES_WithdrawalAdr2Gene, 
-                                          train_test_split = train_test_split, 
-                                          data_balance_method = data_balance_method, 
-                                          allow_parallel = FALSE, 
-                                          nproc = NULL)
+                                             train_test_split = train_test_split, 
+                                             data_balance_method = data_balance_method, 
+                                             allow_parallel = FALSE, 
+                                             nproc = NULL)
 
 cat("\n- Feature: CombinedDisAdr2Gene library\n")
 CombinedDisAdr2Gene_model <- func_train_model(feature_matrix = fgsea_result$NES_CombinedDisAdr2Gene, 
-                                          train_test_split = train_test_split, 
-                                          data_balance_method = data_balance_method, 
-                                          allow_parallel = FALSE, 
-                                          nproc = NULL)
+                                              train_test_split = train_test_split, 
+                                              data_balance_method = data_balance_method, 
+                                              allow_parallel = FALSE, 
+                                              nproc = NULL)
 
 
 
@@ -103,31 +103,31 @@ fgsea_result <- readRDS(paste0("OutputFiles/Model_train/", disease, "/fgseaProbC
 
 cat("\n- Feature: keggPath library\n")
 keggPath_model <- func_train_model(feature_matrix = fgsea_result$NES_keggPath, 
-                                      train_test_split = train_test_split, 
-                                      data_balance_method = data_balance_method, 
-                                      allow_parallel = FALSE, 
-                                      nproc = NULL)
+                                   train_test_split = train_test_split, 
+                                   data_balance_method = data_balance_method, 
+                                   allow_parallel = FALSE, 
+                                   nproc = NULL)
 
 cat("\n- Feature: SMPDbPath_DrugMet library\n")
 SMPDbPath_DrugMet_model <- func_train_model(feature_matrix = fgsea_result$NES_SMPDbPath_DrugMet, 
+                                            train_test_split = train_test_split, 
+                                            data_balance_method = data_balance_method, 
+                                            allow_parallel = FALSE, 
+                                            nproc = NULL)
+
+cat("\n- Feature: SMPDbPath_DrugAction library\n")
+SMPDbPath_DrugAction_model <- func_train_model(feature_matrix = fgsea_result$NES_SMPDbPath_DrugAction, 
                                                train_test_split = train_test_split, 
                                                data_balance_method = data_balance_method, 
                                                allow_parallel = FALSE, 
                                                nproc = NULL)
 
-cat("\n- Feature: SMPDbPath_DrugAction library\n")
-SMPDbPath_DrugAction_model <- func_train_model(feature_matrix = fgsea_result$NES_SMPDbPath_DrugAction, 
-                                                      train_test_split = train_test_split, 
-                                                      data_balance_method = data_balance_method, 
-                                                      allow_parallel = FALSE, 
-                                                      nproc = NULL)
-
 cat("\n- Feature: miscGeneSet library\n")
 miscGeneSet_model <- func_train_model(feature_matrix = fgsea_result$NES_miscGeneSet, 
-                                             train_test_split = train_test_split, 
-                                             data_balance_method = data_balance_method, 
-                                             allow_parallel = FALSE, 
-                                             nproc = NULL)
+                                      train_test_split = train_test_split, 
+                                      data_balance_method = data_balance_method, 
+                                      allow_parallel = FALSE, 
+                                      nproc = NULL)
 
 
 

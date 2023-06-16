@@ -8,7 +8,7 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 40   # Number of task
+#SBATCH --ntasks 20   # Number of task
 #SBATCH --time 1-00:00:00   # Runtime
 #SBATCH --mem=100000   # Reserve 100 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
@@ -25,4 +25,4 @@ grep -c ^processor /proc/cpuinfo
 
 echo "Running RWR for " $1 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Feature_generation/DrugCombs_dNetRWR.R --disease $1 --nproc 40
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Feature_generation/DrugCombs_dNetRWR.R --disease $1 --nproc 20

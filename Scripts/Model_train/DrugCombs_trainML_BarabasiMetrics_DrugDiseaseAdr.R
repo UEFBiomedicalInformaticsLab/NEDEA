@@ -97,10 +97,10 @@ proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 # Train model
 BarabasiProx_model <- func_train_model(feature_matrix = proximity_matrix, 
-                                              train_test_split = train_test_split, 
-                                              data_balance_method = data_balance_method, 
-                                              allow_parallel = FALSE, 
-                                              nproc = NULL)
+                                       train_test_split = train_test_split, 
+                                       data_balance_method = data_balance_method, 
+                                       allow_parallel = FALSE, 
+                                       nproc = NULL)
 
 proximity <- gsub("^proximity_", "", proximity)
 

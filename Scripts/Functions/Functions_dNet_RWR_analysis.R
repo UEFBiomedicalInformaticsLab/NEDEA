@@ -38,7 +38,7 @@ func_RWR_seed_from_DTI <- function(rwr_input_network, drugs, drug_target_ixn){
   # Extract targets for the selected drugs from the DTI 
   drug_target_ixn <- drug_target_ixn[drug_target_ixn$Node1_drugbank_drug_id %in% drugs, ]
   drug_target_ixn <- as.data.frame(sapply(drug_target_ixn, as.vector))
-
+  
   # Filter to keep targets in the network
   drug_target_ixn <- drug_target_ixn[drug_target_ixn$Node2_ensembl_gene_id %in% V(rwr_input_network)$name, ]
   
@@ -94,7 +94,7 @@ func_dNetRWR_on_drugCombination <- function(rwr_input_network, drug1, drug2,
   union_seed <- ifelse(rowSums(rwr_input_seed) > 0, 1, 0)
   intersect_seed <- ifelse(rowSums(rwr_input_seed) == 2, 1, 0)
   rwr_input_seed <- cbind(rwr_input_seed, union_seed, intersect_seed)
-
+  
   # Execute dNet RWR
   rwr_result <- suppressMessages(dRWR(g = rwr_input_network, 
                                       setSeeds = rwr_input_seed, 

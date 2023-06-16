@@ -59,7 +59,7 @@ calc_set_pair_distances <- function(gene_network, geneSet1, geneSet2){
     distance_matrix <- distances(graph = gene_network,
                                  v = V(gene_network)[V(gene_network)$name %in% geneSet1],
                                  to = V(gene_network)[V(gene_network)$name %in% geneSet2],
-				 algorithm = "dijkstra")
+                                 algorithm = "dijkstra")
     
     distance_matrix[is.infinite(distance_matrix)] <- NA
     distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
@@ -139,7 +139,7 @@ Barabasi_proximity_closest <- function(gene_network, geneSet1, geneSet2){
       distance_matrix <- distances(graph = gene_network,
                                    v = V(gene_network)[V(gene_network)$name %in% geneSet1],
                                    to = V(gene_network)[V(gene_network)$name %in% geneSet2],
-				 algorithm = "dijkstra")
+                                   algorithm = "dijkstra")
       
       
       distance_matrix[is.infinite(distance_matrix)] <- NA
@@ -196,7 +196,7 @@ Barabasi_proximity_shortest <- function(gene_network, geneSet1, geneSet2){
       distance_matrix <- distances(graph = gene_network,
                                    v = V(gene_network)[V(gene_network)$name %in% geneSet1],
                                    to = V(gene_network)[V(gene_network)$name %in% geneSet2],
-				 algorithm = "dijkstra")
+                                   algorithm = "dijkstra")
       
       distance_matrix[is.infinite(distance_matrix)] <- NA
       # distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
@@ -229,7 +229,7 @@ get_topological_centre <- function(gene_network, geneSet){
       distance_matrix <- distances(graph = gene_network,
                                    v = V(gene_network)[V(gene_network)$name %in% geneSet],
                                    to = V(gene_network)[V(gene_network)$name %in% geneSet],
-				 algorithm = "dijkstra")
+                                   algorithm = "dijkstra")
       
       
       # Calculate sum of distances of each gene in geneSet to all other genes in the geneSet
@@ -267,7 +267,7 @@ Barabasi_proximity_centre <- function(gene_network, geneSet1, geneSet2){
       distance_matrix <- distances(graph = gene_network,
                                    v = V(gene_network)[V(gene_network)$name %in% geneSet1_centre],
                                    to = V(gene_network)[V(gene_network)$name %in% geneSet2_centre],
-				 algorithm = "dijkstra")
+                                   algorithm = "dijkstra")
       
       if(nrow(distance_matrix) > 1 && ncol(distance_matrix) == 1){
         proximity_centre <- unname(colMeans(distance_matrix, na.rm = TRUE))
@@ -307,7 +307,7 @@ Barabasi_proximity_kernel <- function(gene_network, geneSet1, geneSet2){
       distance_matrix <- distances(graph = gene_network,
                                    v = V(gene_network)[V(gene_network)$name %in% geneSet1],
                                    to = V(gene_network)[V(gene_network)$name %in% geneSet2],
-				 algorithm = "dijkstra")
+                                   algorithm = "dijkstra")
       
       
       distance_matrix[is.infinite(distance_matrix)] <- NA

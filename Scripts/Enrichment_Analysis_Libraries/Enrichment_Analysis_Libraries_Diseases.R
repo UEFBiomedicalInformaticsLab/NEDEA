@@ -233,14 +233,14 @@ spark_disconnect(sc)
 if(!dir.exists("Databases/Intogen")){dir.create("Databases/Intogen", recursive = TRUE)}
 
 if(!file.exists("Databases/Intogen/Compendium_Cancer_Genes.tsv")){
-  download.file(url = "https://intogen.org/download?file=IntOGen-Drivers-20200201.zip",
+  download.file(url = "https://www.intogen.org/download?file=IntOGen-Drivers-20200201.zip",
                 destfile = "Databases/Intogen/IntOGen_Drivers_20200201.zip", method = "wget")
   unzip("Databases/Intogen/IntOGen_Drivers_20200201.zip", files = "2020-02-02_IntOGen-Drivers-20200213/Compendium_Cancer_Genes.tsv", 
         exdir = "Databases/Intogen/", junkpaths = TRUE)
 }
 
 if(!file.exists("Databases/Intogen/cohorts.tsv")){
-  download.file(url = "https://intogen.org/download?file=IntOGen-Cohorts-20200201.zip",
+  download.file(url = "https://www.intogen.org/download?file=IntOGen-Cohorts-20200201.zip",
                 destfile = "Databases/Intogen/IntOGen_Cohorts_20200201.zip", method = "wget")
   unzip("Databases/Intogen/IntOGen_Cohorts_20200201.zip", files = "2020-02-02_IntOGen-Cohorts-20200213/cohorts.tsv", 
         exdir = "Databases/Intogen/", junkpaths = TRUE)
@@ -392,5 +392,5 @@ if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFi
 saveRDS(CTD_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CTD_Disease2Gene_lib.rds")
 
 
-                             
+
 print(warnings())

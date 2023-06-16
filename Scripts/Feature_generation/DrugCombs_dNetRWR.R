@@ -22,7 +22,7 @@ option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
   make_option(c("--nproc"), type = "numeric", default = NULL, 
-          help = "Number of processes to use. Default: NULL", metavar = "numeric")
+              help = "Number of processes to use. Default: NULL", metavar = "numeric")
 )
 
 opt_parser = OptionParser(option_list = option_list)

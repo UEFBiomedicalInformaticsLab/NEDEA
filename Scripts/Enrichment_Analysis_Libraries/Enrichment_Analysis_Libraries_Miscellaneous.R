@@ -89,7 +89,7 @@ if(!dir.exists("Databases/HOCdb/")){dir.create("Databases/HOCdb/", recursive = T
 
 # Manually download supplementary file from https://doi.org/10.1093/database/baaa045
 if(!file.exists("Databases/HOCdb/suppl_data_baaa045.zip")){
-    warning(paste0("Download supplementary file: Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx"))
+  warning(paste0("Download supplementary file: Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx"))
 }
 unzip("Databases/HOCdb/suppl_data_baaa045.zip", exdir = "Databases/HOCdb/", file = "Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx")
 

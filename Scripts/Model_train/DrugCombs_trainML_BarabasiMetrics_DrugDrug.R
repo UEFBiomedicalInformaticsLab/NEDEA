@@ -79,55 +79,55 @@ proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 cat("\n- Feature: all Barabasi Proximities (Drug-Drug)\n")
 BarabasiProx_all_model <- func_train_model(feature_matrix = proximity_matrix, 
-                                             train_test_split = train_test_split, 
-                                             data_balance_method = data_balance_method, 
-                                             allow_parallel = FALSE, 
-                                             nproc = NULL)
+                                           train_test_split = train_test_split, 
+                                           data_balance_method = data_balance_method, 
+                                           allow_parallel = FALSE, 
+                                           nproc = NULL)
 
 
 cat("\n- Feature: Barabasi Proximity (Closest) (Drug-Drug)\n")
 proximity_closest <- proximity_matrix[proximity_matrix$features == "proximity_closest", ]
 BarabasiProx_closest_model <- func_train_model(feature_matrix = proximity_closest, 
-                                              train_test_split = train_test_split, 
-                                              data_balance_method = data_balance_method, 
-                                              allow_parallel = FALSE, 
-                                              nproc = NULL)
+                                               train_test_split = train_test_split, 
+                                               data_balance_method = data_balance_method, 
+                                               allow_parallel = FALSE, 
+                                               nproc = NULL)
 
 
 cat("\n- Feature: Barabasi Proximity (Shortest) (Drug-Drug)\n")
 proximity_shortest <- proximity_matrix[proximity_matrix$features == "proximity_shortest", ]
 BarabasiProx_shortest_model <- func_train_model(feature_matrix = proximity_shortest, 
+                                                train_test_split = train_test_split, 
+                                                data_balance_method = data_balance_method, 
+                                                allow_parallel = FALSE, 
+                                                nproc = NULL)
+
+
+cat("\n- Feature: Barabasi Proximity (proximity_centre) (Drug-Drug)\n")
+proximity_centre <- proximity_matrix[proximity_matrix$features == "proximity_centre", ]
+BarabasiProx_centre_model <- func_train_model(feature_matrix = proximity_centre, 
                                               train_test_split = train_test_split, 
                                               data_balance_method = data_balance_method, 
                                               allow_parallel = FALSE, 
                                               nproc = NULL)
 
 
-cat("\n- Feature: Barabasi Proximity (proximity_centre) (Drug-Drug)\n")
-proximity_centre <- proximity_matrix[proximity_matrix$features == "proximity_centre", ]
-BarabasiProx_centre_model <- func_train_model(feature_matrix = proximity_centre, 
-                                                   train_test_split = train_test_split, 
-                                                   data_balance_method = data_balance_method, 
-                                                   allow_parallel = FALSE, 
-                                                   nproc = NULL)
-
-
 cat("\n- Feature: Barabasi Proximity (proximity_kernel) (Drug-Drug)\n")
 proximity_kernel <- proximity_matrix[proximity_matrix$features == "proximity_kernel", ]
 BarabasiProx_kernel_model <- func_train_model(feature_matrix = proximity_kernel, 
-                                                 train_test_split = train_test_split, 
-                                                 data_balance_method = data_balance_method, 
-                                                 allow_parallel = FALSE, 
-                                                 nproc = NULL)
+                                              train_test_split = train_test_split, 
+                                              data_balance_method = data_balance_method, 
+                                              allow_parallel = FALSE, 
+                                              nproc = NULL)
 
 
 cat("\n- Feature: Barabasi Proximity (proximity_separation) (Drug-Drug)\n")
 proximity_separation <- proximity_matrix[proximity_matrix$features == "proximity_separation", ]
 BarabasiProx_separation_model <- func_train_model(feature_matrix = proximity_separation, 
-                                                 train_test_split = train_test_split, 
-                                                 data_balance_method = data_balance_method, 
-                                                 allow_parallel = FALSE, 
-                                                 nproc = NULL)
+                                                  train_test_split = train_test_split, 
+                                                  data_balance_method = data_balance_method, 
+                                                  allow_parallel = FALSE, 
+                                                  nproc = NULL)
 
 
 

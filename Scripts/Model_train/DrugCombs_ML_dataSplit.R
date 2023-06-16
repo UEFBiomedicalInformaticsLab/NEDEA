@@ -19,7 +19,7 @@ option_list = list(
   make_option(c("--folds"), type = "numeric", default = 5, 
               help = "Number of folds to be created. Should be an integer.", metavar = "numeric"),
   make_option(c("--repeats"), type = "numeric", default = 5, 
-          help = "Number of repeats of fold splitting to be performed. Should be an integer.", metavar = "numeric")
+              help = "Number of repeats of fold splitting to be performed. Should be an integer.", metavar = "numeric")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -74,19 +74,19 @@ ML_data_split_repeat <- list()
 ML_data_split <- list()
 
 for(j in seq(repeats)){
-    
-    set.seed(5081 + j)
-
-    fldIndex <- createFolds(y = drugCombs$Class, k = folds, list = TRUE, returnTrain = FALSE)
-
-    for(i in 1:length(fldIndex)) {
-      testData <- drugCombs[fldIndex[[i]], ]
-      remainingFolds <- fldIndex[-i]
-      trainData <- drugCombs[Reduce(union, lapply(remainingFolds, unlist)), ]
-      ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
-    }
-    names(ML_data_split) <- names(fldIndex)
-    ML_data_split_repeat[[j]] <- ML_data_split
+  
+  set.seed(5081 + j)
+  
+  fldIndex <- createFolds(y = drugCombs$Class, k = folds, list = TRUE, returnTrain = FALSE)
+  
+  for(i in 1:length(fldIndex)) {
+    testData <- drugCombs[fldIndex[[i]], ]
+    remainingFolds <- fldIndex[-i]
+    trainData <- drugCombs[Reduce(union, lapply(remainingFolds, unlist)), ]
+    ML_data_split[[i]] <- list("train" = trainData, "test" = testData)
+  }
+  names(ML_data_split) <- names(fldIndex)
+  ML_data_split_repeat[[j]] <- ML_data_split
 }
 names(ML_data_split_repeat) <- paste0("Repeat", seq(repeats))
 ML_data_split_repeat <- unlist(ML_data_split_repeat, recursive = FALSE, )

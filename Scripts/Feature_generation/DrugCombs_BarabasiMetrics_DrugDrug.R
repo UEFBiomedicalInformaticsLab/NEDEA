@@ -36,9 +36,9 @@ if(is.null(opt$disease)){
 
 if(!is.null(opt$nproc)){
   if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
-  print_help(opt_parser)
-  stop("--nproc should be be an integer.", call.=FALSE)
-}
+    print_help(opt_parser)
+    stop("--nproc should be be an integer.", call.=FALSE)
+  }
 }
 
 # Define global options for this script 

@@ -14,11 +14,11 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 # MLmetrics::AUC (modified function)
 # AUC calcution returns NA due to large value of n_pos * n_neg which cannot be handled by R
 AUC <- function(y_pred, y_true){
-            rank <- rank(y_pred)
-            n_pos <- as.numeric(sum(y_true == 1))
-            n_neg <- as.numeric(sum(y_true == 0))
-            auc <- (sum(rank[y_true == 1]) - n_pos * (n_pos + 1)/2)/(n_pos * n_neg)
-            return(auc)
+  rank <- rank(y_pred)
+  n_pos <- as.numeric(sum(y_true == 1))
+  n_neg <- as.numeric(sum(y_true == 0))
+  auc <- (sum(rank[y_true == 1]) - n_pos * (n_pos + 1)/2)/(n_pos * n_neg)
+  return(auc)
 }
 
 
@@ -97,10 +97,10 @@ train_nb_model <- function(x, y){
 
 # Function to train all models
 func_train_model <- function(feature_matrix, 
-                                train_test_split, 
-                                data_balance_method = "none", 
-                                allow_parallel = TRUE, 
-                                nproc = NULL){
+                             train_test_split, 
+                             data_balance_method = "none", 
+                             allow_parallel = TRUE, 
+                             nproc = NULL){
   
   require(foreach)
   require(doParallel)
@@ -134,7 +134,7 @@ func_train_model <- function(feature_matrix,
     
     # Balance the training data (if used)
     switch(data_balance_method,
-            "none" = {
+           "none" = {
              trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name , !(colnames(data) %in% c("Class")), drop = FALSE]
              trainClass <- as.factor(data[row.names(data) %in% train_test_split[[i]]$train$Name, c("Class")])
            })
@@ -146,15 +146,15 @@ func_train_model <- function(feature_matrix,
     colnames(trainClass_count) <- paste0("Train_", colnames(trainClass_count))
     testClass_count <- rbind(table(testClass))
     colnames(testClass_count) <- paste0("Test_", colnames(testClass_count))
-      
+    
     # Preprocess the data
     preProcess <- preProcess(trainData, method = c("center", "scale"))
     trainData <- predict(object = preProcess, newdata = trainData)
     testData <- predict(object = preProcess, newdata = testData)
     
     
-      
-      
+    
+    
     # Train Random Forest model
     cat("--- Random Forest\n")
     rf_model <- train_rf_model(x = trainData, y = trainClass)
@@ -334,7 +334,7 @@ func_train_model <- function(feature_matrix,
                                BalancedAccuracy_train =  unname (nb_confusionMatrix_train$byClass["Balanced Accuracy"]),
                                BalancedAccuracy_test =  unname (unname (nb_confusionMatrix_test$byClass["Balanced Accuracy"]))))
     
-       
+    
     
     # Compile results
     tmp <- list(rf = list(model = rf_model, 
@@ -349,15 +349,15 @@ func_train_model <- function(feature_matrix,
                                  test_predictions = svmRadial_predictions, 
                                  test_probabilities = svmRadial_predictions_prob, 
                                  test_confusionMatrix = svmRadial_confusionMatrix_test),
-                 nb = list(model = nb_model, 
-                           test_predictions = nb_predictions, 
-                           test_probabilities = nb_predictions_prob, 
-                           test_confusionMatrix = nb_confusionMatrix_test))
+                nb = list(model = nb_model, 
+                          test_predictions = nb_predictions, 
+                          test_probabilities = nb_predictions_prob, 
+                          test_confusionMatrix = nb_confusionMatrix_test))
     
     modelling_results[[i]] <- tmp
     
   }
-
+  
   result_summary_tables <- list(rf = rf_result_table,
                                 glmnet = glmnet_result_table,
                                 svmRadial = svmRadial_result_table,
