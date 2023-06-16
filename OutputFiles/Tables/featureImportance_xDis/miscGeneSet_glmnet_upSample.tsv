@@ -1,0 +1,5 @@
+"BreastCancer.TopK_median"	"BreastCancer.Scores_median"	"KidneyCancer.TopK_median"	"KidneyCancer.Scores_median"	"LungCancer.TopK_median"	"LungCancer.Scores_median"	"OvaryCancer.TopK_median"	"OvaryCancer.Scores_median"	"ProstateCancer.TopK_median"	"ProstateCancer.Scores_median"	"SkinCancer.TopK_median"	"SkinCancer.Scores_median"
+"DGdb_DrugableGenome"	"1"	"DGdb_DrugableGenome"	"1"	"DGdb_DrugableGenome"	"1"	"DGdb_DrugableGenome"	"1"	"Hallmaker_of_Cancer_genes"	"1"	"DGdb_DrugableGenome"	"1"
+"GenAge_genes"	"2"	"GenAge_genes"	"2"	"GenAge_genes"	"2"	"GenAge_genes"	"2"	"DGdb_DrugableGenome"	"2"	"GenAge_genes"	"2"
+"Hallmaker_of_Cancer_genes"	"3"	"Hallmaker_of_Cancer_genes"	"3"	"Hallmaker_of_Cancer_genes"	"3"	"Hallmaker_of_Cancer_genes"	"3"	"GenAge_genes"	"3"	"Hallmaker_of_Cancer_genes"	"3"
+"PharmGKB_vip"	"4"	"PharmGKB_vip"	"4"	"PharmGKB_vip"	"4"	"PharmGKB_vip"	"4"	"PharmGKB_vip"	"4"	"PharmGKB_vip"	"4"

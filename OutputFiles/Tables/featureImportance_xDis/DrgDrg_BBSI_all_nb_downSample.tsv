@@ -1,0 +1,8 @@
+"BreastCancer.TopK_median"	"BreastCancer.Scores_median"	"KidneyCancer.TopK_median"	"KidneyCancer.Scores_median"	"LungCancer.TopK_median"	"LungCancer.Scores_median"	"OvaryCancer.TopK_median"	"OvaryCancer.Scores_median"	"ProstateCancer.TopK_median"	"ProstateCancer.Scores_median"	"SkinCancer.TopK_median"	"SkinCancer.Scores_median"
+"proximity_closest"	"2"	"proximity_kernel"	"1"	"proximity_shortest"	"1"	"proximity_centre"	"1"	"proximity_centre"	"1"	"proximity_shortest"	"1"
+"proximity_shortest"	"2"	"proximity_shortest"	"2"	"proximity_closest"	"2"	"proximity_shortest"	"2"	"proximity_shortest"	"2"	"proximity_closest"	"2"
+"proximity_centre"	"3"	"proximity_centre"	"3"	"proximity_centre"	"3"	"proximity_closest"	"3"	"proximity_closest"	"3"	"proximity_centre"	"3"
+"proximity_kernel"	"4"	"proximity_closest"	"4"	"proximity_kernel"	"4"	"proximity_kernel"	"4"	"proximity_kernel"	"4"	"proximity_kernel"	"4"
+"drug1_target_number"	"5"	"drug1_target_number"	"5"	"drug1_target_number"	"5"	"drug2_target_number"	"5"	"drug1_target_number"	"5"	"proximity_separation"	"5"
+"proximity_separation"	"6"	"drug2_target_number"	"6"	"proximity_separation"	"6"	"proximity_separation"	"6"	"drug2_target_number"	"6"	"drug1_target_number"	"6"
+"drug2_target_number"	"7"	"proximity_separation"	"7"	"drug2_target_number"	"6"	"drug1_target_number"	"7"	"proximity_separation"	"6"	"drug2_target_number"	"7"
