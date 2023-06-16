@@ -1,8 +1,6 @@
-set.seed(5081)
-
-
-
 # Script to compare similarity between selected genes from RWR using dynamic quartile probability thresholding (version 5)
+
+
 
 
 

@@ -1,8 +1,6 @@
-set.seed(5081)
-
-
-
 # Drug combinations 
+
+
 
 # Notes:
 # (1) Effective drug combinations: Synergistic drug combinations from FimmDrugComb
@@ -11,6 +9,9 @@ set.seed(5081)
 #     risk/severity indications that contain both drugs involved
 #     in forming effective pairs
 # (3) Drug pairs also filtered to keep only those for which there are reported targets
+
+
+
 
 
 
@@ -35,6 +36,8 @@ if(is.null(opt$disease)){
 
 # Define global options for this script 
 disease <- opt$disease
+
+
 
 
 

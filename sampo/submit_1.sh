@@ -67,6 +67,7 @@ disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "Kidney
 #   done
   
   
+<<<<<<< HEAD
   
 # ML data split
 for disease in ${disease_list[@]}
@@ -80,24 +81,55 @@ for disease in ${disease_list[@]}
 # for disease in ${disease_list[@]}
 #   do
 #     sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
+=======
+    
+# # Steiner tree (ADR-Disease-Drug)
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=SteinerTree_AdrDisDrg_$disease --output=SteinerTree_AdrDisDrg_$disease.out --export=disease=$disease sampo/9_sampo_Rscript.sh $disease
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 #   done
   
   
   
+<<<<<<< HEAD
 # # Model hyperparameters
 # for disease in ${disease_list[@]}
 #   do
 #     sbatch --job-name=plot_hyperParam_$disease --output=plot_hyperParam_$disease.out --export=disease=$disease sampo/18_sampo_Rscript.sh $disease
+=======
+# # ML data split
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=ML_dataSplit_$disease --output=ML_dataSplit_$disease.out --export=disease=$disease sampo/10_sampo_Rscript.sh $disease
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 #   done
 
 
 
+<<<<<<< HEAD
 # # Model hyperparameters table
 # for disease in ${disease_list[@]}
 #   do
 #     sbatch --job-name=table_hyperParam_$disease --output=table_hyperParam_$disease.out --export=disease=$disease sampo/25_sampo_Rscript.sh $disease
 #   done
 
+=======
+# Model accuracy
+for disease in ${disease_list[@]}
+  do
+    sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
+  done
+  
+  
+  
+# Model hyperparameters
+for disease in ${disease_list[@]}
+  do
+    sbatch --job-name=plot_hyperParam_$disease --output=plot_hyperParam_$disease.out --export=disease=$disease sampo/18_sampo_Rscript.sh $disease
+  done
+  
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 
 
 # # Final model training

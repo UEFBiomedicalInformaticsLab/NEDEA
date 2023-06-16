@@ -1,6 +1,3 @@
-set.seed(5081)
-
-
 # Perform FGSEA on drug combinations based on the RWR results (version 5)
 
 
@@ -11,17 +8,17 @@ set.seed(5081)
 library(optparse)
 library(foreach)
 library(doParallel)
-source("Scripts/Functions/Functions_dNet_RWR_analysis.R")
-source("Scripts/Functions/Functions_parallelprocesses.R")
+source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_dNet_RWR_analysis.R")
+source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_parallelprocesses.R")
+
+
 
 
 
 # Get arguments
 option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
-              help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
-  make_option(c("--nproc"), type = "numeric", default = NULL, 
-          help = "Number of processes to use. Default: NULL", metavar = "numeric")
+              help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -32,16 +29,8 @@ if(is.null(opt$disease)){
   stop("--disease argument needed", call.=FALSE)
 }
 
-if(!is.null(opt$nproc)){
-  if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
-    print_help(opt_parser)
-    stop("--nproc should be be an integer.", call.=FALSE)
-  }
-}
-
 # Define global options for this script 
 disease <- opt$disease
-nproc <- opt$nproc
 
 cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 

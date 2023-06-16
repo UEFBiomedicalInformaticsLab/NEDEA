@@ -1,7 +1,3 @@
-rm(list = ls())
-
-
-
 # Script for plotting the model parameters across resampling
 
 
@@ -43,7 +39,7 @@ cat(paste0("\n\nPlotting parameters for: ", disease, "\n\n"))
 
 
 # Get the parameters for unbalanced models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_none_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -54,14 +50,22 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_none){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     none_model_param[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(none_model_param[[tmp]]) <- paste(prox_comp, names(none_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(none_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                           replacement = paste0("_", prox_comp, "."), 
+                                           x = names(none_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -79,7 +83,7 @@ none_model_param$imbalance <- "none"
 
 
 # Get the parameters for SMOTE models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_SMOTE_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -90,14 +94,22 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_smote){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     smote_model_param[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(smote_model_param[[tmp]]) <- paste(prox_comp, names(smote_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(smote_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                            replacement = paste0("_", prox_comp, "."), 
+                                            x = names(smote_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -115,7 +127,7 @@ smote_model_param$imbalance <- "SMOTE"
 
 
 # Get the parameters for upSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_upSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -126,14 +138,22 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_upSample){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     upSample_model_param[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(upSample_model_param[[tmp]]) <- paste(prox_comp, names(upSample_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(upSample_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                               replacement = paste0("_", prox_comp, "."), 
+                                               x = names(upSample_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -151,7 +171,7 @@ upSample_model_param$imbalance <- "upSample"
 
 
 # Get the parameters for downSample models
-files <- list.files(path = paste0("Analysis/STRING/DrugCombs_v5/", disease),
+files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
                     pattern = "^models_downSample_[a-zA-Z_]+.xlsx", 
                     ignore.case = TRUE, full.names = TRUE)
 
@@ -162,14 +182,22 @@ for(file in files){
   
   ## Read files
   for(name in sheet_names_downSample){
-    tmp <- strsplit(x = file, split = "\\/")[[1]][5]
+    tmp <- strsplit(x = file, split = "\\/")[[1]][4]
     tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
     downSample_model_param[[tmp]][[name]] <- read.xlsx(file, sheet = name)
   }
   if(grepl(pattern = "BarabasiProx", x = file)){
-    prox_comp <- strsplit(x = file, split = "\\/")[[1]][5]
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
     prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
     names(downSample_model_param[[tmp]]) <- paste(prox_comp, names(downSample_model_param[[tmp]]), sep = "_")
+  }
+  if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
+    prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
+    prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
+    prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
+    names(downSample_model_param[[tmp]]) <- gsub(pattern = "\\.", 
+                                                 replacement = paste0("_", prox_comp, "."), 
+                                                 x = names(downSample_model_param[[tmp]]), )
   }
 }
 rm(tmp)
@@ -208,15 +236,20 @@ model_param$parameter <- factor(model_param$parameter, levels = c("BestTune_alph
                                                                   "BestTune_adjust", "BestTune_laplace", "BestTune_usekernel",
                                                                   "BestTune_kmax", "BestTune_distance", "BestTune_kernel"))
 model_param$featureType <- factor(x = model_param$featureType,
-                                            levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
-                                                        "BbsiProx_separation", "SteinerTopol", 
-                                                        "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
+                                  levels = c("Dis2Gene", "WdrlAdr2Gene", "CombDisAdr2Gene",
+                                             "BbsiProx_separation", "SteinerTopol", 
+                                             "keggPath", "SMPDbPath_DrugAction", "SMPDbPath_DrugMet"))
 
 
 
 
 # Plot the results
-svglite(paste0("Analysis/STRING/DrugCombs_v5/", disease, "/ModelParameters_", disease, ".svg"), width = 15, height = 3)
+
+if(!dir.exists(paste0("OutputFiles/Plots/", disease))){
+  dir.create(paste0("OutputFiles/Plots/", disease), recursive = TRUE)
+}
+
+svglite(paste0("OutputFiles/Plots/", disease, "/ModelParameters_", disease, ".svg"), width = 15, height = 3)
 labels <- unique(model_param[, c("model", "parameter")])
 labels$plot_label <- paste0(labels$parameter, " (", labels$model, ")")
 plot_label <- labels$plot_label

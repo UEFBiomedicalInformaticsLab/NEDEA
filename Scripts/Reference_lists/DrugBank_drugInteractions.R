@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 set.seed(5081)
 
 
 
 # Extract all small molecular drug-drug interactions from DrugBank
+=======
+# Extract all small molecular drug-drug interactions from DrugBank
+
+
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 
 
 
@@ -11,6 +17,11 @@ library(tidyverse)
 
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 if(!dir.exists("InputFiles/ReferenceList/")){
   dir.create("InputFiles/ReferenceList/", recursive = TRUE)
 } 

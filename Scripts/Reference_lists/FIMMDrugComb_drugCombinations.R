@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 set.seed(5081)
 
-
-
+=======
 # Drug combinations from FIMM DrugComb (https://drugcomb.fimm.fi/)
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
+
+
 
 
 
@@ -10,7 +13,13 @@ set.seed(5081)
 library(httr)
 library(jsonlite)
 httr::set_config(config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
+<<<<<<< HEAD
 source("Scripts/Functions/Functions_data_manipulation.R")
+=======
+source("Scripts/Functions/Functions_ID_Conversion.R")
+
+
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 
 
 
@@ -189,7 +198,10 @@ cell_lines <- cell_lines[grep("breast|kidney|lung|ovary|prostate|skin", ignore.c
 names(cell_lines) <- gsub(".synergy$", "", names(cell_lines))
 tmp <- do.call(cbind.fill, cell_lines)
 colnames(tmp) <- names(cell_lines)
+<<<<<<< HEAD
 if(!dir.exists("OutputFiles/Tables/"))dir.create("OutputFiles/Tables/", recursive = TRUE)
+=======
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 write.csv(tmp, "OutputFiles/Tables/DrugComb_cellLines_training.csv")
               
               

@@ -1,4 +1,4 @@
-set.seed(5081)
+rm(list = ls())
 
 
 
@@ -15,6 +15,8 @@ library(openxlsx)
 library(igraph)
 source("Scripts/Functions/Functions_Barabasi_metrics.R")
 source("Scripts/Functions/Functions_parallelprocesses.R")
+
+
 
 
 

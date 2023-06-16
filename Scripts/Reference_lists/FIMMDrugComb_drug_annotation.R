@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 set.seed(5081)
 
 
 
+=======
+>>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Drug combinations from FIMM DrugComb (https://drugcomb.fimm.fi/)
 
 
@@ -10,6 +13,8 @@ set.seed(5081)
 library(unixtools)
 library(webchem)
 source("Scripts/Functions/Functions_data_manipulation.R")
+
+
 
 
 

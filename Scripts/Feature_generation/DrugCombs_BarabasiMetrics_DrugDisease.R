@@ -1,7 +1,3 @@
-set.seed(5081)
-
-
-
 # Calculate different Barabasi metrics between targets of the two drugs and the disease related genes
 
 
@@ -15,6 +11,8 @@ library(openxlsx)
 library(igraph)
 source("Scripts/Functions/Functions_Barabasi_metrics.R")
 source("Scripts/Functions/Functions_parallelprocesses.R")
+
+
 
 
 
