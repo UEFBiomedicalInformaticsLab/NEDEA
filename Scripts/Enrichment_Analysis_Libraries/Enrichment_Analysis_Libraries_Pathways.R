@@ -1,11 +1,8 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
 # Libraries for enrichment analysis of pathways
-
-
 
 
 
@@ -14,6 +11,9 @@ library(unixtools)
 library(org.Hs.eg.db)
 library(msigdbr)
 library(httr)
+library(readxl)
+library(tidyverse)
+
 
 
 
@@ -69,6 +69,55 @@ kegg_module2gene_lib <- split(x = kegg_gene_keggModule$ensembl_gene_id, f = kegg
 # }
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
 saveRDS(kegg_module2gene_lib, "InputFiles/Enrichment_Analysis_Libraries/kegg_module2gene_lib.rds")
+
+
+
+
+
+## Enrichment of hallmark of cancer related KEGG pathways -------------------------------------------------------------
+
+# Download the HOC associated pathways
+if(!dir.exists("Databases/CHG/")){dir.create("Databases/CHG/", recursive = TRUE)}
+if(!file.exists("Databases/CHG/Table_1.xls")){
+  download.file(url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7013921/bin/Table_1.xls",
+                destfile = "Databases/CHG/Table_1.xls", method = "wget")
+}
+
+CHG_pathways <- read_excel("Databases/CHG/Table_1.xls", skip = 2)
+CHG_pathways <- CHG_pathways$Pathway
+CHG_pathways <- sort(unique(unlist(str_split(CHG_pathways, "\n"))))
+CHG_pathways <- CHG_pathways[CHG_pathways != ""]
+
+# Create mapping from Entrez gene ID to Ensembl gene ID
+entrezId_2_ensemblId <- as.data.frame(org.Hs.egENSEMBL)
+
+# Create KEGG pathway ID to pathway name mapping
+keggId_2_keggName <- GET("https://rest.kegg.jp/list/pathway/hsa")
+keggId_2_keggName <- content(keggId_2_keggName)
+keggId_2_keggName <- data.frame(str_split(keggId_2_keggName, pattern = "\n"))
+colnames(keggId_2_keggName) <- "kegg_pathway_id"
+keggId_2_keggName <- na.exclude(separate(keggId_2_keggName, col = "kegg_pathway_id", into = c("kegg_pathway_id", "kegg_pathway_name"), sep = "\t"))
+
+
+
+# Retrieve genes for the pathways
+CHG_keggPath2Gene_lib <- list()
+for(pathway in CHG_pathways){
+  print(paste0("-- retrieving for ", pathway))
+  response <- GET(paste0("https://rest.kegg.jp/link/hsa/", pathway))
+  response <- content(response)
+  response <- data.frame(str_split(response, pattern = "\n"))
+  colnames(response) <- "kegg_pathway_id"
+  response <- na.exclude(separate(response, col = "kegg_pathway_id", into = c("kegg_pathway_id", "entrez_gene_id"), sep = "\t"))
+  response$kegg_pathway_id <- gsub("^path:", "", response$kegg_pathway_id)
+  response$entrez_gene_id <- gsub("^hsa:", "", response$entrez_gene_id)
+  response$ensembl_gene_id <- entrezId_2_ensemblId$ensembl_id[match(response$entrez_gene_id, entrezId_2_ensemblId$gene_id)]
+  tmp <- paste0(keggId_2_keggName[keggId_2_keggName$kegg_pathway_id == pathway, "kegg_pathway_name"], " (", pathway, ")")
+  tmp <- gsub("* - Homo sapiens \\(human\\)*", "", tmp)
+  CHG_keggPath2Gene_lib[[tmp]] <- sort(na.exclude(unique(response$ensembl_gene_id)))
+}
+if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
+saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CHG_keggPath2Gene_lib.rds")
 
 
 
@@ -134,6 +183,7 @@ for(pathway_subject in unique(SMPDb_pathways$Subject)){
 
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
 saveRDS(SMPDb_Pathway2Gene, "InputFiles/Enrichment_Analysis_Libraries/SMPDb_Pathway2Gene_lib.rds")
+
 
 
 print(warnings())

@@ -1,11 +1,8 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
 # Libraries for enrichment analysis of side-effects
-
-
 
 
 
@@ -75,6 +72,7 @@ for(i in 1:length(ADReCS_ADR2Gene_level3_lib)){
 }
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
 saveRDS(ADReCS_ADR2Gene_level3_lib, "InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level3_lib.rds")
+
 
 
 print(warnings())

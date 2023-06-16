@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -7,19 +6,16 @@ rm(list = ls())
 
 
 
-
-
 # Load libraries
 library(unixtools)
-source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_ID_Conversion.R")
+library(webchem)
+source("Scripts/Functions/Functions_data_manipulation.R")
 
 
 
 # Set temporary directory
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
-
-
 
 
 
@@ -45,9 +41,6 @@ for(study in sort(unique(FimmDrugComb_drugCombCat$study_name))){
 }
 
 
-# sort(table(substr(FimmDrugComb_drugs, 1, 3)), decreasing = TRUE)
-
-
 
 # Check if drug names have been previously mapped. 
 # Saves time in retrieving
@@ -58,16 +51,12 @@ if(file.exists("InputFiles/ReferenceList/FimmDrugComb_drugs_idMap.rds")){
 
 
 
-
-
 # Map using DrugBank supplied identifiers
 DrugBank_Drugs_idMap <- read.csv("Databases/DrugBank/drug_external_identifiers.csv", header = TRUE)
 map1 <- unique(DrugBank_Drugs_idMap[DrugBank_Drugs_idMap$identifier %in% FimmDrugComb_drugs,c("identifier", "parent_key")])
 colnames(map1) <- c("drug_names", "DrugBank_drug_id")
 row.names(map1) <- NULL
 FimmDrugComb_drugs <- FimmDrugComb_drugs[!FimmDrugComb_drugs %in% map1$drug_names]
-
-
 
 
 
@@ -89,18 +78,7 @@ rm(tmp)
 
 
 
-
-
 # Map using WebChem
-library(webchem)
-
-# names_2_cas <- cir_query(identifier = FimmDrugComb_drugs[1:20], representation = "cas", match = "all", verbose = TRUE)
-# names_2_cas <- func_list_2_df(names_2_cas)
-# names_2_cas <- names_2_cas[!names_2_cas$V2 == "NA", ]
-# colnames(names_2_cas) <- c("drug_name", "cas")
-# saveRDS(names_2_cas, "tmp_dir/names_2_cas.rds")
-
-
 if(file.exists("tmp_dir/names_2_cas.rds")){
   names_2_cas <- readRDS("tmp_dir/names_2_cas.rds")
 }else{names_2_cas <- data.frame()}
@@ -111,6 +89,7 @@ names_2_cas_new <- names_2_cas_new[!names_2_cas_new$V2 == "NA", ]
 colnames(names_2_cas_new) <- c("drug_name", "cas")
 names_2_cas <- rbind(names_2_cas, names_2_cas_new)
 saveRDS(names_2_cas, "tmp_dir/names_2_cas.rds")
+
 
 
 #Map the retrieved CAS to DrugBank drug ID
@@ -126,7 +105,9 @@ FimmDrugComb_drugs_idMap <- unique(rbind(map1, map2, map3, map4))
 FimmDrugComb_drugs_idMap <- rbind(FimmDrugComb_drugs_idMap_old, FimmDrugComb_drugs_idMap)
 row.names(FimmDrugComb_drugs_idMap) <- NULL
 
+if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/")
 saveRDS(FimmDrugComb_drugs_idMap, "InputFiles/ReferenceList/FimmDrugComb_drugs_idMap.rds")
+
 
 
 print(warnings())

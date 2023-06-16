@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -15,8 +14,14 @@ rm(list = ls())
 
 
 
+
+
 # Load libraries
 library(org.Hs.eg.db)
+
+
+
+
 
 # Create gene ID mappings
 entrezId_2_ensemblId <- as.data.frame(org.Hs.egENSEMBL)
@@ -79,7 +84,7 @@ names(PharmGKB_LungCancer2Gene_lib) <- paste0(names(PharmGKB_LungCancer2Gene_lib
 
 ## ThETA
 library(ThETA)
-source("ExternalTools/ThETA/Corrected_Functions.R")
+source("Scripts/ThETA/Corrected_Functions.R")
 data(gtexv7_zscore)
 data(ppi_strdb_700)
 data(dis_vrnts)
@@ -117,5 +122,7 @@ Enrichment_LungCancer2Gene_lib <- c(DisGeNET_LungCancer2Gene_lib, OpenTargets_Lu
 # Save as RDS file
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
 saveRDS(Enrichment_LungCancer2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_LungCancer_lib.rds")
+
+
 
 print(warnings())

@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -15,7 +14,10 @@ library(org.Hs.eg.db)
 library(tidyverse)
 library(sparklyr)
 library(sparklyr.nested)
-source("/research/groups/fortino/arindam/DrugCombination_1/Scripts/Functions/Functions_ID_Conversion.R")
+source("Scripts/Functions/Functions_data_manipulation.R")
+source("Scripts/Functions/Functions_ID_Conversion.R")
+
+
 
 
 
@@ -366,7 +368,7 @@ if(!file.exists("Databases/ComparativeToxicogenomicsDatabase/CTD_genes_diseases.
 }
 
 CTD_Gene_Disease <- read.csv(gzfile("Databases/ComparativeToxicogenomicsDatabase/CTD_genes_diseases.csv.gz"), header = FALSE, fill = TRUE, skip = 29)
-colnames(CTD_Gene_Disease) <- c("GeneSymbol",	"GeneID",	"DiseaseName",	"DiseaseID",	"DirectEvidence",	"InferenceChemicalName",	"InferenceScore",	"OmimIDs",	"PubMedIDs")
+colnames(CTD_Gene_Disease) <- c("GeneSymbol", "GeneID", "DiseaseName", "DiseaseID", "DirectEvidence", "InferenceChemicalName", "InferenceScore", "OmimIDs", "PubMedIDs")
 
 # Filter to keep only direct associations
 CTD_Gene_Disease <- CTD_Gene_Disease[CTD_Gene_Disease$DirectEvidence %in% c("marker/mechanism", "therapeutic", "marker/mechanism|therapeutic"), ]
@@ -390,4 +392,5 @@ if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFi
 saveRDS(CTD_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CTD_Disease2Gene_lib.rds")
 
 
+                             
 print(warnings())

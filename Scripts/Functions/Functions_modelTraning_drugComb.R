@@ -10,6 +10,7 @@ library(DMwR)
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
+
 # MLmetrics::AUC (modified function)
 # AUC calcution returns NA due to large value of n_pos * n_neg which cannot be handled by R
 AUC <- function(y_pred, y_true){
@@ -32,7 +33,7 @@ train_rf_model <- function(x, y){
                tuneGrid = expand.grid(mtry = c(1:10)),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
-                                        repeats = 2,
+                                        repeats = 3,
                                         summaryFunction = prSummary,
                                         classProbs = TRUE,
                                         savePredictions = TRUE))
@@ -46,11 +47,11 @@ train_glmnet_model <- function(x, y){
                method = "glmnet",
                metric = "F",
                allowParallel = TRUE,
-               tuneGrid = expand.grid(alpha = seq(0.1, 1, 0.1),
+               tuneGrid = expand.grid(alpha = seq(0, 1, 0.1),
                                       lambda = 10^seq(-6, 3, by = 0.5)),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
-                                        repeats = 2,
+                                        repeats = 3,
                                         summaryFunction = prSummary,
                                         classProbs = TRUE,
                                         savePredictions = TRUE))
@@ -68,7 +69,7 @@ train_svmRadial_model <- function(x, y){
                                       C = 10^(-3:3)),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
-                                        repeats = 2,
+                                        repeats = 3,
                                         summaryFunction = prSummary, 
                                         classProbs = TRUE,
                                         savePredictions = TRUE))
@@ -83,37 +84,19 @@ train_nb_model <- function(x, y){
                metric = "F",
                tuneGrid = expand.grid(laplace = seq(0, 10, 0.1), 
                                       adjust = seq(0, 1, 0.1),
-                                     usekernel = TRUE),
+                                      usekernel = TRUE),
                trControl = trainControl(method = "repeatedcv",
                                         number = 5,
-                                        repeats = 2,
+                                        repeats = 3,
                                         summaryFunction = prSummary,
                                         classProbs = TRUE,
                                         savePredictions = TRUE))
 }
 
-
-
-# Parameters to train k-Nearest Neighbors model
-train_knn_model <- function(x, y){
-  caret::train(x = x,
-               y = y,
-               method = "kknn",
-               metric = "F",
-               tuneGrid = expand.grid(kmax = seq(0, 25, 5),
-                                     distance = seq(1, 10, 1),
-                                     kernel = c("triangular", "rectangular", "epanechnikov", "optimal")),
-               trControl = trainControl(method = "repeatedcv",
-                                        number = 5,
-                                        repeats = 2,
-                                        summaryFunction = prSummary,
-                                        classProbs = TRUE,
-                                        savePredictions = TRUE))
-}
 
 
 # Function to train all models
-func_repeated_train <- function(feature_matrix, 
+func_train_model <- function(feature_matrix, 
                                 train_test_split, 
                                 data_balance_method = "none", 
                                 allow_parallel = TRUE, 
@@ -123,8 +106,8 @@ func_repeated_train <- function(feature_matrix,
   require(doParallel)
   
   
-  if(!data_balance_method %in% c("SMOTE", "downSample", "upSample", "none")){
-    stop("data_balance_method must be SMOTE, downSample, upSample or none")
+  if(!data_balance_method %in% c("none")){
+    stop("data_balance_method: No data balancing methods currently included. Default: none")
   }
   
   if(allow_parallel){
@@ -134,7 +117,7 @@ func_repeated_train <- function(feature_matrix,
   } 
   
   
-  rf_result_table <- glmnet_result_table <- svmRadial_result_table <- nb_result_table <- knn_result_table <- data.frame()
+  rf_result_table <- glmnet_result_table <- svmRadial_result_table <- nb_result_table <- data.frame()
   modelling_results <- list()
   
   
@@ -151,32 +134,7 @@ func_repeated_train <- function(feature_matrix,
     
     # Balance the training data (if used)
     switch(data_balance_method,
-           "SMOTE" = {
-             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
-             trainData_smote <- SMOTE(Class ~ ., trainData, perc.over = 100, perc.under = 200)
-             trainData <- trainData_smote[ , !(colnames(trainData_smote) %in% c("Class")), drop = FALSE]
-             trainClass <- as.factor(trainData_smote[, c("Class")])
-           },
-           
-           "downSample" = {
-             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
-             trainData_downSample <- downSample(x = trainData[ , !(colnames(trainData) %in% c("Class")), drop = FALSE],
-                                                y = trainData$Class)
-             
-             trainData <- trainData_downSample[ , !(colnames(trainData_downSample) %in% c("Class")), drop = FALSE]
-             trainClass <- as.factor(trainData_downSample[, c("Class")])
-           },
-           
-           "upSample" = {
-             trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name,]
-             trainData_upSample <- upSample(x = trainData[ , !(colnames(trainData) %in% c("Class")), drop = FALSE],
-                                            y = trainData$Class)
-             
-             trainData <- trainData_upSample[ , !(colnames(trainData_upSample) %in% c("Class")), drop = FALSE]
-             trainClass <- as.factor(trainData_upSample[, c("Class")])
-           },
-           
-           "none" = {
+            "none" = {
              trainData <- data[row.names(data) %in% train_test_split[[i]]$train$Name , !(colnames(data) %in% c("Class")), drop = FALSE]
              trainClass <- as.factor(data[row.names(data) %in% train_test_split[[i]]$train$Name, c("Class")])
            })
@@ -190,7 +148,7 @@ func_repeated_train <- function(feature_matrix,
     colnames(testClass_count) <- paste0("Test_", colnames(testClass_count))
       
     # Preprocess the data
-    preProcess <- preProcess(trainData, method = c("zv", "center", "scale"))
+    preProcess <- preProcess(trainData, method = c("center", "scale"))
     trainData <- predict(object = preProcess, newdata = trainData)
     testData <- predict(object = preProcess, newdata = testData)
     
@@ -204,10 +162,10 @@ func_repeated_train <- function(feature_matrix,
     rf_predictions_prob <- predict(object = rf_model, newdata = testData, type = "prob") 
     rf_confusionMatrix_train <- confusionMatrix(table(rf_model$pred$pred, rf_model$pred$obs), positive = "Eff")
     rf_confusionMatrix_test <- confusionMatrix(table(rf_predictions, testClass), positive = "Eff")
-    rf_rocauc_train = AUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
-    rf_rocauc_test = AUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    rf_prauc_train = PRAUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
-    rf_prauc_test = PRAUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    rf_rocauc_train <- AUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
+    rf_rocauc_test <- AUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
+    rf_prauc_train <- PRAUC(y_pred = na.exclude(rf_model$pred)$Eff, y_true = ifelse(na.exclude(rf_model$pred)$obs == "Eff", 1, 0))
+    rf_prauc_test <- PRAUC(y_pred = rf_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
     rf_result_table <- rbind(rf_result_table,
                              data.frame(
                                Fold = i,
@@ -376,50 +334,7 @@ func_repeated_train <- function(feature_matrix,
                                BalancedAccuracy_train =  unname (nb_confusionMatrix_train$byClass["Balanced Accuracy"]),
                                BalancedAccuracy_test =  unname (unname (nb_confusionMatrix_test$byClass["Balanced Accuracy"]))))
     
-    
-    
-    
-    # Train k-Nearest Neighbors model
-    cat("--- k-Nearest Neighbors\n")
-    knn_model <- train_knn_model(x = trainData, y = trainClass)
-    knn_predictions <- predict(object = knn_model, newdata = testData, type = "raw")
-    knn_predictions_prob <- predict(object = knn_model, newdata = testData, type = "prob") 
-    knn_confusionMatrix_train <- confusionMatrix(table(knn_model$pred$pred, knn_model$pred$obs), positive = "Eff")
-    knn_confusionMatrix_test <- confusionMatrix(table(knn_predictions, testClass), positive = "Eff")
-    knn_rocauc_train = AUC(y_pred = na.exclude(knn_model$pred)$Eff, y_true = ifelse(na.exclude(knn_model$pred)$obs == "Eff", 1, 0))
-    knn_rocauc_test = AUC(y_pred = knn_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    knn_prauc_train = PRAUC(y_pred = na.exclude(knn_model$pred)$Eff, y_true = ifelse(na.exclude(knn_model$pred)$obs == "Eff", 1, 0))
-    knn_prauc_test = PRAUC(y_pred = knn_predictions_prob$Eff, y_true = ifelse(testClass == "Eff", 1, 0))
-    knn_result_table <- rbind(knn_result_table,
-                             data.frame(
-                               Fold = i,
-                               trainClass_count,
-                               testClass_count,
-                               BestTune_kmax = knn_model$bestTune$kmax,
-                               BestTune_distance = knn_model$bestTune$distance,
-                               BestTune_kernel = knn_model$bestTune$kernel,
-                               PositiveClass = knn_confusionMatrix_test$positive,
-                               ROCAUC_train = as.numeric(knn_rocauc_train),
-                               ROCAUC_test = as.numeric(knn_rocauc_test),
-                               PRAUC_train = as.numeric(knn_prauc_train),
-                               PRAUC_test = as.numeric(knn_prauc_test),
-                               Accuracy_train =  unname (knn_confusionMatrix_train$overall["Accuracy"]),
-                               Accuracy_test =  unname (knn_confusionMatrix_test$overall["Accuracy"]),
-                               Kappa_train =  unname (knn_confusionMatrix_train$overall["Kappa"]),
-                               Kappa_test =  unname (knn_confusionMatrix_test$overall["Kappa"]),
-                               Sensitivity_train =  unname (knn_confusionMatrix_train$byClass["Sensitivity"]),
-                               Sensitivity_test =  unname (knn_confusionMatrix_test$byClass["Sensitivity"]),
-                               Specificity_train =  unname (knn_confusionMatrix_train$byClass["Specificity"]),
-                               Specificity_test =  unname (knn_confusionMatrix_test$byClass["Specificity"]),
-                               Precision_train =  unname (knn_confusionMatrix_train$byClass["Precision"]),
-                               Precision_test =  unname (knn_confusionMatrix_test$byClass["Precision"]),
-                               Recall_train =  unname (knn_confusionMatrix_train$byClass["Recall"]),
-                               Recall_test =  unname (knn_confusionMatrix_test$byClass["Recall"]),
-                               F1_train =  unname (knn_confusionMatrix_train$byClass["F1"]),
-                               F1_test =  unname (knn_confusionMatrix_test$byClass["F1"]),
-                               BalancedAccuracy_train =  unname (knn_confusionMatrix_train$byClass["Balanced Accuracy"]),
-                               BalancedAccuracy_test =  unname (unname (knn_confusionMatrix_test$byClass["Balanced Accuracy"]))))
-    
+       
     
     # Compile results
     tmp <- list(rf = list(model = rf_model, 
@@ -437,11 +352,7 @@ func_repeated_train <- function(feature_matrix,
                  nb = list(model = nb_model, 
                            test_predictions = nb_predictions, 
                            test_probabilities = nb_predictions_prob, 
-                           test_confusionMatrix = nb_confusionMatrix_test),
-                 knn = list(model = knn_model, 
-                            test_predictions = knn_predictions, 
-                            test_probabilities = knn_predictions_prob, 
-                            test_confusionMatrix = knn_confusionMatrix_test))
+                           test_confusionMatrix = nb_confusionMatrix_test))
     
     modelling_results[[i]] <- tmp
     
@@ -450,8 +361,7 @@ func_repeated_train <- function(feature_matrix,
   result_summary_tables <- list(rf = rf_result_table,
                                 glmnet = glmnet_result_table,
                                 svmRadial = svmRadial_result_table,
-                                nb = nb_result_table,
-                                knn = knn_result_table)
+                                nb = nb_result_table)
   
   
   return(list(result_summary_tables = result_summary_tables, 

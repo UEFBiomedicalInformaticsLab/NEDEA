@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -34,6 +33,7 @@ rm(list = ls())
 
 # Load libraries
 library(openxlsx)
+
 
 
 # Extract ADRs from ADReCS -----------------------------------------------------------
@@ -127,9 +127,12 @@ for (i in unique(names(drugWithdrawal_Adr2Gene_lib))) {
   }
 }
 lib_term_similarity <- lib_term_similarity[order(lib_term_similarity$Jaccard, decreasing = TRUE), ]
-if(!dir.exists("OutputFiles/Enrichment_lib_checks/")){dir.create("OutputFiles/Enrichment_lib_checks/", recursive = TRUE)}
+
+if(!dir.exists("OutputFiles/Tables/")){ dir.create("OutputFiles/Tables/", recursive = TRUE) }
 write.xlsx(list(Library_size = lib_size,
                Library_term_similarity = lib_term_similarity), 
-           "OutputFiles/Enrichment_lib_checks/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
+               "OutputFiles/Tables/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
 
 
+
+print(warnings())

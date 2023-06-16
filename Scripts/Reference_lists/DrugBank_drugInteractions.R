@@ -1,8 +1,14 @@
 set.seed(5081)
-rm(list = ls())
+
+
+
+# Extract all small molecular drug-drug interactions from DrugBank
+
+
 
 # Load libraries
 library(tidyverse)
+
 
 
 if(!dir.exists("InputFiles/ReferenceList/")){
@@ -40,5 +46,7 @@ DrugBank_drugInteractions <- DrugBank_drugInteractions[(DrugBank_drugInteraction
 rownames(DrugBank_drugInteractions) <- NULL
 
 saveRDS(DrugBank_drugInteractions, "InputFiles/ReferenceList/DrugBank_drugInteractions_withRiskSeverity.rds")
+
+
 
 print(warnings())

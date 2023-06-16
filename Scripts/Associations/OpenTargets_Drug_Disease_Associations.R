@@ -1,9 +1,12 @@
 set.seed(5081)
-rm(list = ls())
+
+
 
 # Drug-Disease association from OpenTargets
 # Notes: 
 # (1) Only small molecular drug combinations
+
+
 
 # Load libraries
 library(tidyverse)
@@ -84,4 +87,6 @@ rownames(OpenTargets_Drug_Disease_Net) <- NULL
 if(!dir.exists("InputFiles/Associations/")){dir.create("InputFiles/Associations/", recursive = TRUE)} 
 saveRDS(OpenTargets_Drug_Disease_Net, "InputFiles/Associations/OpenTargets_Drug_Disease_Net.rds")
 
+         
+         
 print(warnings())

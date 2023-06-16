@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -7,14 +6,10 @@ rm(list = ls())
 
 
 
-
-
 # Load libraries
 library(unixtools)
 library(org.Hs.eg.db)
 library(openxlsx)
-# library(msigdbr)
-# library(httr)
 
 
 
@@ -93,11 +88,9 @@ GenAge_genes <- as.vector(na.exclude(GenAge_genes$ensembl_gene_id))
 if(!dir.exists("Databases/HOCdb/")){dir.create("Databases/HOCdb/", recursive = TRUE)}
 
 # Manually download supplementary file from https://doi.org/10.1093/database/baaa045
-# if(!file.exists("Databases/HOCdb/suppl_data_baaa045.zip")){
-#   download.file(url = "",
-#                 destfile = "Databases/HOCdb/suppl_data_baaa045.zip", method = "wget")
-#   unzip("Databases/HOCdb/suppl_data_baaa045.zip", exdir = "Databases/HOCdb/", file = "Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx")
-# }
+if(!file.exists("Databases/HOCdb/suppl_data_baaa045.zip")){
+    warning(paste0("Download supplementary file: Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx"))
+}
 unzip("Databases/HOCdb/suppl_data_baaa045.zip", exdir = "Databases/HOCdb/", file = "Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx")
 
 HOC_genes <- read.xlsx("Databases/HOCdb/Halifax-curation.Table S2. Hallmark of Cancer Data - Gene and Pathway.xlsx", sheet = "HP-gene")
@@ -116,6 +109,7 @@ miscellaneous_gene_lib <- list(DGdb_DrugableGenome = dgidb_drugable_genome,
 
 if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
 saveRDS(miscellaneous_gene_lib, "InputFiles/Enrichment_Analysis_Libraries/miscellaneous_gene_lib.rds")
+
 
 
 print(warnings())

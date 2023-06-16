@@ -1,5 +1,4 @@
 set.seed(5081)
-rm(list = ls())
 
 
 
@@ -11,8 +10,7 @@ rm(list = ls())
 library(httr)
 library(jsonlite)
 httr::set_config(config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
-
-
+source("Scripts/Functions/Functions_data_manipulation.R")
 
 
 
@@ -38,7 +36,7 @@ FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
 # Download disease IDs from NCI Thesaurus (NCIt) 
 if(!dir.exists("Databases/NCIt/"))dir.create("Databases/NCIt/")
 if(!file.exists("Databases/NCIt/Thesaurus.txt")){
-  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/Thesaurus_22.12d.FLAT.zip",
+  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/archive/22.12d_Release/Thesaurus_22.12d.FLAT.zip",
                 destfile = "Databases/NCIt/Thesaurus_22.12d.FLAT.zip", method = "wget")
   unzip("Databases/NCIt/Thesaurus_22.12d.FLAT.zip", exdir = "Databases/NCIt/", file = "Thesaurus.txt")
 }
@@ -91,12 +89,8 @@ FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$synergy_class_sum == -4, "drug
 FimmDrugComb_drugCombCat <- split(FimmDrugComb_drugCombCat, f = FimmDrugComb_drugCombCat$tissue_name)
 FimmDrugComb_drugCombCat <- lapply(FimmDrugComb_drugCombCat, function(x){split(x, f = x$drug_class)})
 
-
+if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/")
 saveRDS(FimmDrugComb_drugCombCat, "InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
-
-
-# FimmDrugComb_drugCombCat$lung$synergy$study_name
-
 
 
 
@@ -185,4 +179,19 @@ saveRDS(tmp, "InputFiles/ReferenceList/FimmDrugComb_SkinCancer_drugCombinations.
 
 
 
+# Print the cell lines considered for each cancer types              
+drugCombs <- readRDS("InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
+cell_lines <- lapply(drugCombs, function(x){lapply(x, function(y){unique(y$cell_line_name)})})
+cell_lines <- unlist(cell_lines, recursive = FALSE)
+cell_lines <- cell_lines[grep("synergy", names(cell_lines))]
+
+cell_lines <- cell_lines[grep("breast|kidney|lung|ovary|prostate|skin", ignore.case = TRUE, names(cell_lines))]
+names(cell_lines) <- gsub(".synergy$", "", names(cell_lines))
+tmp <- do.call(cbind.fill, cell_lines)
+colnames(tmp) <- names(cell_lines)
+if(!dir.exists("OutputFiles/Tables/"))dir.create("OutputFiles/Tables/", recursive = TRUE)
+write.csv(tmp, "OutputFiles/Tables/DrugComb_cellLines_training.csv")
+              
+              
+              
 print(warnings())
