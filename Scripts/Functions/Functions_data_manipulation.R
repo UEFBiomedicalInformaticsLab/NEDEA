@@ -7,11 +7,6 @@ library(tidyverse)
 
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Function to convert list object to dataframe 
 library(tidyr)
 func_list_2_df <- function(query_list){
@@ -30,11 +25,6 @@ func_list_2_df <- function(query_list){
 
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Function cbind.fill
 cbind.fill <- function(...){
     nm <- list(...) 
@@ -45,13 +35,7 @@ cbind.fill <- function(...){
 }
                           
                           
-<<<<<<< HEAD
                                                  
-=======
-                          
-                          
-                          
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Function to extract unique elements from a string
 extract_unique <- function(string) {
   elements <- unlist(strsplit(string, ","))

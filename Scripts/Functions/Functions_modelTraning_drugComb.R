@@ -95,27 +95,6 @@ train_nb_model <- function(x, y){
 
 
 
-<<<<<<< HEAD
-=======
-# Parameters to train k-Nearest Neighbors model
-train_knn_model <- function(x, y){
-  caret::train(x = x,
-               y = y,
-               method = "kknn",
-               metric = "F",
-               tuneGrid = expand.grid(kmax = seq(0, 25, 5),
-                                     distance = seq(1, 10, 1),
-                                     kernel = c("optimal")), # "triangular", "rectangular", "epanechnikov", 
-               trControl = trainControl(method = "repeatedcv",
-                                        number = 5,
-                                        repeats = 2,
-                                        summaryFunction = prSummary,
-                                        classProbs = TRUE,
-                                        savePredictions = TRUE))
-}
-
-
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Function to train all models
 func_train_model <- function(feature_matrix, 
                                 train_test_split, 

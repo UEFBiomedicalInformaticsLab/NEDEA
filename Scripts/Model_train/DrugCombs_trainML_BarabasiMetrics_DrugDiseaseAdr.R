@@ -1,20 +1,12 @@
-<<<<<<< HEAD
 set.seed(5081)
 
 
 
-=======
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Train ML models using Barabasi proximity between targets of the two drugs, the disease related genes
 # and the ADR related genes combined
 
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Load libraries
 library(optparse)
 library(foreach)
@@ -26,20 +18,12 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Get arguments
 option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
   make_option(c("--data_balance_method"), type = "character", default = "none", 
-<<<<<<< HEAD
               help = "The method to be used to balance imbalanced data. Possible values: none. Default: none.", metavar = "character"),
-=======
-              help = "The method to be used to balance imbalanced data. Possible values: SMOTE, downSample, upSample, or none. Default: none.", metavar = "character"),
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
   make_option(c("--proximity"), type = "character", default = "separation", 
               help = "The proximity type to use. Possible values: closest, shortest, centre, kernel, separation. Default: separation", metavar = "character"),
   make_option(c("--nproc"), type = "numeric", default = NULL, 
@@ -55,13 +39,8 @@ if(is.null(opt$disease)){
   stop("--disease argument needed", call.=FALSE)
 }
 
-<<<<<<< HEAD
 if(!opt$data_balance_method %in% c("none")){
   stop("--data_balance_method: No data balancing methods currently included. Default: none")
-=======
-if(!opt$data_balance_method %in% c("SMOTE", "downSample", "upSample", "none")){
-  stop("--data_balance_method must be SMOTE, downSample, upSample or none")
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 }
 
 if(!opt$proximity %in% c("closest", "shortest", "centre", "kernel", "separation")){
@@ -109,30 +88,15 @@ proximity_matrix_DrgAdr <- readRDS(paste0("OutputFiles/Model_train/", disease, "
 proximity_matrix_DrgAdr <- proximity_matrix_DrgAdr[[proximity]]
 proximity_matrix_DrgAdr$features <- paste0("[DrgAdr] ", proximity_matrix_DrgAdr$features)
 
-<<<<<<< HEAD
 
 proximity_matrix <- do.call(rbind, list(proximity_matrix_DrgDis, proximity_matrix_DrgAdr))
-=======
-# proximity_matrix_DrgDrg <- readRDS(paste0("OutputFiles/Model_train/", disease, "/BarabasiProx_DrugDrug_", disease, ".rds"))
-# proximity_matrix_DrgDrg <- proximity_matrix_DrgDrg[proximity_matrix_DrgDrg$features == proximity, ]
-# proximity_matrix_DrgDrg$features <- gsub(pattern = proximity, replacement = "[DrgDrg] Proximity between targets of drugs" , x = proximity_matrix_DrgDrg$features)
-
-
-# proximity_matrix <- do.call(rbind, list(proximity_matrix_DrgDis, proximity_matrix_DrgAdr, proximity_matrix_DrgDrg))
-proximity_matrix <- do.call(rbind, list(proximity_matrix_DrgDis, proximity_matrix_DrgAdr))
-# proximity_matrix[proximity_matrix == "Inf"] <- NA
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 proximity_matrix[sapply(proximity_matrix, is.infinite)] <- NA
 proximity_matrix <- proximity_matrix[!rowSums(is.na(proximity_matrix)) == ncol(proximity_matrix)-1 ,]
 proximity_matrix <- proximity_matrix[, !colSums(is.na(proximity_matrix)) > 0]
 
 
 # Train model
-<<<<<<< HEAD
 BarabasiProx_model <- func_train_model(feature_matrix = proximity_matrix, 
-=======
-BarabasiProx_model <- func_repeated_train(feature_matrix = proximity_matrix, 
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
                                               train_test_split = train_test_split, 
                                               data_balance_method = data_balance_method, 
                                               allow_parallel = FALSE, 

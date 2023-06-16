@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 set.seed(5081)
 
 
 
-=======
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 # Enrichment libraries based on common ADRs related to drug withrawal
 # 
 # Primary terms include: hepatotoxicity, immune-related reaction, cardiotoxicity, 
@@ -131,21 +128,11 @@ for (i in unique(names(drugWithdrawal_Adr2Gene_lib))) {
 }
 lib_term_similarity <- lib_term_similarity[order(lib_term_similarity$Jaccard, decreasing = TRUE), ]
 
-<<<<<<< HEAD
 if(!dir.exists("OutputFiles/Tables/")){ dir.create("OutputFiles/Tables/", recursive = TRUE) }
 write.xlsx(list(Library_size = lib_size,
                Library_term_similarity = lib_term_similarity), 
                "OutputFiles/Tables/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
 
-=======
-if(!dir.exists(paste0("OutputFiles/Tables/", disease, "/featureImportance/"))){
-  dir.create(paste0("OutputFiles/Tables/", disease, "/featureImportance/"), recursive = TRUE)
-}
-
-write.xlsx(list(Library_size = lib_size,
-               Library_term_similarity = lib_term_similarity), 
-           "OutputFiles/Tables/drugWithdrawal_Adr2Gene_libInfo.xlsx", overwrite = TRUE)
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 
 
 print(warnings())

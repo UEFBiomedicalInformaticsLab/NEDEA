@@ -1,4 +1,9 @@
+set.seed(5081)
+
+
+
 # Script to build protein-protein interaction network from STRING based on information scores of databases
+
 
 
 # Load libraries
@@ -53,5 +58,7 @@ print(paste("Network size (vertices, edges):", vcount(String_ppi_Net), ecount(St
 
 if(!dir.exists("InputFiles/Networks/")){dir.create("InputFiles/Networks/", recursive = TRUE)}
 saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.rds")
+
+
 
 print(warnings())
