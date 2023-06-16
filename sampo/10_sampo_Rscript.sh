@@ -25,4 +25,4 @@ grep -c ^processor /proc/cpuinfo
 
 echo "ML data split " $1 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_ML_dataSplit.R --disease $1 --folds 5
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_ML_dataSplit.R --disease $1 --folds 5 --repeats 10

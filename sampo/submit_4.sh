@@ -2,7 +2,6 @@
 
 
 
-<<<<<<< HEAD
 disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "KidneyCancer" "SkinCancer")
 data_balance_method=("none")
 models=("rf" "svmRadial" "nb")
@@ -28,9 +27,6 @@ feature_types=("CombinedDisAdr2Gene")
 
 
 # Validation (CDCDB/RX/OTC)
-=======
-# Final model training
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
 disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "KidneyCancer" "SkinCancer")
 data_balance_method=("none")
 models=("rf" "svmRadial" "nb")
@@ -44,11 +40,7 @@ do
     do
       for featureType in ${feature_types[@]}
       do
-<<<<<<< HEAD
       sbatch --job-name=Val_CDCDCrxotc_$disease\_$balance\_$model\_$featureType --output=Val_CDCDCrxotc_$disease\_$balance\_$model\_$featureType.out --export=disease=$disease,balance=$balance,model=$model,featureType=$featureType, sampo/24_sampo_Rscript.sh $disease $data_balance_method $model $featureType
-=======
-      sbatch --job-name=ML_FinalModel_$disease\_$balance\_$model\_$featureType --output=ML_FinalModel_$disease\_$balance\_$model\_$featureType.out --export=disease=$disease,balance=$balance,model=$model,featureType=$featureType, sampo/21_sampo_Rscript.sh $disease $data_balance_method $model $feature_type
->>>>>>> dd66bdd55a3da78129090252ed59959b311d68ad
       done
     done
   done

@@ -8,8 +8,8 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 80   # Number of task
-#SBATCH --time 3-00:00:00   # Runtime
+#SBATCH --ntasks 40   # Number of task
+#SBATCH --time 1-00:00:00   # Runtime
 #SBATCH --mem=50000   # Reserve 50 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
 #SBATCH --mail-user arindam.ghosh@uef.fi      # this is the email you wish to be notified at
