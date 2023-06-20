@@ -8,8 +8,7 @@ set.seed(5081)
 
 # Load libraries
 library(openxlsx)
-library(tidyr)
-library(stringr)
+library(tidyverse)
 library(biomaRt)
 library(dbparser)
 
