@@ -1,5 +1,5 @@
 
-# DrugCombination_1
+# Drug Combination v1.0
 
 This repository contains the scripts used to train classifiers for
 prioritization of drug combinations for cancer based on efficacy and
@@ -9,7 +9,7 @@ safety estimates.
 
 The following packages must be available for executing the scripts:
 biomaRt; dbparser; doParallel; foreach; httr; igraph; jsonlite; msigdbr;
-openxlsx; optparse; org.Hs.eg.db; readxl; sparklyr; sparklyr.nested;
+openxlsx; optparse; org.Hs.eg.db; sparklyr; sparklyr.nested;
 tidyverse; unixtools
 
 The packages can be installed as:
@@ -130,7 +130,7 @@ href="Scripts/Associations/OpenTargets_Drug_Disease_Associations.R">Scripts/Asso
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td>Core annotation for drug molecules (OpenTarget parquet files)</td>
+<td>Core annotation for drug molecules (OpenTargets parquet files)</td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
@@ -138,7 +138,7 @@ href="Scripts/Associations/OpenTargets_Drug_Disease_Associations.R">Scripts/Asso
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
-<td>The script retrieves the drug disease associations from OpenTargets database.</td>
+<td>The script retrieves the drug disease associations for small molecular drugs from OpenTargets database.</td>
 </tr>
 </tbody>
 </table>

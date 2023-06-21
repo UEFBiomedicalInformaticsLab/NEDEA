@@ -54,13 +54,13 @@ load(file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease,
 effectiveComb_rwr <- drugCombs_rwr_res_final$effectiveCombinations
 adverseComb_rwr <- drugCombs_rwr_res_final$adverseCombinations
 
-# Check if all resuls have valied number of columns
+# Check if all results have valied number of columns
 effectiveComb_rwr <- effectiveComb_rwr[lapply(effectiveComb_rwr, ncol) == 7]
 adverseComb_rwr <- adverseComb_rwr[lapply(adverseComb_rwr, ncol) == 7]
 rm(drugCombs_rwr_res_final)
 
 
-cat("\n\nNumbe rof drug combinations: ")
+cat("\n\nNumber of drug combinations: ")
 cat(paste0("\n - Effective combinations = ", length(effectiveComb_rwr)))
 cat(paste0("\n - Adverse combinations = ", length(adverseComb_rwr), "\n\n"))
 
@@ -92,36 +92,6 @@ adverseComb_NES <- func_extract_fgsea_result(enrichment_result = adverseComb_enr
 
 NES_keggPath <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
 names(NES_keggPath)[1] <- "Pathway"
-
-
-
-
-
-# Run FGSEA on msigdb_ReactomePath2Gene_lib
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/msigdb_ReactomePath2Gene_lib.rds"))
-cat("\n\n\n- Executing FGSEA for msigdb_ReactomePath2Gene_lib\n")
-
-
-effectiveComb_enrichment <- func_fgsea_from_rwr_probCut(enrichment_library = enrichment_lib, 
-                                                        rwr_data = effectiveComb_rwr, 
-                                                        quantile_prob = 0.9)
-
-adverseComb_enrichment <- func_fgsea_from_rwr_probCut(enrichment_library = enrichment_lib, 
-                                                      rwr_data = adverseComb_rwr, 
-                                                      quantile_prob = 0.9)
-
-
-effectiveComb_NES <- func_extract_fgsea_result(enrichment_result = effectiveComb_enrichment,
-                                               result_type = "NES",
-                                               enrichment_library = enrichment_lib)
-
-adverseComb_NES <- func_extract_fgsea_result(enrichment_result = adverseComb_enrichment,
-                                             result_type = "NES",
-                                             enrichment_library = enrichment_lib)
-
-NES_ReactomePath <- merge(effectiveComb_NES, adverseComb_NES, by = 0 , all = TRUE)
-names(NES_ReactomePath)[1] <- "Pathway"
-
 
 
 
@@ -219,7 +189,6 @@ names(NES_miscGeneSet)[1] <- "GeneSet"
 # Final results
 fgsea_result <- list()
 fgsea_result$NES_keggPath <- NES_keggPath
-fgsea_result$NES_ReactomePath <- NES_ReactomePath
 fgsea_result$NES_SMPDbPath_DrugMet <- NES_SMPDbPath_DrugMet
 fgsea_result$NES_SMPDbPath_DrugAction <- NES_SMPDbPath_DrugAction
 fgsea_result$NES_miscGeneSet <- NES_miscGeneSet
