@@ -84,8 +84,8 @@ are considered.</td>
 
 <table>
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 91%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -117,19 +117,38 @@ file.</p>
 </tbody>
 </table>
 
-|              |                                                                                                                              |
-|--------------|------------------------------------------------------------------------------------------------------------------------------|
-| **R Script** | [Scripts/Associations/OpenTargets_Drug_Disease_Associations.R](Scripts/Associations/OpenTargets_Drug_Disease_Associations.R) |
-| **Input**    | Core annotation for drug molecules (OpenTarget parquet files)                                                                |
-| **Output**   | OpenTargets_Drug_Disease_Net.rds                                                                                             |
-| **Summary**  | The script retrieves the drug disease associations from OpenTargets database.                                                |
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 95%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>R Script</strong></td>
+<td><a
+href="Scripts/Associations/OpenTargets_Drug_Disease_Associations.R">Scripts/Associations/OpenTargets_Drug_Disease_Associations.R</a></td>
+</tr>
+<tr class="even">
+<td><strong>Input</strong></td>
+<td>Core annotation for drug molecules (OpenTarget parquet files)</td>
+</tr>
+<tr class="odd">
+<td><strong>Output</strong></td>
+<td>OpenTargets_Drug_Disease_Net.rds</td>
+</tr>
+<tr class="even">
+<td><strong>Summary</strong></td>
+<td>The script retrieves the drug disease associations from OpenTargets database.</td>
+</tr>
+</tbody>
+</table>
 
 #### 1.3. Curating the drug combinations for training the classifiers
 
 <table>
 <colgroup>
-<col style="width: 5%" />
-<col style="width: 94%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -160,8 +179,8 @@ keep only those tested on cancer related cell lines.</td>
 
 <table>
 <colgroup>
-<col style="width: 9%" />
-<col style="width: 90%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -194,8 +213,8 @@ effects.</td>
 
 <table>
 <colgroup>
-<col style="width: 3%" />
-<col style="width: 96%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -232,19 +251,38 @@ targets</td>
 </tbody>
 </table>
 
-|              |                                                                                                                        |
-|--------------|------------------------------------------------------------------------------------------------------------------------|
-| **R Script** | [Scripts/Drug_combinations/DrugCombs_training_annotation.R](Scripts/Drug_combinations/DrugCombs_training_annotation.R) |
-| **Input**    | DrugComb\_\[disease\].rds                                                                                              |
-| **Output**   | DrugCombs_training_annotation.xlsx                                                                                     |
-| **Summary**  | The script summarises the drug pairs for the training set. Also includes DrugBank drug ID to drug name mapping.        |
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 95%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>R Script</strong></td>
+<td><a
+href="Scripts/Drug_combinations/DrugCombs_training_annotation.R">Scripts/Drug_combinations/DrugCombs_training_annotation.R</a></td>
+</tr>
+<tr class="even">
+<td><strong>Input</strong></td>
+<td>DrugComb_[disease].rds</td>
+</tr>
+<tr class="odd">
+<td><strong>Output</strong></td>
+<td>DrugCombs_training_annotation.xlsx </td>
+</tr>
+<tr class="even">
+<td><strong>Summary</strong></td>
+<td>The script summarises the drug pairs for the training set. Also includes DrugBank drug ID to drug name mapping.</td>
+</tr>
+</tbody>
+</table>
 
 #### 1.4. Preparing the libraries for estimation of efficacy and safety
 
 <table>
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 91%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -274,8 +312,8 @@ separately.</td>
 
 <table>
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 91%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -321,8 +359,8 @@ databases like DisGeNET, OpenTargets, Intogen, Enrichr, PharmGKB.</td>
 
 <table>
 <colgroup>
-<col style="width: 7%" />
-<col style="width: 92%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -358,8 +396,8 @@ related to drug withdrawal.</td>
 
 <table>
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 91%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -399,8 +437,8 @@ class="uri">https://doi.org/10.1093/database/baaa045</a></td>
 
 <table>
 <colgroup>
-<col style="width: 8%" />
-<col style="width: 91%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -434,8 +472,8 @@ cancer pathways and small molecular pathways from SMPDB.</td>
 
 <table>
 <colgroup>
-<col style="width: 1%" />
-<col style="width: 98%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -483,8 +521,8 @@ different databases and TheTA.</td>
 
 <table>
 <colgroup>
-<col style="width: 5%" />
-<col style="width: 94%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -523,8 +561,8 @@ combination.</td>
 
 <table>
 <colgroup>
-<col style="width: 7%" />
-<col style="width: 92%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -571,8 +609,8 @@ FGSEA.</td>
 
 <table>
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 89%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
@@ -619,20 +657,42 @@ genes.</td>
 
 #### 3.1. Prepare data for repeated cross validation
 
-|                |                                                                                                                                                     |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **R Script**   | [Scripts/Model_train/DrugCombs_ML_dataSplit.R](Scripts/Model_train/DrugCombs_ML_dataSplit.R)                                                        |
-| **Parameters** | --disease, --folds, --repeats                                                                                                                       |
-| **Input**      | DrugComb\_\[disease\].rds                                                                                                                           |
-| **Output**     | ML_dataSplit\_\[disease\].rds                                                                                                                       |
-| **Summary**    | The script segregates the data into training and test set by splitting it into k folds and n repeats. For each turn, n-1 fold is used for training. |
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 95%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>R Script</strong></td>
+<td><a
+href="Scripts/Model_train/DrugCombs_ML_dataSplit.R">Scripts/Model_train/DrugCombs_ML_dataSplit.R</a></td>
+</tr>
+<tr class="even">
+    <td><strong>Parameters</strong></td>
+    <td>--disease, --folds, --repeats</td>
+    </tr>
+<tr class="odd">
+<td><strong>Input</strong></td>
+<td>DrugComb_[disease].rds</td>
+</tr>
+<tr class="even">
+<td><strong>Output</strong></td>
+<td>ML_dataSplit_[disease].rds</td>
+</tr>
+<tr class="odd">
+<td><strong>Summary</strong></td>
+<td>The script segregates the data into training and test set by splitting it into k folds and n repeats. For each turn, n-1 fold is used for training.</td>
+</tr>
+</tbody>
+</table>
 
 #### 3.2. Train and validate the models
 
 <table>
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 89%" />
+<col style="width: 4%" />
+<col style="width: 95%" />
 </colgroup>
 <tbody>
 <tr class="odd">
