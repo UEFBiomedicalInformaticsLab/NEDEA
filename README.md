@@ -8,8 +8,9 @@ safety estimates.
 ## Preparing the environment
 
 The following packages must be available for executing the scripts:
-biomaRt; dbparser; httr; igraph; jsonlite; msigdbr; openxlsx;
-org.Hs.eg.db; readxl; sparklyr; sparklyr.nested; tidyverse; unixtools
+biomaRt; dbparser; doParallel; foreach; httr; igraph; jsonlite; msigdbr;
+openxlsx; optparse; org.Hs.eg.db; readxl; sparklyr; sparklyr.nested;
+tidyverse; unixtools
 
 The packages can be installed as:
 
@@ -28,6 +29,19 @@ Several of the scripts require the following parameters as input:
 **--disease:** The disease for which the script to be executed. Possible
 values: BreastCancer, LungCancer, KidneyCancer, OvaryCancer,
 ProstateCancer, SkinCancer
+
+**--folds:** Number of folds to be created. Default: 5
+
+**--repeats:** Number of repeats of fold splitting to be performed.
+Default: 5
+
+**--data_balance_method:** The method to be used to balance imbalanced
+data. Possible values: none. Default: none.
+
+**--proximity:** The proximity type to use. Possible values: closest,
+shortest, centre, kernel, separation. Default: separation
+
+**--nproc:** Number of processes to use. Default: NULL
 
 ### Part 1: Preparing the input files for training the classifiers
 
@@ -106,7 +120,7 @@ file.</p>
 |              |                                                                                                                              |
 |--------------|------------------------------------------------------------------------------------------------------------------------------|
 | **R Script** | [Scripts/Associations/OpenTargets_Drug_Disease_Associations.R](Scripts/Associations/OpenTargets_Drug_Disease_Associations.R) |
-| **Input**    | Core annotation for drug molecules (OpenTarget parquest files)                                                               |
+| **Input**    | Core annotation for drug molecules (OpenTarget parquet files)                                                                |
 | **Output**   | OpenTargets_Drug_Disease_Net.rds                                                                                             |
 | **Summary**  | The script retrieves the drug disease associations from OpenTargets database.                                                |
 
@@ -420,24 +434,24 @@ cancer pathways and small molecular pathways from SMPDB.</td>
 
 <table>
 <colgroup>
-<col style="width: 9%" />
-<col style="width: 90%" />
+<col style="width: 1%" />
+<col style="width: 98%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>R Script</strong></td>
-<td><p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_BreastCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_BreastCancer_lib.R</a></p>
-<p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_KidneyCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_KidneyCancer_lib.R</a></p>
-<p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_LungCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_LungCancer_lib.R</a></p>
-<p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_OvaryCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_OvaryCancer_lib.R</a></p>
-<p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.R</a></p>
-<p><a
-href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.R</a></p></td>
+<td><a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_BreastCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_BreastCancer_lib.R</a>
+<a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_KidneyCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_KidneyCancer_lib.R</a>
+<a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_LungCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_LungCancer_lib.R</a>
+<a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_OvaryCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_OvaryCancer_lib.R</a>
+<a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.R</a>
+<a
+href="Scripts/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.R">Scripts/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.R</a></td>
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
@@ -467,37 +481,88 @@ different databases and TheTA.</td>
 
 #### 2.1. Execute RWR on the drug combinations
 
-|              |                                                |
-|--------------|------------------------------------------------|
-| **R Script** | Scripts/Feature_generation/DrugCombs_dNetRWR.R |
-| **Input**    |                                                |
-| **Output**   |                                                |
-| **Summary**  |                                                |
+<table>
+<colgroup>
+<col style="width: 5%" />
+<col style="width: 94%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>R Script</strong></td>
+<td><a
+href="Scripts/Feature_generation/DrugCombs_dNetRWR.R">Scripts/Feature_generation/DrugCombs_dNetRWR.R</a></td>
+</tr>
+<tr class="even">
+<td><strong>Parameters</strong></td>
+<td>--disease, --nproc</td>
+</tr>
+<tr class="odd">
+<td><strong>Input</strong></td>
+<td><ol type="a">
+<li>DrugComb_[disease].rds</li>
+<li>DrugBank_Drug_Target_Net.rds</li>
+<li>STRING_PPI_Net_database.rds</li>
+</ol></td>
+</tr>
+<tr class="even">
+<td><strong>Output</strong></td>
+<td>dNetRWR050_[disease].rda</td>
+</tr>
+<tr class="odd">
+<td><strong>Summary</strong></td>
+<td>The script executes a random walk with restart on the input network
+for the effective and adverse drug combinations. The known targets of
+the drugs are used as seed for the RWR. The output is a probability
+score for the genes/proteins in the network for each drug
+combination.</td>
+</tr>
+</tbody>
+</table>
 
 #### 2.2. Execute FGSEA on the ranked gene list from RWR
 
 <table>
 <colgroup>
-<col style="width: 19%" />
-<col style="width: 80%" />
+<col style="width: 7%" />
+<col style="width: 92%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>R Script</strong></td>
-<td><p>Scripts/Feature_generation/DrugCombs_fgsea_CommonLibraries.R</p>
-<p>Scripts/Feature_generation/DrugCombs_fgsea_EfficacySafety.R</p></td>
+<td><p><a
+href="Scripts/Feature_generation/DrugCombs_fgsea_CommonLibraries.R">Scripts/Feature_generation/DrugCombs_fgsea_CommonLibraries.R</a></p>
+<p><a
+href="Scripts/Feature_generation/DrugCombs_fgsea_EfficacySafety.R">Scripts/Feature_generation/DrugCombs_fgsea_EfficacySafety.R</a></p></td>
 </tr>
 <tr class="even">
-<td><strong>Input</strong></td>
-<td></td>
+<td><strong>Parameters</strong></td>
+<td>--disease, --nproc</td>
 </tr>
 <tr class="odd">
-<td><strong>Output</strong></td>
-<td></td>
+<td><strong>Input</strong></td>
+<td><ol type="a">
+<li>dNetRWR050_[disease].rda</li>
+<li>CHG_keggPath2Gene_lib.rds</li>
+<li>SMPDb_Pathway2Gene_lib.rds</li>
+<li>SMPDb_Pathway2Gene_lib.rds</li>
+<li>miscellaneous_gene_lib.rds</li>
+<li>Disease2Gene_[disease]_lib.rds</li>
+<li>drugWithdrawal_Adr2Gene_lib.rds</li>
+</ol></td>
 </tr>
 <tr class="even">
+<td><strong>Output</strong></td>
+<td><ol type="a">
+<li>fgseaProbCut_CommonLib_[disease].rds</li>
+<li>fgseaProbCut_EfficacySafety_[disease].rds</li>
+</ol></td>
+</tr>
+<tr class="odd">
 <td><strong>Summary</strong></td>
-<td></td>
+<td>For each drug combination, the ranked gene/protein list obtained
+from RWR is used for fast gene set enrichment analysis. Only the genes
+that occurs above the 90th quantile probability score is used for
+FGSEA.</td>
 </tr>
 </tbody>
 </table>
@@ -506,27 +571,46 @@ different databases and TheTA.</td>
 
 <table>
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 82%" />
+<col style="width: 10%" />
+<col style="width: 89%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>R Script</strong></td>
-<td><p>Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugAdr.</p>
-<p>RScripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDisease.R</p>
-<p>Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDrug.R</p></td>
+<td><p><a
+href="Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugAdr.R">Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugAdr.R</a></p>
+<p><a
+href="Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDisease.R">Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDisease.R</a></p>
+<p><a
+href="Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDrug.R">Scripts/Feature_generation/DrugCombs_BarabasiMetrics_DrugDrug.R</a></p></td>
 </tr>
 <tr class="even">
-<td><strong>Input</strong></td>
-<td></td>
+<td><strong>Parameters</strong></td>
+<td>--disease, --nproc</td>
 </tr>
 <tr class="odd">
-<td><strong>Output</strong></td>
-<td></td>
+<td><strong>Input</strong></td>
+<td><ol type="a">
+<li>DrugComb_[disease].rds</li>
+<li>DrugBank_Drug_Target_Net.rds</li>
+<li>drugWithdrawal_Adr2Gene_lib.rds</li>
+<li>Disease2Gene_[disease]_lib.rds</li>
+<li>STRING_PPI_Net_database.rds</li>
+</ol></td>
 </tr>
 <tr class="even">
+<td><strong>Output</strong></td>
+<td><ol type="a">
+<li>BarabasiProx_DrugAdr_[disease].rds</li>
+<li>BarabasiProx_DrugDisease_[disease].rds</li>
+<li>BarabasiProx_DrugDrug_[disease].rds</li>
+</ol></td>
+</tr>
+<tr class="odd">
 <td><strong>Summary</strong></td>
-<td></td>
+<td>The script calculates various types of network proximity between
+drug targets, disease associated genes and adverse drug reaction related
+genes.</td>
 </tr>
 </tbody>
 </table>
@@ -535,40 +619,63 @@ different databases and TheTA.</td>
 
 #### 3.1. Prepare data for repeated cross validation
 
-|              |                                                  |
-|--------------|--------------------------------------------------|
-| **R Script** | Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R |
-| **Input**    |                                                  |
-| **Output**   |                                                  |
-| **Summary**  |                                                  |
+|                |                                                                                                                                                     |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **R Script**   | [Scripts/Model_train/DrugCombs_ML_dataSplit.R](Scripts/Model_train/DrugCombs_ML_dataSplit.R)                                                        |
+| **Parameters** | --disease, --folds, --repeats                                                                                                                       |
+| **Input**      | DrugComb\_\[disease\].rds                                                                                                                           |
+| **Output**     | ML_dataSplit\_\[disease\].rds                                                                                                                       |
+| **Summary**    | The script segregates the data into training and test set by splitting it into k folds and n repeats. For each turn, n-1 fold is used for training. |
 
 #### 3.2. Train and validate the models
 
 <table>
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 82%" />
+<col style="width: 10%" />
+<col style="width: 89%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>R Script</strong></td>
-<td><p>Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R</p>
-<p>Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugAdr.R</p>
-<p>Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDisease.R</p>
-<p>Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDrug.R</p>
-<p>Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDiseaseAdr.R</p></td>
+<td><p><a
+href="Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R">Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R</a></p>
+<p><a
+href="Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugAdr.R">Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugAdr.R</a></p>
+<p><a
+href="Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDisease.R">Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDisease.R</a></p>
+<p><a
+href="Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDrug.R">Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDrug.R</a></p>
+<p><a
+href="Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDiseaseAdr.R">Scripts/Model_train/DrugCombs_trainML_BarabasiMetrics_DrugDiseaseAdr.R</a></p></td>
 </tr>
 <tr class="even">
-<td><strong>Input</strong></td>
-<td></td>
+<td><strong>Parameters</strong></td>
+<td>--disease, --data_balance_method, --proximity, --nproc</td>
 </tr>
 <tr class="odd">
-<td><strong>Output</strong></td>
-<td></td>
+<td><strong>Input</strong></td>
+<td><ol type="a">
+<li>ML_dataSplit_[disease].rds</li>
+<li>fgseaProbCut_EfficacySafety_[disease].rds</li>
+<li>fgseaProbCut_CommonLib_[disease].rds</li>
+<li>BarabasiProx_DrugAdr_[disease].rds</li>
+<li>BarabasiProx_DrugDisease_[disease].rds</li>
+<li>BarabasiProx_DrugDrug_[disease].rds</li>
+</ol></td>
 </tr>
 <tr class="even">
+<td><strong>Output</strong></td>
+<td><ol type="a">
+<li>models_[data_balance_method]_rwrFgsea_[disease].rds</li>
+<li>models_[data_balance_method]_BarabasiProx_DrugAdr_[disease].rds</li>
+<li>models_[data_balance_method]_BarabasiProx_DrugDisease_[disease].rds</li>
+<li>models_[data_balance_method]_BarabasiProx_DrgDisAdr_[disease]_[proximity].rds</li>
+</ol></td>
+</tr>
+<tr class="odd">
 <td><strong>Summary</strong></td>
-<td></td>
+<td>The features generated in part 2 are used here to train four
+different types of classifiers.</td>
 </tr>
 </tbody>
 </table>
