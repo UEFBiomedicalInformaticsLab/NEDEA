@@ -8,7 +8,7 @@ safety estimates.
 ## Preparing the environment
 
 The following packages must be available for executing the scripts:
-biomaRt; dbparser; doParallel; foreach; httr; igraph; jsonlite; msigdbr;
+biomaRt; caret; dbparser; doParallel; foreach; httr; igraph; jsonlite; MLmetrics; msigdbr;
 openxlsx; optparse; org.Hs.eg.db; sparklyr; sparklyr.nested;
 tidyverse; unixtools
 
