@@ -6,7 +6,7 @@
 # Load libraries
 library(caret)
 library(MLmetrics)
-library(DMwR)
+# library(DMwR)
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
@@ -122,7 +122,7 @@ func_train_model <- function(feature_matrix,
   res <- foreach(i=names(train_test_split), 
                  .multicombine = TRUE,
                  .verbose = TRUE,
-                 .packages = c("caret", "MLmetrics", "DMwR"),
+                 .packages = c("caret", "MLmetrics"),
                  .final = function(x){setNames(x, names(train_test_split))},
                  .export = c("train_rf_model", "train_glmnet_model", "train_svmRadial_model", "train_nb_model")) %dopar% {
                    
@@ -333,9 +333,20 @@ func_train_model <- function(feature_matrix,
                                 glmnet = list(model = glmnet_model, 
                                               test_predictions = glmnet_predictions, 
                                               test_probabilities = glmnet_predictions_prob, 
-                                              test_confusionMatrix = glmnet_confusionMatrix_test))
+                                              test_confusionMatrix = glmnet_confusionMatrix_test),
+                                svmRadial = list(model = svmRadial_model, 
+                                                 test_predictions = svmRadial_predictions, 
+                                                 test_probabilities = svmRadial_predictions_prob, 
+                                                 test_confusionMatrix = svmRadial_confusionMatrix_test),
+                                nb = list(model = nb_model, 
+                                          test_predictions = nb_predictions, 
+                                          test_probabilities = nb_predictions_prob, 
+                                          test_confusionMatrix = nb_confusionMatrix_test))
                    tmp2 <- list(rf = rf_result_table,
-                                glmnet = glmnet_result_table)
+                                glmnet = glmnet_result_table,
+                                svmRadial = svmRadial_result_table,
+                                nb = nb_result_table
+                                )
                    
                    list(modelling_results = tmp1, result_summary_tables = tmp2)
                  }

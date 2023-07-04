@@ -142,7 +142,7 @@ final_results$keggPath <- keggPath_model$modelling_results
 final_results$SMPDbPath_DrugMet <- SMPDbPath_DrugMet_model$modelling_results
 final_results$SMPDbPath_DrugAction <- SMPDbPath_DrugAction_model$modelling_results
 final_results$miscGeneSet <- miscGeneSet_model$modelling_results
-# saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".rds"))
+saveRDS(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".rds"))
 
 
 final_results <- list()
@@ -154,7 +154,7 @@ final_results$SMPDbPath_DrugMet <- SMPDbPath_DrugMet_model$result_summary_tables
 final_results$SMPDbPath_DrugAction <- SMPDbPath_DrugAction_model$result_summary_tables
 final_results$miscGeneSet <- miscGeneSet_model$result_summary_tables
 final_results <- unlist(final_results, recursive = FALSE)
-# write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"), overwrite = TRUE)
+write.xlsx(final_results, paste0("OutputFiles/Model_train/", disease, "/models_", data_balance_method, "_rwrFgsea_", disease, ".xlsx"), overwrite = TRUE)
 
 
 
