@@ -8,7 +8,7 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 20   # Number of task
+#SBATCH --ntasks 10   # Number of task
 #SBATCH --time 3-00:00:00   # Runtime
 #SBATCH --mem=100000   # Reserve 100 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
@@ -25,4 +25,4 @@ grep -c ^processor /proc/cpuinfo
 
 echo "RWR FGSEA " $1 " - " $2 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R --disease $1 --data_balance_method $2 --nproc 20
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R --disease $1 --data_balance_method $2 --nproc 10
