@@ -71,8 +71,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 }
 
 
-if(!dir.exists("OutputFiles/Plots/Publication")){
-  dir.create("OutputFiles/Plots/Publication", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/")){
+  dir.create("OutputFiles/Plots/", recursive = TRUE)
 }
 
 saveRDS(model_stats, "OutputFiles/Plots/model_stats_1.rds")
@@ -114,7 +114,7 @@ select_model_stats$disease <- gsub("Cancer$", "", select_model_stats$disease)
 select_model_stats$featureType <- factor(x = select_model_stats$featureType,
                                          levels = c("Efficacy", "Safety", "Combined-efficacy-safety"))
 select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
-                                       levels = c("none", "SMOTE", "upSample", "downSample"))
+                                       levels = c("none"))
 
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
 

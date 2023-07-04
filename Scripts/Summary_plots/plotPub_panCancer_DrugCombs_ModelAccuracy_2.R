@@ -1,3 +1,7 @@
+set.seed(5081)
+
+
+
 # Script for plotting the model accuracy (for publication: comparision of combined-efficacy-safety vs Barabasi separation measure)
 
 
@@ -7,8 +11,6 @@ library(openxlsx)
 library(tidyverse)
 library(svglite)
 library(RColorBrewer)
-
-
 
 
 
@@ -57,161 +59,21 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   none_model_stats <- none_model_stats[none_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]
   none_model_stats$imbalance <- "none"
   
-  
-  
-  
-  
-  # Get the statistics for SMOTE models
-  files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
-                      pattern = "^models_SMOTE_[a-zA-Z_]+.xlsx", 
-                      ignore.case = TRUE, full.names = TRUE)
-  
-  smote_model_stats <- list()
-  
-  for(file in files){
-    sheet_names_smote <- getSheetNames(file)
-    
-    ## Read files
-    for(name in sheet_names_smote){
-      tmp <- strsplit(x = file, split = "\\/")[[1]][4]
-      tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
-      smote_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
-    }
-    if(grepl(pattern = "BarabasiProx", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
-      names(smote_model_stats[[tmp]]) <- paste(prox_comp, names(smote_model_stats[[tmp]]), sep = "_")
-    }
-    if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
-      prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
-      names(smote_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
-                                              replacement = paste0("_", prox_comp, "."), 
-                                              x = names(smote_model_stats[[tmp]]), )
-    }
-  }
-  rm(tmp)
-  
-  smote_model_stats <- unlist(smote_model_stats, recursive = FALSE)
-  smote_model_stats <- bind_rows(smote_model_stats, .id = "model")
-  smote_model_stats <- separate(smote_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
-  
-  smote_model_stats <- smote_model_stats[, c("featureType", "model", "Fold", 
-                                             "PRAUC_train", "PRAUC_test",
-                                             "F1_train", "F1_test")]
-  smote_model_stats <- smote_model_stats[smote_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]  
-  smote_model_stats$imbalance <- "SMOTE"
-  
-  
-  
-  
-  
-  # Get the statistics for upSample models
-  files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
-                      pattern = "^models_upSample_[a-zA-Z_]+.xlsx", 
-                      ignore.case = TRUE, full.names = TRUE)
-  
-  upSample_model_stats <- list()
-  
-  for(file in files){
-    sheet_names_upSample <- getSheetNames(file)
-    
-    ## Read files
-    for(name in sheet_names_upSample){
-      tmp <- strsplit(x = file, split = "\\/")[[1]][4]
-      tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
-      upSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
-    }
-    if(grepl(pattern = "BarabasiProx", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
-      names(upSample_model_stats[[tmp]]) <- paste(prox_comp, names(upSample_model_stats[[tmp]]), sep = "_")
-    }
-    if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
-      prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
-      names(upSample_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
-                                                 replacement = paste0("_", prox_comp, "."), 
-                                                 x = names(upSample_model_stats[[tmp]]), )
-    }
-  }
-  rm(tmp)
-  
-  upSample_model_stats <- unlist(upSample_model_stats, recursive = FALSE)
-  upSample_model_stats <- bind_rows(upSample_model_stats, .id = "model")
-  upSample_model_stats <- separate(upSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
-  
-  upSample_model_stats <- upSample_model_stats[, c("featureType", "model", "Fold", 
-                                                   "PRAUC_train", "PRAUC_test",
-                                                   "F1_train", "F1_test")]
-  upSample_model_stats <- upSample_model_stats[upSample_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ]    
-  upSample_model_stats$imbalance <- "upSample"
-  
-  
-  
-  
-  
-  # Get the statistics for downSample models
-  files <- list.files(path = paste0("OutputFiles/Model_train/", disease),
-                      pattern = "^models_downSample_[a-zA-Z_]+.xlsx", 
-                      ignore.case = TRUE, full.names = TRUE)
-  
-  downSample_model_stats <- list()
-  
-  for(file in files){
-    sheet_names_downSample <- getSheetNames(file)
-    
-    ## Read files
-    for(name in sheet_names_downSample){
-      tmp <- strsplit(x = file, split = "\\/")[[1]][4]
-      tmp <- strsplit(x = tmp, split = "\\.")[[1]][1]
-      downSample_model_stats[[tmp]][[name]] <- read.xlsx(file, sheet = name)
-    }
-    if(grepl(pattern = "BarabasiProx", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][4]
-      names(downSample_model_stats[[tmp]]) <- paste(prox_comp, names(downSample_model_stats[[tmp]]), sep = "_")
-    }
-    if(grepl(pattern = "BarabasiProx_DrgDisAdr", x = file)){
-      prox_comp <- strsplit(x = file, split = "\\/")[[1]][4]
-      prox_comp <- strsplit(x = prox_comp, split = "\\_")[[1]][6]
-      prox_comp <- strsplit(x = prox_comp, split = "\\.")[[1]][1]
-      names(downSample_model_stats[[tmp]]) <- gsub(pattern = "\\.", 
-                                                   replacement = paste0("_", prox_comp, "."), 
-                                                   x = names(downSample_model_stats[[tmp]]), )
-    }
-  }
-  rm(tmp)
-  
-  downSample_model_stats <- unlist(downSample_model_stats, recursive = FALSE)
-  downSample_model_stats <- bind_rows(downSample_model_stats, .id = "model")
-  downSample_model_stats <- separate(downSample_model_stats, col = "model", into = c("file", "featureType", "model"), sep = "\\.")
-  
-  downSample_model_stats <- downSample_model_stats[, c("featureType", "model", "Fold", 
-                                                       "PRAUC_train", "PRAUC_test",
-                                                       "F1_train", "F1_test")]
-  downSample_model_stats <- downSample_model_stats[downSample_model_stats$model %in% c("glmnet", "nb", "rf", "svmRadial"), ] 
-  downSample_model_stats$imbalance <- "downSample"
-  
-  
-  
-  
+
   
   # Merge all model stats and rearrange for plotting
-  tmp <- rbind(none_model_stats, smote_model_stats, upSample_model_stats, downSample_model_stats) 
+  tmp <- none_model_stats 
   tmp$disease <- disease
   model_stats <- rbind(model_stats, tmp)
   
 }
 
-if(!dir.exists("OutputFiles/Plots/Publication")){
-  dir.create("OutputFiles/Plots/Publication", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/")){
+  dir.create("OutputFiles/Plots/", recursive = TRUE)
 }
 
-saveRDS(model_stats, "OutputFiles/Plots/Publication/model_stats_2.rds")
-# model_stats <- readRDS("OutputFiles/Plots/Publication/model_stats_2.rds")
+saveRDS(model_stats, "OutputFiles/Plots/model_stats_2.rds")
+# model_stats <- readRDS("OutputFiles/Plots/model_stats_2.rds")
 
 model_stats <- model_stats[, !colnames(model_stats) %in% c("BalancedAccuracy_train", "BalancedAccuracy_test", 
                                                            "Precision_train", "Precision_test", 
@@ -224,7 +86,6 @@ model_stats <- reshape(model_stats, direction = "long",
                        times = c("PRAUC_train", "F1_train",
                                  "PRAUC_test", "F1_test"))
 
-model_stats <- model_stats[model_stats$imbalance == "none", ]
 
 rownames(model_stats) <- NULL
 model_stats$value <- as.numeric(model_stats$value)
@@ -255,7 +116,7 @@ select_model_stats$disease <- gsub("Cancer$", "", select_model_stats$disease)
 select_model_stats$featureType <- factor(x = select_model_stats$featureType,
                                          levels = c("Combined-efficacy-safety", "Drug-Drug", "Drug-Disease", "Drug-ADR", "Drug-Disease-ADR"))
 select_model_stats$imbalance <- factor(x = select_model_stats$imbalance,
-                                       levels = c("none", "SMOTE", "upSample", "downSample"))
+                                       levels = c("none"))
 
 select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if while calculating ratio the denominator is 0
 
@@ -263,8 +124,7 @@ select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if whi
 
 
 
-# svglite("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test.svg", width = 6, height = length(unique(model_stats$disease)))
-tiff("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test_2.tiff", 
+tiff("OutputFiles/Plots/panCancer_ModelAccuracy_Test_2.tiff", 
      width = 17, height = length(features_to_plot) * 4, 
      units = "cm", compression = "lzw", res = 1200)
 
