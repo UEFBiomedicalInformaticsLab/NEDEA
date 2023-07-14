@@ -76,11 +76,11 @@ disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "Kidney
 
 
 
-# Model accuracy
-for disease in ${disease_list[@]}
-  do
-    sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
-  done
+# # Model accuracy
+# for disease in ${disease_list[@]}
+#   do
+#     sbatch --job-name=plot_ModelAcc_$disease --output=plot_ModelAcc_$disease.out --export=disease=$disease sampo/17_sampo_Rscript.sh $disease
+#   done
   
   
   
@@ -92,18 +92,10 @@ for disease in ${disease_list[@]}
 
 
 
-# Model hyperparameters table
-for disease in ${disease_list[@]}
-  do
-    sbatch --job-name=table_hyperParam_$disease --output=table_hyperParam_$disease.out --export=disease=$disease sampo/25_sampo_Rscript.sh $disease
-  done
-
-
-
-# # Final model training
+# # Model hyperparameters table
 # for disease in ${disease_list[@]}
 #   do
-#     sbatch --job-name=finalModel_$disease --output=finalModel_$disease.out --export=disease=$disease sampo/21_sampo_Rscript.sh $disease 
+#     sbatch --job-name=table_hyperParam_$disease --output=table_hyperParam_$disease.out --export=disease=$disease sampo/25_sampo_Rscript.sh $disease
 #   done
 
 

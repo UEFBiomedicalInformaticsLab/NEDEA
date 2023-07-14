@@ -132,20 +132,10 @@ func_dNetRWR_on_drugCombination <- function(rwr_input_network, drug1, drug2,
 
 # Function to perform FGSEA using the ranked genes from RWR --------------------
 # 
-# The number of genes to be used can be defined using quantile_prob
-# 
-# 
-# Test:
-# 
-# 
-# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_", disease, "_lib.rds"))
-# rwr_data <- effectiveComb_rwr
-# enrichment_library <- enrichment_lib
-# minSize = 1
-# maxSize = 200
-# scoreType = "std"
-# verbose = TRUE
-# quantile_prob = 0.9
+# Notes:
+# (a) The number of genes to be used can be defined using quantile_prob
+
+
 
 
 func_fgsea_from_rwr_probCut <- function(enrichment_library, 

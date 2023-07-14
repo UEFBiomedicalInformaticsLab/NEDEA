@@ -1,6 +1,8 @@
+set.seed(5081)
+
+
+
 # Drug combinations from C-DCDB (https://icc.ise.bgu.ac.il/medical_ai/CDCDB/)
-
-
 
 
 
@@ -11,9 +13,9 @@ library(tidyverse)
 
 # Download drug combinations from C-DCDB
 if(!dir.exists("Databases/CDCDB/"))dir.create("Databases/CDCDB/")
-if(!file.exists("Databases/CDCDB/09.05.2023.zip")){
+if(!file.exists("Databases/CDCDB/11.07.2023.zip")){
   warning(paste0("ERROR: C-DCDB file not found !!! \n", 
-                 "Download 09.05.2023.zip file manually from https://icc.ise.bgu.ac.il/medical_ai/CDCDB/"))
+                 "Download 11.07.2023.zip file manually from https://icc.ise.bgu.ac.il/medical_ai/CDCDB/"))
 }
 
 
@@ -22,7 +24,7 @@ if(!file.exists("Databases/CDCDB/09.05.2023.zip")){
 
 # Extract the drug combinations reported in the FDA Orange Book (RX/OTC type)
 if(!file.exists("Databases/CDCDB/orangebook_combs_df.csv")){
-  unzip("Databases/CDCDB/09.05.2023.zip", files = "orangebook_combs_df.csv", exdir = "Databases/CDCDB/")
+  unzip("Databases/CDCDB/11.07.2023.zip", files = "orangebook_combs_df.csv", exdir = "Databases/CDCDB/")
 }
 CDCDB_drugCombs <- read.csv("Databases/CDCDB/orangebook_combs_df.csv")
 CDCDB_drugCombs <- CDCDB_drugCombs[CDCDB_drugCombs$TYPE != "DISCN", ] # Remove discontinued drug combinations
@@ -46,7 +48,7 @@ saveRDS(CDCDB_drugCombs, "InputFiles/ReferenceList/CDCDB_drugCombinations_Orange
                                        
 # Extract the drug combinations reported in the FDA Orange Book (DISCN type)
 if(!file.exists("Databases/CDCDB/orangebook_combs_df.csv")){
-  unzip("Databases/CDCDB/09.05.2023.zip", files = "orangebook_combs_df.csv", exdir = "Databases/CDCDB/")
+  unzip("Databases/CDCDB/11.07.2023.zip", files = "orangebook_combs_df.csv", exdir = "Databases/CDCDB/")
 }
 CDCDB_drugCombs <- read.csv("Databases/CDCDB/orangebook_combs_df.csv")
 CDCDB_drugCombs <- CDCDB_drugCombs[CDCDB_drugCombs$TYPE == "DISCN", ] # Remove discontinued drug combinations
@@ -71,14 +73,14 @@ saveRDS(CDCDB_drugCombs, "InputFiles/ReferenceList/CDCDB_drugCombinations_Orange
                                                                        
 # Extract conditions from AATC
 if(!file.exists("Databases/CDCDB/conditions_df.csv")){
-  unzip("Databases/CDCDB/09.05.2023.zip", files = "conditions_df.csv", exdir = "Databases/CDCDB/")
+  unzip("Databases/CDCDB/11.07.2023.zip", files = "conditions_df.csv", exdir = "Databases/CDCDB/")
 }
 conditions <- read.csv("Databases/CDCDB/conditions_df.csv")
 conditions <- conditions[grep("cancer", conditions$condition, ignore.case = TRUE), ]
 
 # Read the drug combinations for the selected NCT IDs
 if(!file.exists("Databases/CDCDB/design_group_df.csv")){
-  unzip("Databases/CDCDB/09.05.2023.zip", files = "design_group_df.csv", exdir = "Databases/CDCDB/")
+  unzip("Databases/CDCDB/11.07.2023.zip", files = "design_group_df.csv", exdir = "Databases/CDCDB/")
 }
 design <- read.csv("Databases/CDCDB/design_group_df.csv")
 design <- design[, c("nct_id", "drugbank_identifier")]
@@ -94,9 +96,9 @@ design <- design[, !(colSums(design == "") == nrow(design))]
 drugCombs <- design[design$nct_id %in% conditions$nct_id,]
 rm(tmp1)
 
-# Extract the trials that were widthdrawn/suspended/terminated due to toxicity
+# Extract the trials that were withdrawn/suspended/terminated due to toxicity
 if(!file.exists("Databases/CDCDB/trials_df.csv")){
-  unzip("Databases/CDCDB/09.05.2023.zip", files = "trials_df.csv", exdir = "Databases/CDCDB/")
+  unzip("Databases/CDCDB/11.07.2023.zip", files = "trials_df.csv", exdir = "Databases/CDCDB/")
 }
 trials <- read.csv("Databases/CDCDB/trials_df.csv")
 trials <- trials[trials$overall_status %in% c("Suspended", "Terminated", "Withdrawn"),]
