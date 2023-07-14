@@ -8,10 +8,10 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 10   # Number of task
-#SBATCH --time 3-00:00:00   # Runtime
-#SBATCH --mem=100000   # Reserve 100 GB RAM for the job
-#SBATCH --partition gpu   # Partition to submit
+#SBATCH --ntasks 5   # Number of task
+#SBATCH --time 1-00:00:00   # Runtime
+#SBATCH --mem=50000   # Reserve 10 GB RAM for the job
+#SBATCH --partition serial   # Partition to submit
 #SBATCH --mail-user arindam.ghosh@uef.fi      # this is the email you wish to be notified at
 #SBATCH --mail-type ALL   # ALL will alert you of job beginning, completion, failure etc
 
@@ -23,6 +23,6 @@
 ~/miniconda3/envs/interactome/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
-echo "RWR FGSEA " $1 " - " $2 " ---------------------"
+echo "Plot model accuracy: " $1 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Model_train/DrugCombs_trainML_rwrFgsea.R --disease $1 --data_balance_method $2 --nproc 10
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Summary_plots/plot_DrugCombs_ModelAccuracy.R --disease $1

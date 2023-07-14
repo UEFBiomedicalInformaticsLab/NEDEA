@@ -2,7 +2,7 @@
 
 
 # ML RWR FGSEA
-disease_list=("SkinCancer")
+disease_list=("LungCancer" "SkinCancer")
 data_balance_method=("none")
 for disease in ${disease_list[@]}
 do

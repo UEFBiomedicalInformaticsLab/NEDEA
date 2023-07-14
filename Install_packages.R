@@ -1,7 +1,7 @@
 # Install packages
 
-cran_pkgs <- c("caret", "dbparser", "doParallel", "foreach", "glmnet", "httr", "igraph", "jsonlite", "MLmetrics", "msigdbr", "naivebayes", "openxlsx", "optparse", "RSQLite", "sparklyr", "sparklyr.nested", "pheatmap", "tidyverse", "TopKLists", "xml2")
-bioc_pkgs <- c("XVector", "Biostrings", "AnnotationDbi", "biomaRt", "org.Hs.eg.db")
+cran_pkgs <- c("caret", "dbparser", "dnet", "doParallel", "foreach", "glmnet", "httr", "igraph", "jsonlite", "MLmetrics", "msigdbr", "naivebayes", "openxlsx", "optparse", "RSQLite", "sparklyr", "sparklyr.nested", "pheatmap", "tidyverse", "TopKLists", "xml2")
+bioc_pkgs <- c("XVector", "Biostrings", "AnnotationDbi", "biomaRt", "org.Hs.eg.db", "Rgraphviz", "supraHex")
 
 cran_pkgs_install <- cran_pkgs[!(cran_pkgs %in% row.names(installed.packages()))]
 bioc_pkgs_install <- bioc_pkgs[!(bioc_pkgs %in% row.names(installed.packages()))]

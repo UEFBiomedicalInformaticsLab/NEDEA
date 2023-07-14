@@ -71,12 +71,12 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 }
 
 
-if(!dir.exists("OutputFiles/Plots/")){
-  dir.create("OutputFiles/Plots/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/Publication/")){
+  dir.create("OutputFiles/Plots/Publication/", recursive = TRUE)
 }
 
-saveRDS(model_stats, "OutputFiles/Plots/model_stats_1.rds")
-# model_stats <- readRDS("OutputFiles/Plots/model_stats_1.rds")
+saveRDS(model_stats, "OutputFiles/Plots/Publication/model_stats_1.rds")
+# model_stats <- readRDS("OutputFiles/Plots/Publication/model_stats_1.rds")
 
 model_stats <- model_stats[, !colnames(model_stats) %in% c("BalancedAccuracy_train", "BalancedAccuracy_test", 
                                                            "Precision_train", "Precision_test", 
@@ -122,7 +122,7 @@ select_model_stats <- na.exclude(select_model_stats) # Some scores are NA if whi
 
 
 
-tiff("OutputFiles/Plots/panCancer_ModelAccuracy_Test_1.tiff", 
+tiff("OutputFiles/Plots/Publication/panCancer_ModelAccuracy_Test_1.tiff", 
      width = 17, height = length(features_to_plot) * 4, 
      units = "cm", compression = "lzw", res = 1200)
 

@@ -122,12 +122,12 @@ func_train_model <- function(feature_matrix,
   res <- foreach(i=names(train_test_split), 
                  .multicombine = TRUE,
                  .verbose = TRUE,
+                 .errorhandling = "pass",
                  .packages = c("caret", "MLmetrics"),
                  .final = function(x){setNames(x, names(train_test_split))},
                  .export = c("train_rf_model", "train_glmnet_model", "train_svmRadial_model", "train_nb_model")) %dopar% {
                    
                    cat(paste0("-- ", i, "\n"))
-                   
                    
                    # Balance the training data (if used)
                    switch(data_balance_method,
@@ -346,12 +346,12 @@ func_train_model <- function(feature_matrix,
                                 glmnet = glmnet_result_table,
                                 svmRadial = svmRadial_result_table,
                                 nb = nb_result_table
-                                )
+                   )
                    
                    list(modelling_results = tmp1, result_summary_tables = tmp2)
                  }
   
-  
+
   modelling_results <- list() 
   result_summary_tables <- list()
   for(fold in names(res)){
@@ -372,5 +372,4 @@ func_train_model <- function(feature_matrix,
     unregister_dopar()
     Sys.sleep(300)
   } 
-  
 }
