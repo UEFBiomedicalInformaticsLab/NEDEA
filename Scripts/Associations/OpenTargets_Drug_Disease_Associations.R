@@ -19,7 +19,7 @@ library(sparklyr.nested)
 # Retrieve all drugs information from OpenTargets
 if(!dir.exists("Databases/OpenTargets/")){dir.create("Databases/OpenTargets/", recursive = TRUE)}
 if(!dir.exists("Databases/OpenTargets/molecule")){
-  system("wget --recursive --no-parent --no-host-directories -P Databases/OpenTargets/ --cut-dirs 8 ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/22.11/output/etl/parquet/molecule
+  system("wget --recursive --no-parent --no-host-directories -P Databases/OpenTargets/ --cut-dirs 8 ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/21.04/output/etl/parquet/molecule
 ")
 }
 
