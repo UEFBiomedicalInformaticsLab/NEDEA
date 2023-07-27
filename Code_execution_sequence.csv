@@ -50,3 +50,4 @@
 48,,Scripts/External_predictions/ExtPred_drugCombs_manualCurated.R,1,1,0,0,0,0,0,0,
 ,26,Scripts/External_predictions/ExtPred_rwrFgsea_CDD.R,1,0,,,,,,,
 ,0,Scripts/External_predictions/Compile_validation_CDD.R,1,,,,,,,,
+,27,Scripts/External_predictions/ExtPred_rwrFgsea_CDCDB_AATC.R,,,,,,,,,

@@ -2,7 +2,16 @@ set.seed(5081)
 
 
 
-# External predictions using the CDD drug combinations 
+# External predictions using the CDCDB drug combinations (AACT)
+
+# Notes:
+# (1) The two drug combinations from AACT in C-DCDC being used
+# (2) Remove drug combinations that contained already in 
+#     the training set of the cancer.
+# (3) Removed drug combinations that do not contain any reported drug targets
+# (4) Run RWR-FGSEA and then use the selected model to predict
+
+
 
 
 
@@ -75,7 +84,6 @@ feature_type <- opt$feature_type
 nproc <- opt$nproc
 
 
-
 # Read drug combinations used in training set
 drugCombs_training <- readRDS(paste0("InputFiles/DrugCombinations/DrugComb_", disease, ".rds"))
 drugCombs_training <- do.call(rbind, drugCombs_training)
@@ -84,51 +92,55 @@ drugs_training <- unique(c(drugCombs_training$Drug1_DrugBank_drug_id, drugCombs_
 
 
 
-# Download cancer drug list from Cancer Drugs Database
-if(!dir.exists("Databases/CancerDrugsDatabase/"))dir.create("Databases/CancerDrugsDatabase/", recursive = TRUE)
-if(!file.exists("Databases/CancerDrugsDatabase/cancerdrugsdb.txt")){
-  download.file(url = "https://acfdata.coworks.be/cancerdrugsdb.txt",
-                destfile = "Databases/CancerDrugsDatabase/cancerdrugsdb.txt", method = "wget")
+# Read the AACT drug combinations from CDCDB
+drugCombs <- readRDS("InputFiles/ReferenceList/CDCDB_drugCombinations_AACT.rds")
+drugCombs <- drugCombs[grep("-1", drugCombs$Drug1_DrugBank_drug_id, invert = TRUE),]
+drugCombs <- drugCombs[grep("-1", drugCombs$Drug2_DrugBank_drug_id, invert = TRUE),]
+drugCombs <- drugCombs[grep("DBSALT", drugCombs$Drug1_DrugBank_drug_id, invert = TRUE),]
+drugCombs <- drugCombs[grep("DBSALT", drugCombs$Drug2_DrugBank_drug_id, invert = TRUE),]
+
+
+# Remove combinations that contains selected terms
+DrugBank_drug_category <- read.csv("Databases/DrugBank/drug_categories.csv")
+DrugBank_drug_category <- DrugBank_drug_category[DrugBank_drug_category$category %in% 
+                                                   c("Amino Acids", "Coenzymes", "Enzymes and Coenzymes", 
+                                                     "Hormones"), ]
+drugCombs <- drugCombs[!(drugCombs$Drug1_DrugBank_drug_id %in% DrugBank_drug_category$parent_key | 
+                           drugCombs$Drug2_DrugBank_drug_id %in% DrugBank_drug_category$parent_key), ]
+
+# Remove combinations that contain drug pair participating in training
+remove_index <- c()
+for(i in 1:nrow(drugCombs)){
+  drug1 <- drugCombs[i, "Drug1_DrugBank_drug_id"]
+  drug2 <- drugCombs[i, "Drug2_DrugBank_drug_id"]
+  tmp <- drugCombs_training[(drugCombs_training$Drug1_DrugBank_drug_id == drug1 & drugCombs_training$Drug2_DrugBank_drug_id == drug2) | 
+                              (drugCombs_training$Drug1_DrugBank_drug_id == drug2 & drugCombs_training$Drug2_DrugBank_drug_id == drug1), ]
+  if(nrow(tmp) > 0){print(i); remove_index <- c(remove_index, i)} 
 }
+if(length(remove_index) > 0){drugCombs <- drugCombs[-remove_index,]}
+rm(tmp)
 
 
-# Read the  list of cancer drugs from cancer drugs database
-CDD_drugs <- read.table("https://acfdata.coworks.be/cancerdrugsdb.txt", 
-                        header = TRUE, 
-                        sep = "\t", 
-                        quote = "", 
-                        fill = TRUE, 
-                        comment.char = "")
-CDD_drugs$DrugBank.ID <- gsub("^<a href=\"https://go.drugbank.com/drugs/[A-D0-9]+\">", "", CDD_drugs$DrugBank.ID)
-CDD_drugs$DrugBank.ID <- gsub("</a>", "", CDD_drugs$DrugBank.ID)
-if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/", recursive = TRUE)
-saveRDS(CDD_drugs, "InputFiles/ReferenceList/CDD_drugs.rds")                                       
+
+# Read DrugBank drug annotations
+# Keep combinations formed by only small molecular drugs
+DrugBank_Drugs <- read.csv("Databases/DrugBank/drug.csv", header = TRUE)
+DrugBank_Drugs <- DrugBank_Drugs[DrugBank_Drugs$type == "small molecule", ] 
 
 
-# Remove drugs used in training 
-CDD_drugs <- CDD_drugs[!(CDD_drugs$DrugBank.ID %in% drugs_training),]
-
+drugCombs <- drugCombs[(drugCombs$Drug1_DrugBank_drug_id %in% DrugBank_Drugs$primary_key & 
+                          drugCombs$Drug2_DrugBank_drug_id %in% DrugBank_Drugs$primary_key), ]
 
 
 # Read drug target interactions from drug bank
 drug_target_ixn  <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
 
 # Check if the drugs forming the pairs have reported targets
-CDD_drugs <- CDD_drugs[CDD_drugs$DrugBank.ID %in% drug_target_ixn$Node1_drugbank_drug_id, ]
-cat(paste0("\nNumber of drugs for generating combinations: ", length(CDD_drugs$DrugBank.ID), "\n"))
-
-
-# Read DrugBank drug annotations
-# Keep only small molecular drugs
-DrugBank_Drugs <- read.csv("Databases/DrugBank/drug.csv", header = TRUE)
-DrugBank_Drugs <- DrugBank_Drugs[DrugBank_Drugs$type == "small molecule", ] 
-CDD_drugs <- CDD_drugs[CDD_drugs$DrugBank.ID %in% DrugBank_Drugs$primary_key, ]
-
-
-# Generate all possible combinations
-drugCombs <- as.data.frame(t(combn(CDD_drugs$DrugBank.ID, 2, simplify = TRUE)))
-colnames(drugCombs) <- c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")
-drugCombs <- drugCombs[drugCombs$Drug1_DrugBank_drug_id != drugCombs$Drug2_DrugBank_drug_id,]
+drugCombs <- drugCombs[(drugCombs$Drug1_DrugBank_drug_id %in% drug_target_ixn$Node1_drugbank_drug_id 
+                        & drugCombs$Drug2_DrugBank_drug_id %in% drug_target_ixn$Node1_drugbank_drug_id), ]
+drugCombs <- unique(drugCombs)
+row.names(drugCombs) <- NULL
+print(dim(drugCombs))
 
 
 
@@ -148,7 +160,8 @@ for(i in 1:nrow(drugCombs)){
 } 
 if(length(remove_index) > 0){drugCombs <- drugCombs[-remove_index,]}
 rm(tmp)
-cat(paste0("\nNumber of drugs combinations for predictions: ", nrow(drugCombs), "\n"))
+cat(paste0("\n\nNumber of drug combinations to be tested: ", nrow(drugCombs), "\n\n"))
+
 
 
 # Read the network on which to run RWR
@@ -158,7 +171,7 @@ rwr_input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net_database.rds")
 # nproc <- detectCores()/2 #Check the number of cores. Use only half of available
 cl <- makeCluster(nproc)
 registerDoParallel(cl) 
-print("Executing RWR")
+
 drugCombs_rwr <- foreach (i=1:nrow(drugCombs),
                           .packages = c("igraph", "tidyr", "dnet")) %dopar% {
                             tmp <- func_dNetRWR_on_drugCombination(rwr_input_network = rwr_input_network,
@@ -173,7 +186,8 @@ drugCombs_rwr <- foreach (i=1:nrow(drugCombs),
 
 
 for(i in 1:length(drugCombs_rwr)){
-  names(drugCombs_rwr)[i] <- paste("Unk", drugCombs[i,c("Drug1_DrugBank_drug_id")], 
+  names(drugCombs_rwr)[i] <- paste(drugCombs[i,c("nct_id")], 
+                                   drugCombs[i,c("Drug1_DrugBank_drug_id")], 
                                    drugCombs[i,c("Drug2_DrugBank_drug_id")], sep = "__")
 }
 
@@ -219,7 +233,6 @@ switch(feature_type,
 
 
 # Execute FGSEA
-print("Executing FGSEA")
 enrichment_res <- func_fgsea_from_rwr_probCut(enrichment_library = enrichment_lib, 
                                               rwr_data = drugCombs_rwr, 
                                               quantile_prob = 0.9,
@@ -229,10 +242,10 @@ drugComb_NES <- func_extract_fgsea_result(enrichment_result = enrichment_res,
                                           result_type = "NES",
                                           enrichment_library = enrichment_lib)
 
-if(!dir.exists("OutputFiles/External_predictions/CDD/features/")){
-  dir.create("OutputFiles/External_predictions/CDD/features/", recursive = TRUE)
+if(!dir.exists("OutputFiles/External_predictions/CDCDB_AACT/features/")){
+  dir.create("OutputFiles/External_predictions/CDCDB_AACT/features/", recursive = TRUE)
 }  
-saveRDS(drugComb_NES, paste0("OutputFiles/External_predictions/CDD/features/CDD_drugCombs__", disease, "_", feature_type, ".rds"))
+saveRDS(drugComb_NES, paste0("OutputFiles/External_predictions/CDCDB_AACT/features/CDCDB_AACT__", disease, "_", feature_type, ".rds"))
 
 
 
@@ -252,33 +265,32 @@ preProcess <- preProcess(data, method = c("center", "scale"))
 data <- predict(object = preProcess, newdata = data)
 
 # Predicted
-print("Executing predictions")
 predictions <- predict(object = final_model, newdata = data, type = "prob") 
-# print(predictions)
+print(predictions)
 row.names(predictions) <- row.names(data)
 predictions$predicted_class <- predict(object = final_model, newdata = data, type = "raw")
 predictions <- rownames_to_column(predictions, "drugCombs")
 predictions <- separate(data = predictions, 
                         col = "drugCombs", 
-                        into = c("actual_class", "Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id"), 
+                        into = c("nct_id", "Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id"), 
                         remove = FALSE)
-predictions$Drug1_name <- CDD_drugs$Product[match(predictions$Drug1_DrugBank_drug_id, CDD_drugs$DrugBank.ID)]
-predictions$Drug2_name <- CDD_drugs$Product[match(predictions$Drug2_DrugBank_drug_id, CDD_drugs$DrugBank.ID)]
-predictions <- predictions[, c("drugCombs", "actual_class", 
+predictions$Drug1_name <- DrugBank_Drugs$name[match(predictions$Drug1_DrugBank_drug_id, DrugBank_Drugs$primary_key)]
+predictions$Drug2_name <- DrugBank_Drugs$name[match(predictions$Drug2_DrugBank_drug_id, DrugBank_Drugs$primary_key)]
+predictions <- predictions[order(predictions$Eff, decreasing = TRUE),]
+predictions <- merge(predictions, drugCombs, by = c("nct_id", "Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id"), all.x = TRUE)
+
+predictions <- predictions %>% select(c("drugCombs", "nct_id", 
                                "Drug1_DrugBank_drug_id", "Drug1_name", 
                                "Drug2_DrugBank_drug_id", "Drug2_name", 
-                               "Adv", "Eff", "predicted_class")]
-predictions <- predictions[order(predictions$Eff, decreasing = TRUE),]
+                               "Adv", "Eff", "predicted_class"), everything())
 
-predictions$Drug1_indications <- CDD_drugs$Indications[match(predictions$Drug1_DrugBank_drug_id, CDD_drugs$DrugBank.ID)]
-predictions$Drug2_indications <- CDD_drugs$Indications[match(predictions$Drug2_DrugBank_drug_id, CDD_drugs$DrugBank.ID)]
-
+predictions <- predictions[, !colnames(predictions) %in% c("drugbank_identifier", "n_drugs")]
 
 # Save as file
-if(!dir.exists("OutputFiles/External_predictions/CDD/")){
-  dir.create("OutputFiles/External_predictions/CDD/", recursive = TRUE)
+if(!dir.exists("OutputFiles/External_predictions/CDCDB_AACT/")){
+  dir.create("OutputFiles/External_predictions/CDCDB_AACT/", recursive = TRUE)
 }                          
-write.xlsx(predictions, paste0("OutputFiles/External_predictions/CDD/ExtPred_CDD_drugCombs__", disease, "_", model, "_", data_balance_method, "_", feature_type, ".xlsx"), 
+write.xlsx(predictions, paste0("OutputFiles/External_predictions/CDCDB_AACT/ExtPred_CDCDB_AACT__", disease, "_", model, "_", data_balance_method, "_", feature_type, ".xlsx"), 
            rowNames = FALSE, overwrite = TRUE)
 
 

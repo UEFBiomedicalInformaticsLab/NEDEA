@@ -108,7 +108,7 @@ DrugBank_drug_category <- DrugBank_drug_category[DrugBank_drug_category$category
 drugCombs <- drugCombs[!(drugCombs$Drug1_DrugBank_drug_id %in% DrugBank_drug_category$parent_key | 
                            drugCombs$Drug2_DrugBank_drug_id %in% DrugBank_drug_category$parent_key), ]
 
-# Remove combinations that contain at least drug pair participating in training
+# Remove combinations that contain drug pair participating in training
 remove_index <- c()
 for(i in 1:nrow(drugCombs)){
   drug1 <- drugCombs[i, "Drug1_DrugBank_drug_id"]
@@ -128,7 +128,7 @@ DrugBank_Drugs <- read.csv("Databases/DrugBank/drug.csv", header = TRUE)
 DrugBank_Drugs <- DrugBank_Drugs[DrugBank_Drugs$type == "small molecule", ] 
 
 
-drugCombs <- drugCombs[(drugCombs$Drug1_DrugBank_drug_id %in% DrugBank_Drugs$primary_key | 
+drugCombs <- drugCombs[(drugCombs$Drug1_DrugBank_drug_id %in% DrugBank_Drugs$primary_key & 
                            drugCombs$Drug2_DrugBank_drug_id %in% DrugBank_Drugs$primary_key), ]
 
 
