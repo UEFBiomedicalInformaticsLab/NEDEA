@@ -12,6 +12,13 @@ library(openxlsx)
 library(tidyverse)
 library(sparklyr)
 library(sparklyr.nested)
+library(unixtools)
+
+
+
+# Set temporary directory
+if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
+set.tempdir("tmp_dir/")
 
 
 
@@ -49,7 +56,6 @@ rm(tmp1)
 
 
 
-# spark_install()
 # Retrieve all drugs information from OpenTargets
 if(!dir.exists("Databases/OpenTargets/")){dir.create("Databases/OpenTargets/", recursive = TRUE)}
 if(!dir.exists("Databases/OpenTargets/indication")){
@@ -59,7 +65,7 @@ if(!dir.exists("Databases/OpenTargets/diseases")){
   system("wget --recursive --no-parent --no-host-directories -P Databases/OpenTargets/ --cut-dirs 8 ftp://ftp.ebi.ac.uk/pub/databases/opentargets/platform/21.04/output/etl/parquet/diseases")
 }
 
-
+spark_install()
 sc <- spark_connect(master = "local")
 
 
@@ -69,10 +75,12 @@ OpenTargets_Drug_indications <- spark_read_parquet(sc, "OpenTargets_Drug_indicat
 OpenTargets_Drug_approvedIndications <- as.data.frame(sdf_unnest_longer(OpenTargets_Drug_indications, "approvedIndications"))
 OpenTargets_Drug_approvedIndications <- OpenTargets_Drug_approvedIndications[, c("id", "approvedIndications")]
 
-OpenTargets_Drug_indications <- OpenTargets_Drug_indications %>% unnest(indications) 
+OpenTargets_Drug_indications <- OpenTargets_Drug_indications %>% sdf_unnest(indications) 
 OpenTargets_Drug_indications <- as.data.frame(OpenTargets_Drug_indications)
 OpenTargets_Drug_indications <- OpenTargets_Drug_indications[, c("id", "disease", "efoName", "maxPhaseForIndication")]
-OpenTargets_Drug_indications <- OpenTargets_Drug_indications[grep("cancer|carcinoma|sarcoma|leukemia", OpenTargets_Drug_indications$efoName), ]
+OpenTargets_Drug_indications <- OpenTargets_Drug_indications[grep("cancer|carcinoma|sarcoma|leukemia", 
+                                                                  OpenTargets_Drug_indications$efoName,
+                                                                  ignore.case = TRUE), ]
 
 # Map drugs to DrugBankID using ChEMBL IDs
 DrugBank_Drugs_idMap <- read.csv("Databases/DrugBank/drug_external_identifiers.csv", header = TRUE)
@@ -86,7 +94,9 @@ OpenTargets_Diseases <- spark_read_parquet(sc, "OpenTargets_Diseases", "Database
 OpenTargets_Diseases <- as.data.frame(OpenTargets_Diseases)
 OpenTargets_Diseases <- OpenTargets_Diseases[, c("id", "name")]
 OpenTargets_Drug_approvedIndications$efoName <- OpenTargets_Diseases$name[match(OpenTargets_Drug_approvedIndications$approvedIndications, OpenTargets_Diseases$id)]
-OpenTargets_Drug_approvedIndications <- OpenTargets_Drug_approvedIndications[grep("cancer|carcinoma|sarcoma|leukemia", OpenTargets_Drug_approvedIndications$efoName), ]
+OpenTargets_Drug_approvedIndications <- OpenTargets_Drug_approvedIndications[grep("cancer|carcinoma|sarcoma|leukemia", 
+                                                                                  OpenTargets_Drug_approvedIndications$efoName, 
+                                                                                  ignore.case = TRUE), ]
 
 
 
