@@ -115,7 +115,7 @@ for(i in 1:nrow(drugCombs)){
   drug2 <- drugCombs[i, "Drug2_DrugBank_drug_id"]
   tmp <- drugCombs_training[(drugCombs_training$Drug1_DrugBank_drug_id == drug1 & drugCombs_training$Drug2_DrugBank_drug_id == drug2) | 
                               (drugCombs_training$Drug1_DrugBank_drug_id == drug2 & drugCombs_training$Drug2_DrugBank_drug_id == drug1), ]
-  if(nrow(tmp) > 0){print(i); remove_index <- c(remove_index, i)} 
+  if(nrow(tmp) > 0){remove_index <- c(remove_index, i)} 
 }
 if(length(remove_index) > 0){drugCombs <- drugCombs[-remove_index,]}
 rm(tmp)

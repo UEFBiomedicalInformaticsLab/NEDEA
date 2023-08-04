@@ -3,12 +3,15 @@ set.seed(5081)
 
 
 # Applicability domain analysis using the combined efficacy and safety estimates from the RWR-FGSEA approach
+# Checks for outliers
 
 
 # Load libraries 
 library(ggfortify)
 library(ggpubr)
 library(tidyverse)
+library(FNN)
+
 
 
 # For external drug combinations from C-DCDB (RX/OTC)
@@ -36,22 +39,47 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
   pca_res_train <- predict(pca_train, pca_data_train)
   pca_res_ext <- predict(pca_train, pca_data_ext)
   
-  # Plot
-  plot_data_train <- data.frame(pca_res_train)
-  plot_data_train$Class <- substr(row.names(plot_data_train), 1, 3)
+  # Compute k-NN distances for training set
+  k <- 10 # you can adjust this value
+  knn_train <- get.knn(pca_res_train[,1:2], k = k)
   
-  plot_data_ext <- data.frame(pca_res_ext)
-  plot_data_ext$Class <- substr(row.names(plot_data_ext), 1, 3)
+  # Compute distribution of average k-NN distances for training set
+  knn_train_avg <- rowMeans(knn_train$nn.dist)
+  quants <- quantile(knn_train_avg, probs = c(0.25, 0.75))
+  iqr <- IQR(knn_train_avg)
   
-  pca_scatter <- ggplot() +
-    geom_point(data = plot_data_train, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
+  # Combine train_set and test_set
+  combined_set <- rbind(pca_res_train[,1:2], pca_res_ext[,1:2])
+  
+  # Compute k-NN distances for combined set
+  knn_combined <- get.knn(combined_set, k = k)
+  
+  # Get k-NN distances for the test set from the combined set k-NN distances
+  knn_ext <- knn_combined$nn.dist[(nrow(pca_res_train) + 1):nrow(combined_set),]
+  
+  # Compute average k-NN distances for test set
+  knn_ext_avg <- rowMeans(knn_ext)
+  
+  # Check if test instances fall within the AD
+  ad_ext <- (knn_ext_avg >= (quants[1] - 1.5 * iqr)) & (knn_ext_avg <= (quants[2] + 1.5 * iqr))
+  
+  # Add applicability domain info to the test set
+  pca_res_ext <- data.frame(pca_res_ext, ad = ad_ext)
+  
+  # Visualize the training and test data in the reduced space
+  
+  plot_list[[disease]] <- ggplot() +
+    geom_point(data = data.frame(pca_res_train), 
+               aes(x = PC1, y = PC2), 
+               color = "blue",
+               size = 0.5 ,
+               shape = 3,) +
+    geom_point(data = pca_res_ext, 
+               aes(x = PC1, y = PC2, color = ad), 
+               size = 0.5 ,
                shape = 3) +
-    geom_point(data = plot_data_ext, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
-               shape = 3) +
+    scale_color_manual(values = c("red", "green"), labels = c("Outside AD", "Inside AD")) +
+    labs(color = "Applicability Domain") +
     theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -71,19 +99,18 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
     ggtitle(disease) +
     xlab(paste0("PC1 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[1], "%)")) + 
     ylab(paste0("PC2 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[2], "%)"))
-  
-  plot_list[[disease]] <- pca_scatter
 }
 if(!dir.exists("OutputFiles/Plots/Applicibility_domain/")){
   dir.create("OutputFiles/Plots/Applicibility_domain/", recursive = TRUE)
 }  
-tiff(paste0("OutputFiles/Plots/Applicibility_domain/AD_NES_CombinedDisAdr2Gene__CDCDB_OrangeBook_rxotc.tiff"),
+tiff(paste0("OutputFiles/Plots/Applicibility_domain/ADcheck_NES_CombinedDisAdr2Gene__CDCDB_OrangeBook_rxotc.tiff"),
      width = 20, height = 20,
      units = "cm", compression = "lzw", res = 1200)
 ggarrange(plotlist = plot_list, 
           nrow = 3, ncol = 2, 
           common.legend = TRUE, legend = "bottom")
 dev.off()
+
 
 
 
@@ -112,23 +139,47 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
   pca_res_train <- predict(pca_train, pca_data_train)
   pca_res_ext <- predict(pca_train, pca_data_ext)
   
-  # Plot
-  plot_data_train <- data.frame(pca_res_train)
-  plot_data_train$Class <- substr(row.names(plot_data_train), 1, 3)
+  # Compute k-NN distances for training set
+  k <- 10 # you can adjust this value
+  knn_train <- get.knn(pca_res_train[,1:2], k = k)
   
-  plot_data_ext <- data.frame(pca_res_ext)
-  plot_data_ext$Class <- substr(row.names(plot_data_ext), 1, 3)
-  plot_data_ext$Class <- gsub("^NCT", "Unk", plot_data_ext$Class)
+  # Compute distribution of average k-NN distances for training set
+  knn_train_avg <- rowMeans(knn_train$nn.dist)
+  quants <- quantile(knn_train_avg, probs = c(0.25, 0.75))
+  iqr <- IQR(knn_train_avg)
   
-  pca_scatter <- ggplot() +
-    geom_point(data = plot_data_train, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
+  # Combine train_set and test_set
+  combined_set <- rbind(pca_res_train[,1:2], pca_res_ext[,1:2])
+  
+  # Compute k-NN distances for combined set
+  knn_combined <- get.knn(combined_set, k = k)
+  
+  # Get k-NN distances for the test set from the combined set k-NN distances
+  knn_ext <- knn_combined$nn.dist[(nrow(pca_res_train) + 1):nrow(combined_set),]
+  
+  # Compute average k-NN distances for test set
+  knn_ext_avg <- rowMeans(knn_ext)
+  
+  # Check if test instances fall within the AD
+  ad_ext <- (knn_ext_avg >= (quants[1] - 1.5 * iqr)) & (knn_ext_avg <= (quants[2] + 1.5 * iqr))
+  
+  # Add applicability domain info to the test set
+  pca_res_ext <- data.frame(pca_res_ext, ad = ad_ext)
+  
+  # Visualize the training and test data in the reduced space
+  
+  plot_list[[disease]] <- ggplot() +
+    geom_point(data = data.frame(pca_res_train), 
+               aes(x = PC1, y = PC2), 
+               color = "blue",
+               size = 0.5 ,
+               shape = 3,) +
+    geom_point(data = pca_res_ext, 
+               aes(x = PC1, y = PC2, color = ad), 
+               size = 0.5 ,
                shape = 3) +
-    geom_point(data = plot_data_ext, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
-               shape = 3) +
+    scale_color_manual(values = c("red", "green"), labels = c("Outside AD", "Inside AD")) +
+    labs(color = "Applicability Domain") +
     theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -148,14 +199,11 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
     ggtitle(disease) +
     xlab(paste0("PC1 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[1], "%)")) + 
     ylab(paste0("PC2 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[2], "%)"))
-  
-  plot_list[[disease]] <- pca_scatter
 }
-
 if(!dir.exists("OutputFiles/Plots/Applicibility_domain/")){
   dir.create("OutputFiles/Plots/Applicibility_domain/", recursive = TRUE)
 }  
-tiff(paste0("OutputFiles/Plots/Applicibility_domain/AD_NES_CombinedDisAdr2Gene__CDCDB_AACT.tiff"),
+tiff(paste0("OutputFiles/Plots/Applicibility_domain/ADcheck_NES_CombinedDisAdr2Gene__CDCDB_AACT.tiff"),
      width = 20, height = 20,
      units = "cm", compression = "lzw", res = 1200)
 ggarrange(plotlist = plot_list, 
@@ -191,22 +239,47 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
   pca_res_train <- predict(pca_train, pca_data_train)
   pca_res_ext <- predict(pca_train, pca_data_ext)
   
-  # Plot
-  plot_data_train <- data.frame(pca_res_train)
-  plot_data_train$Class <- substr(row.names(plot_data_train), 1, 3)
+  # Compute k-NN distances for training set
+  k <- 10 # you can adjust this value
+  knn_train <- get.knn(pca_res_train[,1:2], k = k)
   
-  plot_data_ext <- data.frame(pca_res_ext)
-  plot_data_ext$Class <- substr(row.names(plot_data_ext), 1, 3)
+  # Compute distribution of average k-NN distances for training set
+  knn_train_avg <- rowMeans(knn_train$nn.dist)
+  quants <- quantile(knn_train_avg, probs = c(0.25, 0.75))
+  iqr <- IQR(knn_train_avg)
   
-  pca_scatter <- ggplot() +
-    geom_point(data = plot_data_train, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
+  # Combine train_set and test_set
+  combined_set <- rbind(pca_res_train[,1:2], pca_res_ext[,1:2])
+  
+  # Compute k-NN distances for combined set
+  knn_combined <- get.knn(combined_set, k = k)
+  
+  # Get k-NN distances for the test set from the combined set k-NN distances
+  knn_ext <- knn_combined$nn.dist[(nrow(pca_res_train) + 1):nrow(combined_set),]
+  
+  # Compute average k-NN distances for test set
+  knn_ext_avg <- rowMeans(knn_ext)
+  
+  # Check if test instances fall within the AD
+  ad_ext <- (knn_ext_avg >= (quants[1] - 1.5 * iqr)) & (knn_ext_avg <= (quants[2] + 1.5 * iqr))
+  
+  # Add applicability domain info to the test set
+  pca_res_ext <- data.frame(pca_res_ext, ad = ad_ext)
+  
+  # Visualize the training and test data in the reduced space
+  
+  plot_list[[disease]] <- ggplot() +
+    geom_point(data = data.frame(pca_res_train), 
+               aes(x = PC1, y = PC2), 
+               color = "blue",
+               size = 0.5 ,
                shape = 3) +
-    geom_point(data = plot_data_ext, 
-               aes(x = PC1, y = PC2, color = Class), 
-               size = 0.5,
+    geom_point(data = pca_res_ext, 
+               aes(x = PC1, y = PC2, color = ad), 
+               size = 0.5 ,
                shape = 3) +
+    scale_color_manual(values = c("red", "green"), labels = c("Outside AD", "Inside AD")) +
+    labs(color = "Applicability Domain") +
     theme(panel.background = element_rect(fill = "white", colour = "black", size = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -226,20 +299,18 @@ for(disease in c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", 
     ggtitle(disease) +
     xlab(paste0("PC1 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[1], "%)")) + 
     ylab(paste0("PC2 (",   round(pca_train$sdev^2 / sum(pca_train$sdev^2) * 100, 2)[2], "%)"))
-  
-  plot_list[[disease]] <- pca_scatter
 }
-
 if(!dir.exists("OutputFiles/Plots/Applicibility_domain/")){
   dir.create("OutputFiles/Plots/Applicibility_domain/", recursive = TRUE)
 }  
-tiff(paste0("OutputFiles/Plots/Applicibility_domain/AD_NES_CombinedDisAdr2Gene__CDD.tiff"),
+tiff(paste0("OutputFiles/Plots/Applicibility_domain/ADcheck_NES_CombinedDisAdr2Gene__CDD.tiff"),
      width = 20, height = 20,
      units = "cm", compression = "lzw", res = 1200)
 ggarrange(plotlist = plot_list, 
           nrow = 3, ncol = 2, 
           common.legend = TRUE, legend = "bottom")
 dev.off()
+
 
 
 print(warnings())
