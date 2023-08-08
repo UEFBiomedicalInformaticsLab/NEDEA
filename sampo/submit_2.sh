@@ -3,7 +3,8 @@
 disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "KidneyCancer" "SkinCancer")
 data_balance_method=("none")
 metric_list=("BalancedAccuracy" "F1" "PRAUC")
-
+models=("rf" "svmRadial" "nb" "glmnet")
+feature_types=("Disease2Gene" "WithdrawalAdr2Gene" "CombinedDisAdr2Gene" "keggPath" "SMPDbPath_DrugMet" "SMPDbPath_DrugAction" "miscGeneSet")
   
 
 
@@ -63,11 +64,23 @@ metric_list=("BalancedAccuracy" "F1" "PRAUC")
 
 
 
-# Plot feature importance
-for disease in ${disease_list[@]}
+# # Plot feature importance
+# for disease in ${disease_list[@]}
+# do
+#   for balance in ${data_balance_method[@]}
+#   do
+#     sbatch --job-name=plotVarImp_$disease\_$balance --output=plotVarImp_$disease\_$balance.out --export=disease=$disease,balance=$balance, sampo/16_sampo_Rscript.sh $disease $balance
+#   done
+# done
+
+
+
+
+# Plot sample distribution by important features
+for feature_type in ${feature_types[@]}
 do
-  for balance in ${data_balance_method[@]}
+  for model  in ${models[@]}
   do
-    sbatch --job-name=plotVarImp_$disease\_$balance --output=plotVarImp_$disease\_$balance.out --export=disease=$disease,balance=$balance, sampo/16_sampo_Rscript.sh $disease $balance
+    sbatch --job-name=plotSampleDistImp_$feature_type\_$model --output=plotSampleDistImp_$feature_type\_$model.out --export=feature_type=$feature_type,model=$model, sampo/28_sampo_Rscript.sh $feature_type $model
   done
 done
