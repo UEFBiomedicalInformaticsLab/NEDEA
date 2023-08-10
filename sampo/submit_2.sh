@@ -76,11 +76,22 @@ feature_types=("Disease2Gene" "WithdrawalAdr2Gene" "CombinedDisAdr2Gene" "keggPa
 
 
 
-# Plot sample distribution by important features
+# Plot sample distribution by important features (PCA)
 for feature_type in ${feature_types[@]}
 do
   for model  in ${models[@]}
   do
-    sbatch --job-name=plotSampleDistImp_$feature_type\_$model --output=plotSampleDistImp_$feature_type\_$model.out --export=feature_type=$feature_type,model=$model, sampo/28_sampo_Rscript.sh $feature_type $model
+    sbatch --job-name=plotSampleDistImpPCA_$feature_type\_$model --output=plotSampleDistImpPCA_$feature_type\_$model.out --export=feature_type=$feature_type,model=$model, sampo/28_sampo_Rscript.sh $feature_type $model
+  done
+done
+
+
+
+# Plot sample distribution by important features (NES)
+for feature_type in ${feature_types[@]}
+do
+  for model  in ${models[@]}
+  do
+    sbatch --job-name=plotSampleDistImpNES_$feature_type\_$model --output=plotSampleDistImpNES_$feature_type\_$model.out --export=feature_type=$feature_type,model=$model, sampo/29_sampo_Rscript.sh $feature_type $model
   done
 done

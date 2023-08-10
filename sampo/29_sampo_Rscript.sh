@@ -23,6 +23,6 @@
 ~/miniconda3/envs/interactome/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
-echo "Plot sample distribution by important features (PCA)" $1 " - " $2, " ---------------------"
+echo "Plot sample distribution by important features (NES)" $1 " - " $2, " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Summary_plots/plot_SampleDist_PCA_byImpFeature_rwrFgsea.R --feature_type $1 --model $2 --data_balance_method none 
+~/miniconda3/envs/interactome/bin/Rscript Scripts/Summary_plots/plot_SampleDist_NES_byImpFeature_rwrFgsea.R --feature_type $1 --model $2 --data_balance_method none 
