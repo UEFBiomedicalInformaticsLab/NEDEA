@@ -216,6 +216,271 @@ write.csv(tmp, "Databases/FimmDrugComb/FimmDrugComb_drug_categories_by_tissue.cs
 
 # TO ADD
 
+ddi = read.csv("/Users/vittfo/Downloads/drug_drug_interactions.csv") # we need to read the drug-drug infor file from DrugBank
+colnames(ddi)[c(1,4)] <- c("Drug1_DBank_id", "Drug2_DBank_id") # pelase rename these column names as you wish
+
+# The following code section was used to study the most frequentely reported set of words (item set) in the strings "description" 
+# matching a given key word. 
+find_top_k_frequent_sequences <- function(strings_list, n = 2, k = 10) {
+  require(stringi)  # For string operations
+  
+  # Generate n-grams
+  generate_ngrams <- function(text, n) {
+    words <- unlist(strsplit(text, split = " "))
+    l <- length(words)
+    ngrams <- sapply(1:(l-n+1), function(i) paste(words[i:(i+n-1)], collapse = " "))
+    return(ngrams)
+  }
+  
+  all_ngrams <- unlist(lapply(strings_list, function(x) generate_ngrams(x, n)))
+  
+  # Count and sort n-grams
+  ngram_freq <- table(all_ngrams)
+  sorted_ngram_freq <- sort(ngram_freq, decreasing = TRUE)
+  
+  # Return the top k frequent n-grams and their counts
+  top_k <- min(k, length(sorted_ngram_freq))
+  list(ngrams = names(sorted_ngram_freq)[1:top_k], counts = as.integer(sorted_ngram_freq[1:top_k]))
+}
+                              
+find_top_k_sequences_with_keyword <- function(strings_list, keyword, n = 2, k = 10) {
+  require(stringi)
+  
+  # Generate n-grams
+  generate_ngrams <- function(text, n) {
+    words <- unlist(strsplit(text, split = " "))
+    l <- length(words)
+    ngrams <- sapply(1:(l-n+1), function(i) paste(words[i:(i+n-1)], collapse = " "))
+    return(ngrams)
+  }
+  
+  # Filter sequences with the keyword
+  filter_keyword <- function(ngram_list, keyword) {
+    ngram_list[sapply(ngram_list, function(ngram) grepl(keyword, ngram))]
+  }
+  
+  all_ngrams <- unlist(lapply(strings_list, function(x) generate_ngrams(x, n)))
+  
+  keyword_ngrams <- filter_keyword(all_ngrams, keyword)
+  
+  # If no sequences with keyword, return empty list
+  if (length(keyword_ngrams) == 0) {
+    return(list(ngrams = character(0), counts = integer(0)))
+  }
+  
+  # Count and sort n-grams
+  ngram_freq <- table(keyword_ngrams)
+  sorted_ngram_freq <- sort(ngram_freq, decreasing = TRUE)
+  
+  # Return the top k frequent n-grams and their counts
+  top_k <- min(k, length(sorted_ngram_freq))
+  list(ngrams = names(sorted_ngram_freq)[1:top_k], counts = as.integer(sorted_ngram_freq[1:top_k]))
+}
+
+top_freq = find_top_k_frequent_sequences(ddi$description, n = 4, 100)
+risk_sev_res = find_top_k_sequences_with_keyword(ddi$description, keyword = 'The risk or severity', n = 6, k = 50)
+
+test_eff_inc = grepl("The therapeutic efficacy of", ddi$description) & grepl("can be increased when used in combination", ddi$description)
+test_eff_dec = grepl("The therapeutic efficacy of", ddi$description) & grepl("can be decreased when used in combination", ddi$description)
+test_anticinc = grepl("may increase the anticoagulant activities", ddi$description)
+test_anticdec = grepl("may decrease the anticoagulant activities", ddi$description)
+test_antihinc = grepl("may increase the antihypertensive activities", ddi$description)
+test_antihdec = grepl("may decrease the antihypertensive activities", ddi$description)
+test_nsd = grepl("(CNS depressant)", ddi$description)
+test_scinc = grepl("The serum concentration of", ddi$description) & grepl("can be increased", ddi$description)
+test_scdec = grepl("The serum concentration of", ddi$description) & grepl("can be decreased", ddi$description)
+test_meinc = grepl("The metabolism of", ddi$description) & grepl("can be increased", ddi$description)
+test_medec = grepl("The metabolism of", ddi$description) & grepl("can be decreased", ddi$description)
+test_absde = grepl("a decrease in the absorption ", ddi$description)
+test_all_risk = grepl("risk or severity", ddi$description)
+#
+list_tox_test = list()
+for(i in 1:length(risk_sev_res$ngrams)){
+  list_tox_test[[length(list_tox_test) + 1]] = grepl(risk_sev_res$ngrams[i], ddi$description)
+}
+names(list_tox_test) = risk_sev_res$ngrams
+
+#
+sum(test_eff_inc)
+sum(test_eff_dec)
+sum(test_anticinc)
+sum(test_anticdec)
+sum(test_antihinc)
+sum(test_antihdec)
+sum(test_nsd)
+sum(test_scinc)
+sum(test_scdec)
+sum(test_meinc)
+sum(test_medec)
+sum(test_absde)
+sum(test_all_risk)
+                              
+# now we can define our labels
+                      
+# Indicate the drug pairs associated with a confirmed increase or decrease in efficacy (of which there are very few cases).                       
+ddi$effVsNeff = rep('Unk', nrow(ddi))
+ddi$effVsNeff[test_eff_inc] = "IncEff"
+ddi$effVsNeff[test_eff_dec] = "DecEff"
+
+# Using pharmacokinetics information to identify a potential decrease or increase in efficacy for each drug pair
+ddi$phamk = rep('Unk', nrow(ddi))
+ddi$phamk[test_meinc | test_scdec | test_absde] = "PDecEff"
+ddi$phamk[test_medec | test_scinc] = "PIncEff"
+
+# When analyzing drug-drug interactions (DDIs), understanding the potential implications of these interactions on drug efficacy 
+# is crucial for therapeutic decisions. Your strategy uses three key pharmacokinetic parameters to infer potential alterations in drug efficacy:
+# - Serum Concentration Changes: Alterations in the serum concentration of a drug can directly affect its therapeutic outcomes. 
+#   An increase in serum concentration might enhance its efficacy, while a decrease could reduce its therapeutic effect. 
+#   By observing these changes, you can reasonably speculate on the potential impact on drug efficacy.
+# - Metabolism Alterations: Changes in the metabolism of a drug can indirectly influence its serum concentration. 
+#   An increase in metabolism generally results in decreased serum concentration, leading to potentially reduced efficacy. 
+#   Conversely, decreased metabolism can lead to increased serum concentrations, which may enhance efficacy but also the risk of adverse effects.
+# - Absorption Decreases: Absorption is the gateway to systemic circulation for orally administered drugs. 
+#   A decrease in absorption directly affects the amount of the drug entering systemic circulation, 
+#   which can reduce its therapeutic effect.
+
+# Now we select toxicity endpoints which are often observed in cancer for each drug pair 
+
+#### For all cancers
+
+# The risk or severity of adverse effect (not specific)
+# The risk or severity of QTc
+# The risk or severity of hypertension
+# The risk or severity of Tachycardia
+# The risk or severity of hyperglycemia
+# The risk or severity of hypotension
+# The risk or severity of renal
+# The risk or severity of infection
+# The risk or severity of CNS
+# The risk or severity of edema
+# The risk or severity of neutropenia
+# The risk or severity of myelosuppression
+# The risk or severity of cardiotoxicity
+# The risk or severity of liver 
+# The risk or severity of hyperthermia
+
+set_adv_ids = c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49) 
+
+#### Breast cancer adverse effects
+# The risk or severity of Cardiac Arrhythmia
+# The risk or severity of peripheral neuropathy 
+# The risk or severity of electrolyte imbalance
+names(list_tox_test)[c(set_adv_ids, 25, 31, 47)]
+sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 25, 31, 47)]))
+#
+ddi$breastADV = rep('Unk', nrow(ddi))
+ddi$breastADV[Reduce('|',list_tox_test[c(set_adv_ids, 25, 47)])] = "Adv"
+
+#### Lung cancer adverse effects
+# The risk or severity of bleeding
+# The risk or severity of Thrombosis
+# The risk or severity of Cardiac Arrhythmia
+# The risk or severity of respiratory
+# The risk or severity of hyponatremia
+# The risk or severity of electrolyte imbalance
+names(list_tox_test)[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]
+sapply(list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]))
+#
+ddi$lungADV = rep('Unk', nrow(ddi))
+ddi$lungADV[Reduce('|',list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] = "Adv"
+
+#### Prostate cancer adverse effects
+# The risk or severity of fluid retention
+# The risk or severity of urinary retention
+# The risk or severity of hypercalcemia
+names(list_tox_test)[c(set_adv_ids, 31, 38, 42, 43)]
+sapply(list_tox_test[c(set_adv_ids, 31, 38, 42, 43)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 31, 38, 42, 43)]))
+#
+ddi$prostateADV = rep('Unk', nrow(ddi))
+ddi$prostateADV[Reduce('|',list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] = "Adv"                
+                   
+#### Ovarian cancer adverse effects  
+# The risk or severity of bleeding
+# The risk or severity of Cardiac Arrhythmia
+# The risk or severity of urinary retention
+# The risk or severity of hypercalcemia
+# The risk or severity of respiratory
+names(list_tox_test)[c(set_adv_ids, 3, 25, 42, 43, 46)]
+sapply(list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)]))
+#
+ddi$ovarianADV = rep('Unk', nrow(ddi))
+ddi$ovarianADV[Reduce('|',list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] = "Adv"                
+
+#### Kidney/renal cancer adverse effects  
+# The risk or severity of bleeding
+# The risk or severity of nephrotoxicity
+# The risk or severity of electrolyte
+# The risk or severity of fluid retention
+# The risk or severity of hyperkalemia
+# The risk or severity of hyponatremia
+# The risk or severity of urinary
+# The risk or severity of hypercalcemia
+names(list_tox_test)[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]
+sapply(list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]))
+#
+ddi$kidneyADV = rep('Unk', nrow(ddi))
+ddi$kidneyADV[Reduce('|',list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] = "Adv"   
+#
+#### Skin cancer adverse effects  
+# The risk or severity of respiratory: if skin cancer metastasizes to the lungs, some treatments might have respiratory side effects.
+names(list_tox_test)[c(set_adv_ids, 46)]
+sapply(list_tox_test[c(set_adv_ids, 46)], sum)
+sum(Reduce('|',list_tox_test[c(set_adv_ids, 46)]))
+#
+ddi$skinADV = rep('Unk', nrow(ddi))
+ddi$skinADV[Reduce('|',list_tox_test[c(set_adv_ids, 46)])] = "Adv"   
+#
+#
+# Merging the dataframes based on matching drug ID combinations
+fimm_db_all = merge(FimmDrugComb_drugCombCat2, ddi, 
+                    by.x = c("Drug1_DBank_id", "Drug2_DBank_id"), 
+                    by.y = c("Drug1_DBank_id", "Drug2_DBank_id"), 
+                    all.x = TRUE)
+# 
+breast_tissue = which(fimm_db_all$tissue == "BREAST")
+lung_tissue = which(fimm_db_all$tissue == "LUNG")
+kidney_tissue = which(fimm_db_all$tissue == "KIDNEY")
+prostate_tissue = which(fimm_db_all$tissue == "PROSTATE")
+ovararian_tissue = which(fimm_db_all$tissue == "OVARY")
+skin_tissue = which(fimm_db_all$tissue == "SKIN")
+#
+length(which(complete.cases(fimm_db_all)))
+table(fimm_db_all$totSyn, fimm_db_all$effVsNeff)
+table(fimm_db_all$totSyn, fimm_db_all$phamk)
+print('Association between total synergistic score and ADV info')
+print('<breast>')
+table(fimm_db_all$totSyn[breast_tissue], fimm_db_all$phamk[breast_tissue])
+table(fimm_db_all$totSyn[breast_tissue], fimm_db_all$breastADV[breast_tissue])
+print('<lung>')
+table(fimm_db_all$totSyn[lung_tissue], fimm_db_all$phamk[lung_tissue])
+table(fimm_db_all$totSyn[lung_tissue], fimm_db_all$lungADV[lung_tissue])
+print('<kidney>')
+table(fimm_db_all$totSyn[kidney_tissue], fimm_db_all$phamk[kidney_tissue])
+table(fimm_db_all$totSyn[kidney_tissue], fimm_db_all$kidneyADV[kidney_tissue])
+print('<prostate>')
+table(fimm_db_all$totSyn[prostate_tissue], fimm_db_all$phamk[prostate_tissue])
+table(fimm_db_all$totSyn[prostate_tissue], fimm_db_all$prostateADV[prostate_tissue])
+print('<ovarian>')
+table(fimm_db_all$totSyn[ovararian_tissue], fimm_db_all$phamk[ovararian_tissue])
+table(fimm_db_all$totSyn[ovararian_tissue], fimm_db_all$ovarianADV[ovararian_tissue])
+print('<skin>')
+table(fimm_db_all$totSyn[skin_tissue], fimm_db_all$phamk[skin_tissue])
+table(fimm_db_all$totSyn[skin_tissue], fimm_db_all$skinADV[skin_tissue])
+#
+
+# in more depth
+table(fimm_db_all$totSyn[which(fimm_db_all$totSyn > 2 & fimm_db_all$effVsNeff == "IncEff")], 
+      fimm_db_all$effVsNeff[which(fimm_db_all$totSyn > 2 & fimm_db_all$effVsNeff == "IncEff")])
+table(fimm_db_all$totSyn[which(fimm_db_all$totSyn > 2 & fimm_db_all$phamk == "PIncEff")], 
+      fimm_db_all$phamk[which(fimm_db_all$totSyn > 2 & fimm_db_all$phamk == "PIncEff")])
+
+
+# then you can add the code to split the dataset based on the tissue columns
 
 # LungCancer specific
 tmp <- FimmDrugComb_drugCombCat$lung
