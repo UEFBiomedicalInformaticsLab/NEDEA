@@ -473,11 +473,78 @@ table(fimm_db_all$totSyn[skin_tissue], fimm_db_all$phamk[skin_tissue])
 table(fimm_db_all$totSyn[skin_tissue], fimm_db_all$skinADV[skin_tissue])
 #
 
-# in more depth
-table(fimm_db_all$totSyn[which(fimm_db_all$totSyn > 2 & fimm_db_all$effVsNeff == "IncEff")], 
-      fimm_db_all$effVsNeff[which(fimm_db_all$totSyn > 2 & fimm_db_all$effVsNeff == "IncEff")])
-table(fimm_db_all$totSyn[which(fimm_db_all$totSyn > 2 & fimm_db_all$phamk == "PIncEff")], 
-      fimm_db_all$phamk[which(fimm_db_all$totSyn > 2 & fimm_db_all$phamk == "PIncEff")])
+# how we select the good drug combinations
+
+# BreastCancer specific
+breast_dp = fimm_db_all[breast_tissue,]
+# good drug combination
+length(which((breast_dp$totSyn >= 3 & breast_dp$breastADV == "Unk") | 
+             (breast_dp$phamk == "PIncEff" & breast_dp$breastADV == "Unk" & breast_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+             (breast_dp$effVsNeff== "IncEff" & breast_dp$breastADV == "Unk" & breast_dp$totSyn >= -2)))
+# bad drug combination
+length(which((breast_dp$totSyn <= -3 & breast_dp$breastADV == "Adv") | 
+             (breast_dp$phamk == "PDecEff" & breast_dp$breastADV == "Unk" & breast_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+             (breast_dp$effVsNeff== "DecEff" & breast_dp$breastADV == "Unk" & breast_dp$totSyn <= -3)))
+
+
+# LungCancer specific
+lung_dp = fimm_db_all[lung_tissue,]
+# good drug combination
+length(which((lung_dp$totSyn >= 3 & lung_dp$lungADV == "Unk") | 
+               (lung_dp$phamk == "PIncEff" & lung_dp$lungADV == "Unk" & lung_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+               (lung_dp$effVsNeff== "IncEff" & lung_dp$lungADV == "Unk" & lung_dp$totSyn >= -2)))
+# bad drug combination
+length(which((lung_dp$totSyn <= -3 & lung_dp$lungADV == "Adv") | 
+               (lung_dp$phamk == "PDecEff" & lung_dp$lungADV == "Unk" & lung_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+               (lung_dp$effVsNeff== "DecEff" & lung_dp$lungADV == "Unk" & lung_dp$totSyn <= -3)))
+
+
+# ProstateCancer specific
+prostate_dp = fimm_db_all[prostate_tissue,]
+# good drug combination
+length(which((prostate_dp$totSyn >= 3 & prostate_dp$prostateADV == "Unk") | 
+               (prostate_dp$phamk == "PIncEff" & prostate_dp$prostateADV == "Unk" & prostate_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+               (prostate_dp$effVsNeff== "IncEff" & prostate_dp$prostateADV == "Unk" & prostate_dp$totSyn >= -2)))
+# bad drug combination
+length(which((prostate_dp$totSyn <= -3 & prostate_dp$prostateADV == "Adv") | 
+               (prostate_dp$phamk == "PDecEff" & prostate_dp$prostateADV == "Unk" & prostate_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+               (prostate_dp$effVsNeff== "DecEff" & prostate_dp$prostateADV == "Unk" & prostate_dp$totSyn <= -3)))
+
+
+# KidneyCancer specific
+kidney_dp = fimm_db_all[kidney_tissue,]
+# good drug combination
+length(which((kidney_dp$totSyn >= 3 & kidney_dp$kidneyADV == "Unk") | 
+               (kidney_dp$phamk == "PIncEff" & kidney_dp$kidneyADV == "Unk" & kidney_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+               (kidney_dp$effVsNeff== "IncEff" & kidney_dp$kidneyADV == "Unk" & kidney_dp$totSyn >= -2)))
+# bad drug combination
+length(which((kidney_dp$totSyn <= -3 & kidney_dp$kidneyADV == "Adv") | 
+               (kidney_dp$phamk == "PDecEff" & kidney_dp$kidneyADV == "Unk" & kidney_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+               (kidney_dp$effVsNeff== "DecEff" & kidney_dp$kidneyADV == "Unk" & kidney_dp$totSyn <= -3)))
+
+
+# OvarianCancer specific
+ovarian_dp = fimm_db_all[ovarian_tissue,]
+# good drug combination
+length(which((ovarian_dp$totSyn >= 3 & ovarian_dp$ovarianADV == "Unk") | 
+               (ovarian_dp$phamk == "PIncEff" & ovarian_dp$ovarianADV == "Unk" & ovarian_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+               (ovarian_dp$effVsNeff== "IncEff" & ovarian_dp$ovarianADV == "Unk" & ovarian_dp$totSyn >= -2)))
+# bad drug combination
+length(which((ovarian_dp$totSyn <= -3 & ovarian_dp$ovarianADV == "Adv") | 
+               (ovarian_dp$phamk == "PDecEff" & ovarian_dp$ovarianADV == "Unk" & ovarian_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+               (ovarian_dp$effVsNeff== "DecEff" & ovarian_dp$ovarianADV == "Unk" & ovarian_dp$totSyn <= -3)))
+
+
+# SkinCancer specific
+skin_dp = fimm_db_all[skin_tissue,]
+# good drug combination
+length(which((skin_dp$totSyn >= 3 & skin_dp$skinADV == "Unk") | 
+               (skin_dp$phamk == "PIncEff" & skin_dp$skinADV == "Unk" & skin_dp$totSyn >= -2) |     # there is indecision in the synergistic score or it is positive
+               (skin_dp$effVsNeff== "IncEff" & skin_dp$skinADV == "Unk" & skin_dp$totSyn >= -2)))
+# bad drug combination
+length(which((skin_dp$totSyn <= -3 & skin_dp$skinADV == "Adv") | 
+               (skin_dp$phamk == "PDecEff" & skin_dp$skinADV == "Unk" & skin_dp$totSyn <= -3) |     # there is indecision in the synergistic score or it is positive
+               (skin_dp$effVsNeff== "DecEff" & skin_dp$skinADV == "Unk" & skin_dp$totSyn <= -3)))
 
 
 # then you can add the code to split the dataset based on the tissue columns
