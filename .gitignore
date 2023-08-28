@@ -4,11 +4,18 @@
 .RData
 .Ruserdata
 .ipynb_checkpoints/
+<<<<<<< Updated upstream
 **/*.ipynb_checkpoints/
 *.out
 **/*.csv
 **/*.gz
 **/*.graphml
+=======
+*.out
+**/*.csv
+**/*.graphml
+**/*.gz
+>>>>>>> Stashed changes
 **/*.pdf
 **/*.rds
 **/*.rda
