@@ -55,7 +55,7 @@ load(file = paste0("OutputFiles/Model_train/", disease, "/dNetRWR050_", disease,
 effectiveComb_rwr <- drugCombs_rwr_res_final$effectiveCombinations
 adverseComb_rwr <- drugCombs_rwr_res_final$adverseCombinations
 
-# Check if all resuls have valied number of columns
+# Check if all results have valid number of columns
 effectiveComb_rwr <- effectiveComb_rwr[lapply(effectiveComb_rwr, ncol) == 7]
 adverseComb_rwr <- adverseComb_rwr[lapply(adverseComb_rwr, ncol) == 7]
 rm(drugCombs_rwr_res_final)

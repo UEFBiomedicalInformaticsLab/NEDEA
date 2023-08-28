@@ -37,9 +37,12 @@ FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$dr
 # Get cell line information
 FimmDrugComb_cellLine <- GET("https://api.drugcomb.org/cell_lines")
 FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
+write.csv(FimmDrugComb_cellLine, "Databases/FimmDrugComb/cell_lines.csv", quote = TRUE, row.names = FALSE)
 
 # TO ADD
 # FimmDrugComb_cellLine$tissue <- sapply(FimmDrugComb_cellLine$ccle_name, function(x) substr(x, gregexpr('\\_', x)[[1]]+1, nchar(x)))
+
+
 
 # Download disease IDs from NCI Thesaurus (NCIt) 
 if(!dir.exists("Databases/NCIt/"))dir.create("Databases/NCIt/")
@@ -167,6 +170,7 @@ FimmDrugComb_drugCombCat2 <- df_with_stats
 # Map drugs to DrugBank drug ID
 FimmDrugComb_drugs <- GET("https://api.drugcomb.org/drugs")
 FimmDrugComb_drugs <- fromJSON(rawToChar(FimmDrugComb_drugs$content))
+write.csv(FimmDrugComb_drugs, "Databases/FimmDrugComb/drugs.csv", quote = TRUE, row.names = FALSE)
 
 
 FimmDrugComb_drugCombCat$Drug1_DrugBank_drug_id <- FimmDrugComb_drugs$drugbank_id[match(FimmDrugComb_drugCombCat$drug_row, FimmDrugComb_drugs$dname)]
