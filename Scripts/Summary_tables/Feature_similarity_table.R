@@ -16,7 +16,7 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 cl <- makeCluster(6)
 registerDoParallel(cl) 
 
-disease_list = c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")
+disease_list = c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer", "LiverCancer")
 
 similarity_df <- foreach(disease=disease_list, 
                          .verbose = TRUE,

@@ -5,21 +5,9 @@ set.seed(5081)
 # Enrichment analysis libraries for Lung Cancer
 
 
-# Notes:
-# Includes Lung Cancer and its two major types non-small cell lung cancer and small cell lung cancer [Ref: https://www.cancer.gov/types/stomach].
-# NCBI MedGene Concept ID: C0684249, C0007131, C0149925
-# Experimental Factor Ontology: EFO_0001071, EFO_0003060, EFO_0000702
-# Mondo Disease Ontology: MONDO_0008903, MONDO_0005233, MONDO_0008433
-# For Enricher, used Adenocarcinoma of lung. This is the closest available term
-
-
-
-
 
 # Load libraries
 library(org.Hs.eg.db)
-
-
 
 
 
@@ -30,27 +18,64 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 
 
 
-
 ## DisGeNET
 
 DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
-DisGeNET_LungCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep(pattern = "C0684249|C0007131|C0149925", x = names(DisGeNET_Disease2Gene_lib), ignore.case = TRUE)]
+DisGeNET_LungCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("lung", 
+                                                               names(DisGeNET_Disease2Gene_lib), 
+                                                               ignore.case = TRUE)]
+DisGeNET_LungCancer2Gene_lib <- DisGeNET_LungCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                  names(DisGeNET_LungCancer2Gene_lib), 
+                                                                  ignore.case = TRUE)]
+DisGeNET_LungCancer2Gene_lib <- DisGeNET_LungCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                  names(DisGeNET_LungCancer2Gene_lib), 
+                                                                  ignore.case = TRUE, 
+                                                                  invert = TRUE)] 
 names(DisGeNET_LungCancer2Gene_lib) <- paste0(names(DisGeNET_LungCancer2Gene_lib), "[DisGeNET_curated]")
 
 
+
 ## OpenTargets
+
 OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
-OpenTargets_LungCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep(pattern = "EFO_0001071|EFO_0003060|EFO_0000702|MONDO_0008903|MONDO_0005233|MONDO_0008433", x = names(OpenTargets_Disease2Gene_GA_lib), ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("lung", 
+                                                                           names(OpenTargets_Disease2Gene_GA_lib), 
+                                                                           ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_GA_lib <- OpenTargets_LungCancer2Gene_GA_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                              names(OpenTargets_LungCancer2Gene_GA_lib), 
+                                                                              ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_GA_lib <- OpenTargets_LungCancer2Gene_GA_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                              names(OpenTargets_LungCancer2Gene_GA_lib), 
+                                                                              ignore.case = TRUE, 
+                                                                              invert = TRUE)] 
 names(OpenTargets_LungCancer2Gene_GA_lib) <- paste0(names(OpenTargets_LungCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
 OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
-OpenTargets_LungCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep(pattern = "EFO_0001071|EFO_0003060|EFO_0000702|MONDO_0008903|MONDO_0005233|MONDO_0008433", x = names(OpenTargets_Disease2Gene_RNA_lib), ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("lung", 
+                                                                             names(OpenTargets_Disease2Gene_RNA_lib), 
+                                                                             ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_RNA_lib <- OpenTargets_LungCancer2Gene_RNA_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                names(OpenTargets_LungCancer2Gene_RNA_lib), 
+                                                                                ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_RNA_lib <- OpenTargets_LungCancer2Gene_RNA_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                names(OpenTargets_LungCancer2Gene_RNA_lib), 
+                                                                                ignore.case = TRUE, 
+                                                                                invert = TRUE)] 
 names(OpenTargets_LungCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_LungCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
 OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
-OpenTargets_LungCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep(pattern = "EFO_0001071|EFO_0003060|EFO_0000702|MONDO_0008903|MONDO_0005233|MONDO_0008433", x = names(OpenTargets_Disease2Gene_lit_lib), ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("lung", 
+                                                                             names(OpenTargets_Disease2Gene_lit_lib), 
+                                                                             ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_lit_lib <- OpenTargets_LungCancer2Gene_lit_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                names(OpenTargets_LungCancer2Gene_lit_lib), 
+                                                                                ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_lit_lib <- OpenTargets_LungCancer2Gene_lit_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                names(OpenTargets_LungCancer2Gene_lit_lib), 
+                                                                                ignore.case = TRUE, 
+                                                                                invert = TRUE)] 
 names(OpenTargets_LungCancer2Gene_lit_lib) <- paste0(names(OpenTargets_LungCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
@@ -58,31 +83,68 @@ names(OpenTargets_LungCancer2Gene_lit_lib) <- paste0(names(OpenTargets_LungCance
 
 Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
-Enrichr_GeoLungCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep(pattern = "Adenocarcinoma of lung", 
-                                                                                     x = names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), ignore.case = TRUE)]
+Enrichr_GeoLungCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("lung", 
+                                                                                     names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), 
+                                                                                     ignore.case = TRUE)]
+Enrichr_GeoLungCancerSignatures_Up <- Enrichr_GeoLungCancerSignatures_Up[grep("cancer|carcinoma|sarcoma", 
+                                                                              names(Enrichr_GeoLungCancerSignatures_Up), 
+                                                                              ignore.case = TRUE)]
+Enrichr_GeoLungCancerSignatures_Up <- Enrichr_GeoLungCancerSignatures_Up[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                              names(Enrichr_GeoLungCancerSignatures_Up), 
+                                                                              ignore.case = TRUE, 
+                                                                              invert = TRUE)] 
 names(Enrichr_GeoLungCancerSignatures_Up) <- paste0(names(Enrichr_GeoLungCancerSignatures_Up), "[Enrichr_GeoDiseaseSig_Up]")
 
-Enrichr_GeoLungCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep(pattern = "Adenocarcinoma of lung", 
-                                                                                         x = names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down), ignore.case = TRUE)]
+
+Enrichr_GeoLungCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep("lung", 
+                                                                                         names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down), 
+                                                                                         ignore.case = TRUE)]
+Enrichr_GeoLungCancerSignatures_Down <- Enrichr_GeoLungCancerSignatures_Down[grep("cancer|carcinoma|sarcoma", 
+                                                                                  names(Enrichr_GeoLungCancerSignatures_Down), 
+                                                                                  ignore.case = TRUE)]
+Enrichr_GeoLungCancerSignatures_Down <- Enrichr_GeoLungCancerSignatures_Down[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                  names(Enrichr_GeoLungCancerSignatures_Down), 
+                                                                                  ignore.case = TRUE, 
+                                                                                  invert = TRUE)] 
 names(Enrichr_GeoLungCancerSignatures_Down) <- paste0(names(Enrichr_GeoLungCancerSignatures_Down), "[Enrichr_GeoDiseaseSig_Down]")
 
+
+
 ## Intogen
+
 Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
-Intogen_LungCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep(pattern = "Lung",
-                                                             x = names(Intogen_Disease2Gene_lib), ignore.case = TRUE)]
+Intogen_LungCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("lung", names(Intogen_Disease2Gene_lib), 
+                                                             ignore.case = TRUE)]
+Intogen_LungCancer2Gene_lib <- Intogen_LungCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                names(Intogen_LungCancer2Gene_lib), 
+                                                                ignore.case = TRUE)]
+Intogen_LungCancer2Gene_lib <- Intogen_LungCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                names(Intogen_LungCancer2Gene_lib), 
+                                                                ignore.case = TRUE, 
+                                                                invert = TRUE)] 
 names(Intogen_LungCancer2Gene_lib) <- paste0(names(Intogen_LungCancer2Gene_lib), "[Intogen]")
+
 
 
 ## PharmGKB
 
 PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
-
-PharmGKB_LungCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep(pattern = "Carcinoma, Non-Small-Cell Lung", 
-                                                               x = names(PharmGKB_Disease2Gene_lib), ignore.case = TRUE)]
+PharmGKB_LungCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("lung", 
+                                                               names(PharmGKB_Disease2Gene_lib), 
+                                                               ignore.case = TRUE)]
+PharmGKB_LungCancer2Gene_lib <- PharmGKB_LungCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                  names(PharmGKB_LungCancer2Gene_lib), 
+                                                                  ignore.case = TRUE)]
+PharmGKB_LungCancer2Gene_lib <- PharmGKB_LungCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                  names(PharmGKB_LungCancer2Gene_lib), 
+                                                                  ignore.case = TRUE, 
+                                                                  invert = TRUE)] 
 names(PharmGKB_LungCancer2Gene_lib) <- paste0(names(PharmGKB_LungCancer2Gene_lib), "[PharmGKB_associated]")
 
 
+
 ## ThETA
+
 library(ThETA)
 source("Scripts/ThETA/Corrected_Functions.R")
 data(gtexv7_zscore)

@@ -5,21 +5,6 @@ set.seed(5081)
 # Enrichment analysis libraries for OvaryCancer
 
 
-# Notes:
-# Includes: ovarian carcinoma, Ovarian Endometrioid Adenocarcinoma, 
-# ovarian cancer, ovarian endometrial cancer, ovarian clear cell cancer
-
-
-# NCBI MedGene Concept ID: C2212006, C3544205, C0948216, C0346163, 
-# C1335167, C1335177, C1140680, C0029925, C4721610
-#
-# Experimental Factor Ontology: , "EFO_0001075", "EFO_1000416"
-# Mondo Disease Ontology: "MONDO_0008170", "MONDO_0003812", "MONDO_0000548"
-# For Enrichr, used term ""
-
-
-
-
 
 # Load libraries
 library(org.Hs.eg.db)
@@ -40,68 +25,129 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 ## DisGeNET
 
 DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
-DisGeNET_OvaryCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep(pattern = "C2212006|C3544205|C0948216|C0346163|C1335167|C1335177|C1140680|C0029925|C4721610", 
-                                                                x = names(DisGeNET_Disease2Gene_lib), 
+DisGeNET_OvaryCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("ovary|ovarian|serous", 
+                                                                names(DisGeNET_Disease2Gene_lib), 
                                                                 ignore.case = TRUE)]
+DisGeNET_OvaryCancer2Gene_lib <- DisGeNET_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                    names(DisGeNET_OvaryCancer2Gene_lib), 
+                                                                    ignore.case = TRUE)]
+DisGeNET_OvaryCancer2Gene_lib <- DisGeNET_OvaryCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                      names(DisGeNET_OvaryCancer2Gene_lib), 
+                      ignore.case = TRUE, 
+                      invert = TRUE)] 
 names(DisGeNET_OvaryCancer2Gene_lib) <- paste0(names(DisGeNET_OvaryCancer2Gene_lib), "[DisGeNET_curated]")
 
 
 ## OpenTargets
+
 OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
-OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep(pattern = "EFO_0001075|EFO_1000416|MONDO_0008170|MONDO_0003812|MONDO_0000548", 
-                                                                            x = names(OpenTargets_Disease2Gene_GA_lib), 
+OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("ovary|ovarian|serous", 
+                                                                            names(OpenTargets_Disease2Gene_GA_lib), 
                                                                             ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_OvaryCancer2Gene_GA_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                names(OpenTargets_OvaryCancer2Gene_GA_lib), 
+                                                                                ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_OvaryCancer2Gene_GA_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                      names(OpenTargets_OvaryCancer2Gene_GA_lib), 
+                      ignore.case = TRUE, 
+                      invert = TRUE)] 
 names(OpenTargets_OvaryCancer2Gene_GA_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
 OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
-OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep(pattern = "EFO_0001075|EFO_1000416|MONDO_0008170|MONDO_0003812|MONDO_0000548", 
-                                                                              x = names(OpenTargets_Disease2Gene_RNA_lib), 
+OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("ovary|ovarian|serous", 
+                                                                              names(OpenTargets_Disease2Gene_RNA_lib), 
                                                                               ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_OvaryCancer2Gene_RNA_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                  names(OpenTargets_OvaryCancer2Gene_RNA_lib), 
+                                                                                  ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_OvaryCancer2Gene_RNA_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                      names(OpenTargets_OvaryCancer2Gene_RNA_lib), 
+                      ignore.case = TRUE, 
+                      invert = TRUE)] 
 names(OpenTargets_OvaryCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
 OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
-OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep(pattern = "EFO_0001075|EFO_1000416|MONDO_0008170|MONDO_0003812|MONDO_0000548", 
-                                                                              x = names(OpenTargets_Disease2Gene_lit_lib), 
+OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("ovary|ovarian|serous", 
+                                                                              names(OpenTargets_Disease2Gene_lit_lib), 
                                                                               ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_OvaryCancer2Gene_lit_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                  names(OpenTargets_OvaryCancer2Gene_lit_lib), 
+                                                                                  ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_OvaryCancer2Gene_lit_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                      names(OpenTargets_OvaryCancer2Gene_lit_lib), 
+                      ignore.case = TRUE, 
+                      invert = TRUE)] 
 names(OpenTargets_OvaryCancer2Gene_lit_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
-# ## Enrichr [NOT AVAILABLE]
-# 
-# Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
-# 
-# Enrichr_GeoOvaryCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep(pattern = "Breast Cancer", 
-#                                                                                        x = names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), 
-#                                                                                        ignore.case = TRUE)]
-# names(Enrichr_GeoOvaryCancerSignatures_Up) <- paste0(names(Enrichr_GeoOvaryCancerSignatures_Up), "[Enrichr_GeoDiseaseSig_Up]")
-# 
-# Enrichr_GeoOvaryCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep(pattern = "Breast Cancer", 
-#                                                                                            x = names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down), 
-#                                                                                            ignore.case = TRUE)]
-# names(Enrichr_GeoOvaryCancerSignatures_Down) <- paste0(names(Enrichr_GeoOvaryCancerSignatures_Down), "[Enrichr_GeoDiseaseSig_Down]")
+
+## Enrichr
+
+Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+
+Enrichr_GeoOvaryCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("ovary|ovarian|serous",
+                                                                                      names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up),
+                                                                                      ignore.case = TRUE)]
+Enrichr_GeoOvaryCancerSignatures_Up <- Enrichr_GeoOvaryCancerSignatures_Up[grep("cancer|carcinoma|sarcoma",
+                                                                                names(Enrichr_GeoOvaryCancerSignatures_Up),
+                                                                                ignore.case = TRUE)]
+Enrichr_GeoOvaryCancerSignatures_Up <- Enrichr_GeoOvaryCancerSignatures_Up[grep("hereditary|familial|susceptibility|predisposition",
+                                                                                names(Enrichr_GeoOvaryCancerSignatures_Up),
+                                                                                ignore.case = TRUE,
+                                                                                invert = TRUE)]
+names(Enrichr_GeoOvaryCancerSignatures_Up) <- paste0(names(Enrichr_GeoOvaryCancerSignatures_Up), "[Enrichr_GeoDiseaseSig_Up]")
+
+Enrichr_GeoOvaryCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep("ovary|ovarian|serous",
+                                                                                          names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down),
+                                                                                          ignore.case = TRUE)]
+Enrichr_GeoOvaryCancerSignatures_Down <- Enrichr_GeoOvaryCancerSignatures_Down[grep("cancer|carcinoma|sarcoma",
+                                                                                    names(Enrichr_GeoOvaryCancerSignatures_Down),
+                                                                                    ignore.case = TRUE)]
+Enrichr_GeoOvaryCancerSignatures_Down <- Enrichr_GeoOvaryCancerSignatures_Down[grep("hereditary|familial|susceptibility|predisposition",
+                                                                                    names(Enrichr_GeoOvaryCancerSignatures_Down),
+                                                                                    ignore.case = TRUE,
+                                                                                    invert = TRUE)]
+names(Enrichr_GeoOvaryCancerSignatures_Down) <- paste0(names(Enrichr_GeoOvaryCancerSignatures_Down), "[Enrichr_GeoDiseaseSig_Down]")
+
 
 
 ## Intogen
+
 Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
-Intogen_OvaryCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep(pattern = "Ovary cancer",
-                                                              x = names(Intogen_Disease2Gene_lib), 
-                                                              ignore.case = TRUE)]
+Intogen_OvaryCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("ovary|ovarian|serous", names(Intogen_Disease2Gene_lib), 
+                                        ignore.case = TRUE)]
+Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+                      names(Intogen_OvaryCancer2Gene_lib), 
+                      ignore.case = TRUE)]
+Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                      names(Intogen_OvaryCancer2Gene_lib), 
+                      ignore.case = TRUE, 
+                      invert = TRUE)] 
 names(Intogen_OvaryCancer2Gene_lib) <- paste0(names(Intogen_OvaryCancer2Gene_lib), "[Intogen]")
 
 
-## PharmGKB
 
-PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+# ## PharmGKB [NOT FOUND]
+# 
+# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+# PharmGKB_OvaryCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("ovary|ovarian|serous",
+#                                                                 names(PharmGKB_Disease2Gene_lib),
+#                                                                 ignore.case = TRUE)]
+# PharmGKB_OvaryCancer2Gene_lib <- PharmGKB_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma",
+#                                                                     names(PharmGKB_OvaryCancer2Gene_lib),
+#                                                                     ignore.case = TRUE)]
+# PharmGKB_OvaryCancer2Gene_lib <- PharmGKB_OvaryCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition",
+#                                                                     names(PharmGKB_OvaryCancer2Gene_lib),
+#                                                                     ignore.case = TRUE,
+#                                                                     invert = TRUE)]
+# names(PharmGKB_OvaryCancer2Gene_lib) <- paste0(names(PharmGKB_OvaryCancer2Gene_lib), "[PharmGKB_associated]")
 
-PharmGKB_OvaryCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep(pattern = "Ovarian Neoplasms", 
-                                                                x = names(PharmGKB_Disease2Gene_lib), 
-                                                                ignore.case = TRUE)]
-names(PharmGKB_OvaryCancer2Gene_lib) <- paste0(names(PharmGKB_OvaryCancer2Gene_lib), "[PharmGKB_associated]")
 
 
 ## ThETA
+
 library(ThETA)
 source("Scripts/ThETA/Corrected_Functions.R")
 data(gtexv7_zscore)
@@ -134,10 +180,8 @@ names(ThETA_OvaryCancer2Gene_lib) <- paste0("Ovarian carcinoma (EFO_0001075)", "
 
 Enrichment_OvaryCancer2Gene_lib <- c(DisGeNET_OvaryCancer2Gene_lib, OpenTargets_OvaryCancer2Gene_GA_lib, 
                                      OpenTargets_OvaryCancer2Gene_RNA_lib, OpenTargets_OvaryCancer2Gene_lit_lib, 
-                                     Intogen_OvaryCancer2Gene_lib,
-                                     PharmGKB_OvaryCancer2Gene_lib, ThETA_OvaryCancer2Gene_lib)
-
-
+                                     Enrichr_GeoOvaryCancerSignatures_Up, Enrichr_GeoOvaryCancerSignatures_Down,
+                                     Intogen_OvaryCancer2Gene_lib, ThETA_OvaryCancer2Gene_lib)
 
 
 
