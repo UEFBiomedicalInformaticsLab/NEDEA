@@ -1,0 +1,1 @@
+dim(unique(FimmDrugCombs[, c("Drug1_DrugBank_drug_id", "Drug2_DrugBank_drug_id")]))
