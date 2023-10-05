@@ -66,6 +66,8 @@ String_ppi_Net$Node2_type <- "gene"
 String_ppi_Net$Edge_type <- "undirected"
 String_ppi_Net <- String_ppi_Net[, c("Node1_ensembl_gene_id", "Node1_type", "Node2_ensembl_gene_id", "Node2_type", "Edge_type")]
 
+write.csv(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.csv", row.names = FALSE)
+
 # Convert to graph object
 String_ppi_Net <- graph_from_data_frame(String_ppi_Net[, c("Node1_ensembl_gene_id", "Node2_ensembl_gene_id")], directed = FALSE)
 String_ppi_Net <- simplify(String_ppi_Net, remove.loops = TRUE, remove.multiple	= TRUE) # remove loops and multi-edges

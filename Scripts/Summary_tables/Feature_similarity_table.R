@@ -13,7 +13,7 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
 
-cl <- makeCluster(6)
+cl <- makeCluster(7)
 registerDoParallel(cl) 
 
 disease_list = c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer", "LiverCancer")

@@ -15,6 +15,8 @@ set.seed(5081)
 # names(OpenTargets_Disease2Gene_lib)[grep("Neurotoxicity", names(OpenTargets_Disease2Gene_lib), ignore.case = TRUE)]
 
 # Terms removed due to similarity
+# - Cardiotoxicity (12.03.01.007) [ADReCS_gene]
+# - Neurotoxicity (12.03.01.011) [ADReCS_gene]
 # - Hepatitis, Drug-Induced (C1262760) [DisGeNET]
 # - Drug-Induced Acute Liver Injury (C3658290) [DisGeNET]
 # - Drug-Induced Liver Disease (C0860207) [DisGeNET]
@@ -33,8 +35,6 @@ library(openxlsx)
 
 ADR_terms <- c("Adverse reaction (08.06.01.018)",
                "Cardiotoxicity (02.01.01.002)",
-               "Cardiotoxicity (12.03.01.007)",
-               "Neurotoxicity (12.03.01.011)",
                "Neurotoxicity (17.02.10.002)",
                "Poisoning (12.03.01.004)",
                "Poisoning and toxicity (12.03.01)")
@@ -42,8 +42,8 @@ ADReCS_ADR2Gene_level3_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/
 ADReCS_ADR2Gene_level4_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level4_lib.rds")
 ADReCS_ADR2Gene_lib <- c(ADReCS_ADR2Gene_level4_lib, ADReCS_ADR2Gene_level3_lib)
 
-ADReCS_drugWithdrawalAdr_lib <- ADReCS_ADR2Gene_lib[names(ADReCS_ADR2Gene_lib) %in% ADR_terms]
-names(ADReCS_drugWithdrawalAdr_lib) <- paste0(names(ADReCS_drugWithdrawalAdr_lib), " [ADReCS_gene]")
+ADReCS_gene_drugWithdrawalAdr_lib <- ADReCS_ADR2Gene_lib[names(ADReCS_ADR2Gene_lib) %in% ADR_terms]
+names(ADReCS_gene_drugWithdrawalAdr_lib) <- paste0(names(ADReCS_gene_drugWithdrawalAdr_lib), " [ADReCS_gene]")
 
 
 
@@ -63,8 +63,8 @@ ADReCS_ADR2Protein_level3_lib <- readRDS("InputFiles/Enrichment_Analysis_Librari
 ADReCS_ADR2Protein_level4_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Protein_level4_lib.rds")
 ADReCS_ADR2Protein_lib <- c(ADReCS_ADR2Protein_level4_lib, ADReCS_ADR2Protein_level3_lib)
 
-ADReCS_drugWithdrawalAdr_lib <- ADReCS_ADR2Protein_lib[names(ADReCS_ADR2Protein_lib) %in% ADR_terms]
-names(ADReCS_drugWithdrawalAdr_lib) <- paste0(names(ADReCS_drugWithdrawalAdr_lib), " [ADReCS_protein]")
+ADReCS_protein_drugWithdrawalAdr_lib <- ADReCS_ADR2Protein_lib[names(ADReCS_ADR2Protein_lib) %in% ADR_terms]
+names(ADReCS_protein_drugWithdrawalAdr_lib) <- paste0(names(ADReCS_protein_drugWithdrawalAdr_lib), " [ADReCS_protein]")
 
 
 
@@ -126,7 +126,8 @@ names(PharmGKB_drugWithdrawalAdr_lib) <- paste0(names(PharmGKB_drugWithdrawalAdr
 
 
 # Compile all gene list into one list
-drugWithdrawal_Adr2Gene_lib <- c(ADReCS_drugWithdrawalAdr_lib,
+drugWithdrawal_Adr2Gene_lib <- c(ADReCS_gene_drugWithdrawalAdr_lib,
+                                 ADReCS_protein_drugWithdrawalAdr_lib,
                                  CTD_drugWithdrawalAdr_lib,
                                  DisGeNET_drugWithdrawalAdr_lib,
                                  OpenTargets_drugWithdrawalAdr_lib,
