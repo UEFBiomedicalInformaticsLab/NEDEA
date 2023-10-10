@@ -21,6 +21,7 @@
 **/*.xlsx
 Databases/
 InputFiles/
+omnipathr-log/
 OutputFiles/
 logs/
 tmp_dir/
