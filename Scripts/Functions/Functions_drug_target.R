@@ -107,7 +107,7 @@ download_KEGG_ixns <- function(pathway_ids){
   # summary_df <- data.frame()
   
   for(path in pathway_ids){
-    print(path)
+    # print(path)
     kegg_net <- kegg_pathway_download(pathway_id = path, process = FALSE)
     kegg_net <- kegg_process(kegg_net$entries, kegg_net$relations, simplify = FALSE)
     

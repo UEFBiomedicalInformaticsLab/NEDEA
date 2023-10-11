@@ -40,13 +40,6 @@ disease <- opt$disease
 cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
-
-
-
-# disease <- "BreastCancer"
-
-
-
 # Read the drug combinations
 drugCombs <- readRDS("InputFiles/DrugCombinations/DrugCombinations.rds")
 drugCombs <- drugCombs[[disease]]
@@ -82,6 +75,7 @@ drugTarget_list <- drug_target_ixn %>%
 
 
 # Merge the drug targets information with the drug combinations data
+cat("\nExtracting targets of the drug combinations\n")
 drugCombs_targets <- drugCombs %>%
   left_join(drugTarget_list, by = c("Drug1_DrugBank_id" = "Node1_drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
@@ -113,28 +107,32 @@ ixns_NPA <- import_omnipath_interactions(resources = c("NetPath"))
 ixns_RIs <- import_transcriptional_interactions()
 
 
-# Extend the drug targets using Phospho
-pho_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_ixns_database(x, ixns_PS))
-drugCombs_targets$ext_pho_targets <- sapply(pho_result_list, function(x) x$ext_targets)
-drugCombs_targets$ext_pho_tar_cnt <- sapply(pho_result_list, function(x) x$ext_tar_cnt)
+# Extend the drug targets based on protein phosphorylation
+cat("\nExtending drug targets based on protein phosphorylation information\n")
+ps_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_ixns_database(x, ixns_PS))
+drugCombs_targets$ext_PS_targets <- sapply(ps_result_list, function(x) x$ext_targets)
+drugCombs_targets$ext_PS_tar_cnt <- sapply(ps_result_list, function(x) x$ext_tar_cnt)
 
 
-# Extend the drug targets using SIGNOR
+# Extend the drug targets based on interactions from SIGNOR database
+cat("\nExtending drug targets based on interactions from SIGNOR database\n")
 signor_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_ixns_database(x, ixns_SIGNOR))
-drugCombs_targets$ext_sig_targets <- sapply(signor_result_list, function(x) x$ext_targets)
-drugCombs_targets$ext_sig_tar_cnt <- sapply(signor_result_list, function(x) x$ext_tar_cnt)
+drugCombs_targets$ext_SIGNOR_targets <- sapply(signor_result_list, function(x) x$ext_targets)
+drugCombs_targets$ext_SIGNOR_tar_cnt <- sapply(signor_result_list, function(x) x$ext_tar_cnt)
 
 
-# Extend the drug targets using NetPath
+# Extend the drug targets based on interactions from NetPath database
+cat("\nExtending drug targets based on interactions from NetPath database\n")
 npa_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_ixns_database(x, ixns_NPA))
-drugCombs_targets$ext_npa_targets <- sapply(npa_result_list, function(x) x$ext_targets)
-drugCombs_targets$ext_npa_tar_cnt <- sapply(npa_result_list, function(x) x$ext_tar_cnt)
+drugCombs_targets$ext_NPA_targets <- sapply(npa_result_list, function(x) x$ext_targets)
+drugCombs_targets$ext_NPA_tar_cnt <- sapply(npa_result_list, function(x) x$ext_tar_cnt)
 
 
-# Extend the drug targets using RNs
+# Extend the drug targets based on regulatory network (TF-target interactions)
+cat("\nExtending drug targets based on regulatory network (TF-target interactions)\n")
 reg_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_ixns_database(x, ixns_RIs))
-drugCombs_targets$ext_reg_targets <- sapply(reg_result_list, function(x) x$ext_targets)
-drugCombs_targets$ext_reg_tar_cnt <- sapply(reg_result_list, function(x) x$ext_tar_cnt)
+drugCombs_targets$ext_RI_targets <- sapply(reg_result_list, function(x) x$ext_targets)
+drugCombs_targets$ext_RI_tar_cnt <- sapply(reg_result_list, function(x) x$ext_tar_cnt)
 
 
 
@@ -162,9 +160,10 @@ ixns_KEGG <- download_KEGG_ixns(pathway_ids = CHG_pathways)
 
 
 # Extend the drug targets using interactions from KEGG 
+cat("\nExtending drug targets using KEGG\n")
 kegg_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) extend_targets_kegg_list(x, ixns_KEGG))
-drugCombs_targets$ext_kegg_targets <- sapply(kegg_result_list, function(x) x$ext_kegg_targets)
-drugCombs_targets$ext_kegg_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
+drugCombs_targets$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$ext_kegg_targets)
+drugCombs_targets$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
 
 
