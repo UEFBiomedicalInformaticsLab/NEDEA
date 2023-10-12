@@ -56,8 +56,8 @@ for(i in 1:length(ADReCS_ADR2Gene_level4_lib)){
                     ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level4_lib)[i],]$ADR.ID, ")")
   names(ADReCS_ADR2Gene_level4_lib)[i] <- adrName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(ADReCS_ADR2Gene_level4_lib, "InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level4_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(ADReCS_ADR2Gene_level4_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level4_lib.rds")
 
 
 ADReCS_Gene_ADR_level3 <- ADReCS_Gene_ADR[lengths(strsplit(ADReCS_Gene_ADR$ADR.ID, split = "\\."))==3,]
@@ -70,8 +70,8 @@ for(i in 1:length(ADReCS_ADR2Gene_level3_lib)){
                     ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level3_lib)[i],]$ADR.ID, ")")
   names(ADReCS_ADR2Gene_level3_lib)[i] <- adrName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(ADReCS_ADR2Gene_level3_lib, "InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level3_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(ADReCS_ADR2Gene_level3_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level3_lib.rds")
 
 
 

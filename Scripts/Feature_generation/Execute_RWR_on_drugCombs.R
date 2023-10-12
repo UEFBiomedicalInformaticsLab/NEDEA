@@ -33,6 +33,11 @@ if(is.null(opt$disease)){
   stop("--disease argument needed", call.=FALSE)
 }
 
+if(!opt$drug_target_type %in% c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "all")){
+  print_help(opt_parser)
+  stop("--drug_target_type should be: known, PS, SIGNOR, NPA, RI, KEGG, all", call.=FALSE)
+}
+
 if(!is.null(opt$nproc)){
   if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
     print_help(opt_parser)

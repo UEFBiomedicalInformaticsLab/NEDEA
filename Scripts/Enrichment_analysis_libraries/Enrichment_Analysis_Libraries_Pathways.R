@@ -43,8 +43,8 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 #                         pathwayName_2_pathwayId[pathwayName_2_pathwayId$gs_exact_source == names(msigdb_keggPath2Gene_lib)[i],]$gs_exact_source, ")")
 #   names(msigdb_keggPath2Gene_lib)[i] <- pathwayName
 # }
-# if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-# saveRDS(msigdb_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/msigdb_keggPath2Gene_lib.rds")
+# if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+# saveRDS(msigdb_keggPath2Gene_lib, "InputFiles/Enrichment_analysis_libraries/msigdb_keggPath2Gene_lib.rds")
 
 
 
@@ -67,8 +67,8 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 # #                         moduleId_2_moduleName[moduleId_2_moduleName$kegg_module_id == names(kegg_module2gene_lib)[i],]$kegg_module_id, ")")
 # #   names(kegg_module2gene_lib)[i] <- moduleName
 # # }
-# if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-# saveRDS(kegg_module2gene_lib, "InputFiles/Enrichment_Analysis_Libraries/kegg_module2gene_lib.rds")
+# if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+# saveRDS(kegg_module2gene_lib, "InputFiles/Enrichment_analysis_libraries/kegg_module2gene_lib.rds")
 
 
 
@@ -116,8 +116,8 @@ for(pathway in CHG_pathways){
   tmp <- gsub("* - Homo sapiens \\(human\\)*", "", tmp)
   CHG_keggPath2Gene_lib[[tmp]] <- sort(na.exclude(unique(response$ensembl_gene_id)))
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CHG_keggPath2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds")
 
 
 
@@ -134,8 +134,8 @@ saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CHG_keg
 #                         pathwayName_2_pathwayId[pathwayName_2_pathwayId$gs_exact_source == names(msigdb_ReactomePath2Gene_lib)[i],]$gs_exact_source, ")")
 #   names(msigdb_ReactomePath2Gene_lib)[i] <- pathwayName
 # }
-# if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-# saveRDS(msigdb_ReactomePath2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/msigdb_ReactomePath2Gene_lib.rds")
+# if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+# saveRDS(msigdb_ReactomePath2Gene_lib, "InputFiles/Enrichment_analysis_libraries/msigdb_ReactomePath2Gene_lib.rds")
 
 
 
@@ -181,8 +181,8 @@ for(pathway_subject in unique(SMPDb_pathways$Subject)){
   }
 }
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(SMPDb_Pathway2Gene, "InputFiles/Enrichment_Analysis_Libraries/SMPDb_Pathway2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(SMPDb_Pathway2Gene, "InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds")
 
 
 

@@ -24,7 +24,7 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 
 ## DisGeNET
 
-DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
 DisGeNET_OvaryCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("ovary|ovarian|serous", 
                                                                 names(DisGeNET_Disease2Gene_lib), 
                                                                 ignore.case = TRUE)]
@@ -40,7 +40,7 @@ names(DisGeNET_OvaryCancer2Gene_lib) <- paste0(names(DisGeNET_OvaryCancer2Gene_l
 
 ## OpenTargets
 
-OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("ovary|ovarian|serous", 
                                                                             names(OpenTargets_Disease2Gene_GA_lib), 
                                                                             ignore.case = TRUE)]
@@ -54,7 +54,7 @@ OpenTargets_OvaryCancer2Gene_GA_lib <- OpenTargets_OvaryCancer2Gene_GA_lib[grep(
 names(OpenTargets_OvaryCancer2Gene_GA_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
-OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("ovary|ovarian|serous", 
                                                                               names(OpenTargets_Disease2Gene_RNA_lib), 
                                                                               ignore.case = TRUE)]
@@ -68,7 +68,7 @@ OpenTargets_OvaryCancer2Gene_RNA_lib <- OpenTargets_OvaryCancer2Gene_RNA_lib[gre
 names(OpenTargets_OvaryCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
-OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("ovary|ovarian|serous", 
                                                                               names(OpenTargets_Disease2Gene_lit_lib), 
                                                                               ignore.case = TRUE)]
@@ -85,7 +85,7 @@ names(OpenTargets_OvaryCancer2Gene_lit_lib) <- paste0(names(OpenTargets_OvaryCan
 
 ## Enrichr
 
-Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
 Enrichr_GeoOvaryCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("ovary|ovarian|serous",
                                                                                       names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up),
@@ -115,7 +115,7 @@ names(Enrichr_GeoOvaryCancerSignatures_Down) <- paste0(names(Enrichr_GeoOvaryCan
 
 ## Intogen
 
-Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
+Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 Intogen_OvaryCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("ovary|ovarian|serous", names(Intogen_Disease2Gene_lib), 
                                         ignore.case = TRUE)]
 Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
@@ -131,7 +131,7 @@ names(Intogen_OvaryCancer2Gene_lib) <- paste0(names(Intogen_OvaryCancer2Gene_lib
 
 # ## PharmGKB [NOT FOUND]
 # 
-# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 # PharmGKB_OvaryCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("ovary|ovarian|serous",
 #                                                                 names(PharmGKB_Disease2Gene_lib),
 #                                                                 ignore.case = TRUE)]
@@ -186,8 +186,8 @@ Enrichment_OvaryCancer2Gene_lib <- c(DisGeNET_OvaryCancer2Gene_lib, OpenTargets_
 
 
 # Save as RDS file
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Enrichment_OvaryCancer2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_OvaryCancer_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Enrichment_OvaryCancer2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Disease2Gene_OvaryCancer_lib.rds")
 
 
 

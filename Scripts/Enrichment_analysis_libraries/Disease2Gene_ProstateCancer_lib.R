@@ -20,7 +20,7 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 
 ## DisGeNET
 
-DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
 DisGeNET_ProstateCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("prostate", 
                                          names(DisGeNET_Disease2Gene_lib), 
                                          ignore.case = TRUE)]
@@ -37,7 +37,7 @@ names(DisGeNET_ProstateCancer2Gene_lib) <- paste0(names(DisGeNET_ProstateCancer2
 
 ## OpenTargets
 
-OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 OpenTargets_ProstateCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("prostate", 
                                                names(OpenTargets_Disease2Gene_GA_lib), 
                                                ignore.case = TRUE)]
@@ -51,7 +51,7 @@ OpenTargets_ProstateCancer2Gene_GA_lib <- OpenTargets_ProstateCancer2Gene_GA_lib
 names(OpenTargets_ProstateCancer2Gene_GA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
-OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 OpenTargets_ProstateCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("prostate", 
                                                 names(OpenTargets_Disease2Gene_RNA_lib), 
                                                 ignore.case = TRUE)]
@@ -65,7 +65,7 @@ OpenTargets_ProstateCancer2Gene_RNA_lib <- OpenTargets_ProstateCancer2Gene_RNA_l
 names(OpenTargets_ProstateCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
-OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("prostate", 
                                                 names(OpenTargets_Disease2Gene_lit_lib), 
                                                 ignore.case = TRUE)]
@@ -82,7 +82,7 @@ names(OpenTargets_ProstateCancer2Gene_lit_lib) <- paste0(names(OpenTargets_Prost
 
 ## Enrichr
 
-Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
 Enrichr_GeoProstateCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("prostate", 
                                                             names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), 
@@ -112,7 +112,7 @@ names(Enrichr_GeoProstateCancerSignatures_Down) <- paste0(names(Enrichr_GeoProst
 
 ## Intogen
 
-Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
+Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 Intogen_ProstateCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("prostate", names(Intogen_Disease2Gene_lib), 
                                         ignore.case = TRUE)]
 Intogen_ProstateCancer2Gene_lib <- Intogen_ProstateCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
@@ -128,7 +128,7 @@ names(Intogen_ProstateCancer2Gene_lib) <- paste0(names(Intogen_ProstateCancer2Ge
 
 # ## PharmGKB
 # 
-# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 # PharmGKB_ProstateCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("prostate",
 #                                                                    names(PharmGKB_Disease2Gene_lib),
 #                                                                    ignore.case = TRUE)]
@@ -182,8 +182,8 @@ Enrichment_ProstateCancer2Gene_lib <- c(DisGeNET_ProstateCancer2Gene_lib, OpenTa
 
 
 # Save as RDS file
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Enrichment_ProstateCancer2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Enrichment_ProstateCancer2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Disease2Gene_ProstateCancer_lib.rds")
 
 
 

@@ -95,10 +95,10 @@ drug_pairs <- list("BreastCancer" = breast_dp,
                    "SkinCancer" = skin_dp)
 
 
-if(!dir.exists("InputFiles/DrugCombinations/")){
-  dir.create("InputFiles/DrugCombinations/", recursive = TRUE)
+if(!dir.exists("InputFiles/Drug_combinations/")){
+  dir.create("InputFiles/Drug_combinations/", recursive = TRUE)
 } 
-saveRDS(drug_pairs, "InputFiles/DrugCombinations/DrugCombinations.rds")
+saveRDS(drug_pairs, "InputFiles/Drug_combinations/Drug_combinations.rds")
 
 
 

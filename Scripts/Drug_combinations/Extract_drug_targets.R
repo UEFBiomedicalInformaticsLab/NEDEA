@@ -41,7 +41,7 @@ cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
 # Read the drug combinations
-drugCombs <- readRDS("InputFiles/DrugCombinations/DrugCombinations.rds")
+drugCombs <- readRDS("InputFiles/Drug_combinations/Drug_combinations.rds")
 drugCombs <- drugCombs[[disease]]
 cat(paste0("\n\nNumber of drug combinations: ", nrow(drugCombs), "\n\n"))
 

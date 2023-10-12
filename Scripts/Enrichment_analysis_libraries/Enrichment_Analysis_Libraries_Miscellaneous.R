@@ -107,8 +107,8 @@ miscellaneous_gene_lib <- list(DGdb_DrugableGenome = dgidb_drugable_genome,
                                GenAge_genes = GenAge_genes,
                                Hallmaker_of_Cancer_genes = HOC_genes)
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(miscellaneous_gene_lib, "InputFiles/Enrichment_Analysis_Libraries/miscellaneous_gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(miscellaneous_gene_lib, "InputFiles/Enrichment_analysis_libraries/miscellaneous_gene_lib.rds")
 
 
 

@@ -76,8 +76,8 @@ for(i in 1:length(DisGeNET_Disease2Gene_lib)){
                         diseaseId_2_diseaseName[diseaseId_2_diseaseName$diseaseId == names(DisGeNET_Disease2Gene_lib)[i],]$diseaseId, ")")
   names(DisGeNET_Disease2Gene_lib)[i] <- diseaseName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(DisGeNET_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(DisGeNET_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
 
 
 
@@ -93,8 +93,8 @@ for(i in 1:length(DisGeNET_Phenotype2Gene_lib)){
                           diseaseId_2_diseaseName[diseaseId_2_diseaseName$diseaseId == names(DisGeNET_Phenotype2Gene_lib)[i],]$diseaseId, ")")
   names(DisGeNET_Phenotype2Gene_lib)[i] <- phenotypeName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(DisGeNET_Phenotype2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Phenotype2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(DisGeNET_Phenotype2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_Phenotype2Gene_lib.rds")
 
 
 
@@ -110,8 +110,8 @@ for(i in 1:length(DisGeNET_DiseaseGroup2Gene_lib)){
                              diseaseId_2_diseaseName[diseaseId_2_diseaseName$diseaseId == names(DisGeNET_DiseaseGroup2Gene_lib)[i],]$diseaseId, ")")
   names(DisGeNET_DiseaseGroup2Gene_lib)[i] <- DiseaseGroupName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(DisGeNET_DiseaseGroup2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/DisGeNET_DiseaseGroup2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(DisGeNET_DiseaseGroup2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_DiseaseGroup2Gene_lib.rds")
 
 
 
@@ -162,8 +162,8 @@ for(i in 1:length(OpenTargets_Disease2Gene_GA_lib)){
                         diseaseID_2_diseaseLabel[diseaseID_2_diseaseLabel$diseaseId == names(OpenTargets_Disease2Gene_GA_lib)[i],]$diseaseId, ")")
   names(OpenTargets_Disease2Gene_GA_lib)[i] <- diseaseName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(OpenTargets_Disease2Gene_GA_lib, "InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(OpenTargets_Disease2Gene_GA_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 
 
 
@@ -187,8 +187,8 @@ for(i in 1:length(OpenTargets_Disease2Gene_RNA_lib)){
                         diseaseID_2_diseaseLabel[diseaseID_2_diseaseLabel$diseaseId == names(OpenTargets_Disease2Gene_RNA_lib)[i],]$diseaseId, ")")
   names(OpenTargets_Disease2Gene_RNA_lib)[i] <- diseaseName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(OpenTargets_Disease2Gene_RNA_lib, "InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(OpenTargets_Disease2Gene_RNA_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 
 
 
@@ -213,8 +213,8 @@ for(i in 1:length(OpenTargets_Disease2Gene_lit_lib)){
                         diseaseID_2_diseaseLabel[diseaseID_2_diseaseLabel$diseaseId == names(OpenTargets_Disease2Gene_lit_lib)[i],]$diseaseId, ")")
   names(OpenTargets_Disease2Gene_lit_lib)[i] <- diseaseName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(OpenTargets_Disease2Gene_lit_lib, "InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(OpenTargets_Disease2Gene_lit_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 spark_disconnect(sc)
 
 
@@ -269,8 +269,8 @@ for(i in 1:length(Intogen_Disease2Gene_lib)){
                         " (", names(Intogen_Disease2Gene_lib)[i], ")")
   names(Intogen_Disease2Gene_lib)[i] <- diseaseName
 }
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Intogen_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Intogen_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 
 
 
@@ -319,8 +319,8 @@ Enrichr_Disease2Gene_GeoDiseaseSig_lib <- list()
 Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up <- Enrichr_GeoDiseaseSignatures_Up
 Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down <- Enrichr_GeoDiseaseSignatures_Down
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Enrichr_Disease2Gene_GeoDiseaseSig_lib, "InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Enrichr_Disease2Gene_GeoDiseaseSig_lib, "InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
 
 
@@ -351,8 +351,8 @@ for(i in unique(PharmGKB_Gene_Disease$Entity2_name)) {
   PharmGKB_Disease2Gene_lib[[i]] <- PharmGKB_Gene_Disease[PharmGKB_Gene_Disease$Entity2_name == i,]$Entity1_ensembl_gene_id
 }
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(PharmGKB_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(PharmGKB_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 
 
 
@@ -388,8 +388,8 @@ for(i in 1:length(CTD_Disease2Gene_lib)){
   names(CTD_Disease2Gene_lib)[i] <- diseaseName
 }
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(CTD_Disease2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/CTD_Disease2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(CTD_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/CTD_Disease2Gene_lib.rds")
 
 
 

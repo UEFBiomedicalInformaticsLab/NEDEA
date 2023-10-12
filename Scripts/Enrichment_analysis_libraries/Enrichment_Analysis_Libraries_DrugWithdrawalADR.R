@@ -41,8 +41,8 @@ library(openxlsx)
 ADR_terms <- c("Adverse reaction (08.06.01.018)",
                "Neurotoxicity (12.03.01.011)",
                "Poisoning (12.03.01.004)")
-ADReCS_ADR2Gene_level3_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level3_lib.rds")
-ADReCS_ADR2Gene_level4_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/ADReCS_ADR2Gene_level4_lib.rds")
+ADReCS_ADR2Gene_level3_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level3_lib.rds")
+ADReCS_ADR2Gene_level4_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level4_lib.rds")
 ADReCS_ADR2Gene_lib <- c(ADReCS_ADR2Gene_level4_lib, ADReCS_ADR2Gene_level3_lib)
 
 ADReCS_drugWithdrawalAdr_lib <- ADReCS_ADR2Gene_lib[names(ADReCS_ADR2Gene_lib) %in% ADR_terms]
@@ -56,7 +56,7 @@ ADR_terms <- c("Cardiotoxicity (MESH:D066126)",
                "Chemical and Drug Induced Liver Injury (MESH:D056486)",
                "Chemical and Drug Induced Liver Injury, Chronic (MESH:D056487)",
                "Neurotoxicity Syndromes (MESH:D020258)")
-CTD_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/CTD_Disease2Gene_lib.rds")
+CTD_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/CTD_Disease2Gene_lib.rds")
 CTD_drugWithdrawalAdr_lib <- CTD_Disease2Gene_lib[names(CTD_Disease2Gene_lib) %in% ADR_terms]
 names(CTD_drugWithdrawalAdr_lib) <- paste0(names(CTD_drugWithdrawalAdr_lib), " [CTD]")
 
@@ -68,9 +68,9 @@ ADR_terms <- c("Cardiotoxicity (C0876994)",
                "Chemically-Induced Liver Toxicity (C4279912)",
                "Drug toxicity (C0013221)",
                "Neurotoxicity Syndromes (C0235032)")
-DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
-DisGeNET_DiseaseGroup2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_DiseaseGroup2Gene_lib.rds")
-DisGeNET_Phenotype2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Phenotype2Gene_lib.rds")
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
+DisGeNET_DiseaseGroup2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_DiseaseGroup2Gene_lib.rds")
+DisGeNET_Phenotype2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Phenotype2Gene_lib.rds")
 DisGeNET_Disease2Gene_lib <- c(DisGeNET_Disease2Gene_lib, DisGeNET_DiseaseGroup2Gene_lib, DisGeNET_Phenotype2Gene_lib)
 
 DisGeNET_drugWithdrawalAdr_lib <- DisGeNET_Disease2Gene_lib[names(DisGeNET_Disease2Gene_lib) %in% ADR_terms]
@@ -81,9 +81,9 @@ names(DisGeNET_drugWithdrawalAdr_lib) <- paste0(names(DisGeNET_drugWithdrawalAdr
 # # Extract ADRs from OpenTargets -----------------------------------------------------------
 # 
 # ADR_terms <- c() # No relevant terms with good representation of genes
-# OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
-# OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
-# OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+# OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+# OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+# OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 # OpenTargets_Disease2Gene_lib <- c(OpenTargets_Disease2Gene_GA_lib, OpenTargets_Disease2Gene_lit_lib, OpenTargets_Disease2Gene_RNA_lib)
 # 
 # OpenTargets_drugWithdrawalAdr_lib <- OpenTargets_Disease2Gene_lib[names(OpenTargets_Disease2Gene_lib) %in% ADR_terms]
@@ -96,8 +96,8 @@ drugWithdrawal_Adr2Gene_lib <- c(ADReCS_drugWithdrawalAdr_lib,
                                  CTD_drugWithdrawalAdr_lib,
                                  DisGeNET_drugWithdrawalAdr_lib)
 
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(drugWithdrawal_Adr2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/drugWithdrawal_Adr2Gene_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(drugWithdrawal_Adr2Gene_lib, "InputFiles/Enrichment_analysis_libraries/drugWithdrawal_Adr2Gene_lib.rds")
 
 
 

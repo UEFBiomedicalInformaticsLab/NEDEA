@@ -21,7 +21,7 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 
 ## DisGeNET
 
-DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
 DisGeNET_SkinCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("skin|C0025202|C0278883|C0151779", 
                                                                names(DisGeNET_Disease2Gene_lib), 
                                                                ignore.case = TRUE)]
@@ -38,7 +38,7 @@ names(DisGeNET_SkinCancer2Gene_lib) <- paste0(names(DisGeNET_SkinCancer2Gene_lib
 
 ## OpenTargets
 
-OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 OpenTargets_SkinCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("skin|EFO_0000756|EFO_0002617|EFO_0000389", 
                                                                            names(OpenTargets_Disease2Gene_GA_lib), 
                                                                            ignore.case = TRUE)]
@@ -52,7 +52,7 @@ OpenTargets_SkinCancer2Gene_GA_lib <- OpenTargets_SkinCancer2Gene_GA_lib[grep("h
 names(OpenTargets_SkinCancer2Gene_GA_lib) <- paste0(names(OpenTargets_SkinCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
-OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 OpenTargets_SkinCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("skin|EFO_0000756|EFO_0002617|EFO_0000389",
                                                                              names(OpenTargets_Disease2Gene_RNA_lib),
                                                                              ignore.case = TRUE)]
@@ -66,7 +66,7 @@ OpenTargets_SkinCancer2Gene_RNA_lib <- OpenTargets_SkinCancer2Gene_RNA_lib[grep(
 names(OpenTargets_SkinCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_SkinCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
-OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 OpenTargets_SkinCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("skin|EFO_0000756|EFO_0002617|EFO_0000389",
                                                                              names(OpenTargets_Disease2Gene_lit_lib),
                                                                              ignore.case = TRUE)]
@@ -83,7 +83,7 @@ names(OpenTargets_SkinCancer2Gene_lit_lib) <- paste0(names(OpenTargets_SkinCance
 
 ## Enrichr
 
-Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
 Enrichr_GeoSkinCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("skin", 
                                                                                      names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), 
@@ -113,7 +113,7 @@ names(Enrichr_GeoSkinCancerSignatures_Down) <- paste0(names(Enrichr_GeoSkinCance
 
 ## Intogen
 
-Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
+Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 Intogen_SkinCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("skin", names(Intogen_Disease2Gene_lib), 
                                                              ignore.case = TRUE)]
 Intogen_SkinCancer2Gene_lib <- Intogen_SkinCancer2Gene_lib[grep("cancer|carcinoma|sarcoma|melanoma", 
@@ -129,7 +129,7 @@ names(Intogen_SkinCancer2Gene_lib) <- paste0(names(Intogen_SkinCancer2Gene_lib),
 
 ## PharmGKB
 
-PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 PharmGKB_SkinCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("skin|melanoma",
                                                                names(PharmGKB_Disease2Gene_lib),
                                                                ignore.case = TRUE)]
@@ -185,8 +185,8 @@ Enrichment_SkinCancer2Gene_lib <- c(DisGeNET_SkinCancer2Gene_lib, OpenTargets_Sk
 
 
 # Save as RDS file
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Enrichment_SkinCancer2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Enrichment_SkinCancer2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Disease2Gene_SkinCancer_lib.rds")
 
 
 

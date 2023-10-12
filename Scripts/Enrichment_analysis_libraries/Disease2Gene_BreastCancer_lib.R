@@ -20,7 +20,7 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 
 ## DisGeNET
 
-DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/DisGeNET_Disease2Gene_lib.rds")
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
 DisGeNET_BreastCancer2Gene_lib <- DisGeNET_Disease2Gene_lib[grep("breast", names(DisGeNET_Disease2Gene_lib), 
                                                                  ignore.case = TRUE)]
 DisGeNET_BreastCancer2Gene_lib <- DisGeNET_BreastCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
@@ -36,7 +36,7 @@ names(DisGeNET_BreastCancer2Gene_lib) <- paste0(names(DisGeNET_BreastCancer2Gene
 
 ## OpenTargets
 
-OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 OpenTargets_BreastCancer2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[grep("breast", names(OpenTargets_Disease2Gene_GA_lib), 
                                                                              ignore.case = TRUE)]
 OpenTargets_BreastCancer2Gene_GA_lib <- OpenTargets_BreastCancer2Gene_GA_lib[grep("cancer|carcinoma|sarcoma", 
@@ -49,7 +49,7 @@ OpenTargets_BreastCancer2Gene_GA_lib <- OpenTargets_BreastCancer2Gene_GA_lib[gre
 names(OpenTargets_BreastCancer2Gene_GA_lib) <- paste0(names(OpenTargets_BreastCancer2Gene_GA_lib), "[OpenTargets_GA]")
 
 
-OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 OpenTargets_BreastCancer2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[grep("breast", names(OpenTargets_Disease2Gene_RNA_lib), 
                                                                                ignore.case = TRUE)]
 OpenTargets_BreastCancer2Gene_RNA_lib <- OpenTargets_BreastCancer2Gene_RNA_lib[grep("cancer|carcinoma|sarcoma", 
@@ -62,7 +62,7 @@ OpenTargets_BreastCancer2Gene_RNA_lib <- OpenTargets_BreastCancer2Gene_RNA_lib[g
 names(OpenTargets_BreastCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_BreastCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
 
 
-OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 OpenTargets_BreastCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("breast", names(OpenTargets_Disease2Gene_lit_lib), 
                                                                                ignore.case = TRUE)]
 OpenTargets_BreastCancer2Gene_lit_lib <- OpenTargets_BreastCancer2Gene_lit_lib[grep("cancer|carcinoma|sarcoma", 
@@ -78,7 +78,7 @@ names(OpenTargets_BreastCancer2Gene_lit_lib) <- paste0(names(OpenTargets_BreastC
 
 ## Enrichr
 
-Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
+Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
 
 Enrichr_GeoBreastCancerSignatures_Up <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up[grep("breast", names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up), 
                                                                                        ignore.case = TRUE)]
@@ -106,7 +106,7 @@ names(Enrichr_GeoBreastCancerSignatures_Down) <- paste0(names(Enrichr_GeoBreastC
 
 ## Intogen
 
-Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/Intogen_Disease2Gene_lib.rds")
+Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 Intogen_BreastCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("breast", names(Intogen_Disease2Gene_lib), 
                                                                ignore.case = TRUE)]
 Intogen_BreastCancer2Gene_lib <- Intogen_BreastCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
@@ -122,7 +122,7 @@ names(Intogen_BreastCancer2Gene_lib) <- paste0(names(Intogen_BreastCancer2Gene_l
 
 # ## PharmGKB
 # 
-# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_Analysis_Libraries/PharmGKB_Disease2Gene_lib.rds")
+# PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 # PharmGKB_BreastCancer2Gene_lib <- PharmGKB_Disease2Gene_lib[grep("breast", names(PharmGKB_Disease2Gene_lib), 
 #                                                                  ignore.case = TRUE)]
 # PharmGKB_BreastCancer2Gene_lib <- PharmGKB_BreastCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
@@ -182,8 +182,8 @@ Enrichment_BreastCancer2Gene_lib <- c(DisGeNET_BreastCancer2Gene_lib, OpenTarget
 
 
 # Save as RDS file
-if(!dir.exists("InputFiles/Enrichment_Analysis_Libraries/")){dir.create("InputFiles/Enrichment_Analysis_Libraries/", recursive = TRUE)}
-saveRDS(Enrichment_BreastCancer2Gene_lib, "InputFiles/Enrichment_Analysis_Libraries/Disease2Gene_BreastCancer_lib.rds")
+if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
+saveRDS(Enrichment_BreastCancer2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Disease2Gene_BreastCancer_lib.rds")
 
 
 

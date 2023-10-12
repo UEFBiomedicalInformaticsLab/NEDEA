@@ -19,4 +19,6 @@
 ,0,Scripts/Enrichment_Analysis_Libraries/Disease2Gene_ProstateCancer_lib.R,1,1,,,,,,
 ,0,Scripts/Enrichment_Analysis_Libraries/Disease2Gene_SkinCancer_lib.R,1,1,,,,,,
 ,,,,,,,,,,
-,,/Scripts/Drug_combinations/Extract_drug_targets.R,0,0,1,1,1,1,1,1
+,,Scripts/Drug_combinations/Extract_drug_targets.R,0,0,,1,1,1,1,1
+,,Scripts/Feature_generation/Execute_RWR_on_drugCombs.R,,,,,,,,
+,,Scripts/Feature_generation/Execute_FGSEA_on_drugCombs.R,,,,,,,,
