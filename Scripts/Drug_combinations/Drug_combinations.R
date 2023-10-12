@@ -6,11 +6,11 @@ set.seed(5081)
 
 
 # Read the FIMM drug combinations
-FimmDrugComb_drugCombCat <- readRDS("InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
+FimmDrugComb_drugCombCat <- readRDS("InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
 
 
 # Read the DrugBank drug-drug interactions
-DrugBank_ddi <- readRDS("InputFiles/ReferenceList/DrugBank_DDI_processed.rds")
+DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
 
 
 # Merging the dataframes based on matching drug ID combinations
@@ -43,26 +43,26 @@ table(FIMM_DrugBank_drugCombs_all$totSyn, FIMM_DrugBank_drugCombs_all$phamk)
 print("Association between total synergistic score and ADV info:")
 print("<breast>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[breast_tissue], FIMM_DrugBank_drugCombs_all$phamk[breast_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[breast_tissue], FIMM_DrugBank_drugCombs_all$breastADV[breast_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[breast_tissue], FIMM_DrugBank_drugCombs_all$ADR_BreastCancer[breast_tissue])
 
 print("<lung>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[lung_tissue], FIMM_DrugBank_drugCombs_all$phamk[lung_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[lung_tissue], FIMM_DrugBank_drugCombs_all$lungADV[lung_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[lung_tissue], FIMM_DrugBank_drugCombs_all$ADR_LungCancer[lung_tissue])
 
 print("<kidney>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[kidney_tissue], FIMM_DrugBank_drugCombs_all$phamk[kidney_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[kidney_tissue], FIMM_DrugBank_drugCombs_all$kidneyADV[kidney_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[kidney_tissue], FIMM_DrugBank_drugCombs_all$ADR_KidneyCancer[kidney_tissue])
 
 print("<prostate>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[prostate_tissue], FIMM_DrugBank_drugCombs_all$phamk[prostate_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[prostate_tissue], FIMM_DrugBank_drugCombs_all$prostateADV[prostate_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[prostate_tissue], FIMM_DrugBank_drugCombs_all$ADR_ProstateCancer[prostate_tissue])
 print("<ovarian>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[ovarian_tissue], FIMM_DrugBank_drugCombs_all$phamk[ovarian_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[ovarian_tissue], FIMM_DrugBank_drugCombs_all$ovarianADV[ovarian_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[ovarian_tissue], FIMM_DrugBank_drugCombs_all$ADR_OvaryCancer[ovarian_tissue])
 
 print("<skin>")
 table(FIMM_DrugBank_drugCombs_all$totSyn[skin_tissue], FIMM_DrugBank_drugCombs_all$phamk[skin_tissue])
-table(FIMM_DrugBank_drugCombs_all$totSyn[skin_tissue], FIMM_DrugBank_drugCombs_all$skinADV[skin_tissue])
+table(FIMM_DrugBank_drugCombs_all$totSyn[skin_tissue], FIMM_DrugBank_drugCombs_all$ADR_SkinCancer[skin_tissue])
 
 
 

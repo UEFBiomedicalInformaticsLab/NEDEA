@@ -253,8 +253,8 @@ FimmDrugComb_drugCombCat$drug_class[which(FimmDrugComb_drugCombCat$totSyn >= 3)]
 FimmDrugComb_drugCombCat$drug_class[which(FimmDrugComb_drugCombCat$totSyn <= -3)] <- "antagonism"
 
 
-if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/", recursive = TRUE)
-saveRDS(FimmDrugComb_drugCombCat, "InputFiles/ReferenceList/FimmDrugComb_drugCombinations.rds")
+if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)
+saveRDS(FimmDrugComb_drugCombCat, "InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
 
 
 

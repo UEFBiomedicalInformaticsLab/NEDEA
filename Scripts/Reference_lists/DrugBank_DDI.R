@@ -189,8 +189,8 @@ set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49)
 names(list_tox_test)[c(set_adv_ids, 25, 31, 47)]
 sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 25, 31, 47)]))
-DrugBank_ddi$breastADV <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$breastADV[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "Adv"
+DrugBank_ddi$ADR_BreastCancer <- rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "Adv"
 
 
 
@@ -210,8 +210,8 @@ DrugBank_ddi$breastADV[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "Ad
 names(list_tox_test)[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]
 sapply(list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]))
-DrugBank_ddi$lungADV = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$lungADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "Adv"
+DrugBank_ddi$ADR_LungCancer = rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "Adv"
 
 
 
@@ -226,8 +226,8 @@ DrugBank_ddi$lungADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 
 names(list_tox_test)[c(set_adv_ids, 31, 38, 42, 43)]
 sapply(list_tox_test[c(set_adv_ids, 31, 38, 42, 43)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)]))
-DrugBank_ddi$prostateADV = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$prostateADV[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "Adv"                
+DrugBank_ddi$ADR_ProstateCancer = rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "Adv"                
 
 
 
@@ -243,8 +243,8 @@ DrugBank_ddi$prostateADV[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)
 names(list_tox_test)[c(set_adv_ids, 3, 25, 42, 43, 46)]
 sapply(list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)]))
-DrugBank_ddi$ovarianADV = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ovarianADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "Adv"                
+DrugBank_ddi$ADR_OvaryCancer = rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "Adv"                
 
 
 
@@ -264,8 +264,8 @@ DrugBank_ddi$ovarianADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 4
 names(list_tox_test)[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]
 sapply(list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]))
-DrugBank_ddi$kidneyADV = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$kidneyADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "Adv"   
+DrugBank_ddi$ADR_KidneyCancer = rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "Adv"   
 
 
 
@@ -278,12 +278,12 @@ DrugBank_ddi$kidneyADV[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 
 names(list_tox_test)[c(set_adv_ids, 46)]
 sapply(list_tox_test[c(set_adv_ids, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 46)]))
-DrugBank_ddi$skinADV = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$skinADV[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "Adv"   
+DrugBank_ddi$ADR_SkinCancer = rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "Adv"   
 
 
-if(!dir.exists("InputFiles/ReferenceList/"))dir.create("InputFiles/ReferenceList/", recursive = TRUE)
-saveRDS(DrugBank_ddi, "InputFiles/ReferenceList/DrugBank_DDI_processed.rds")
+if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)
+saveRDS(DrugBank_ddi, "InputFiles/Reference_list/DrugBank_DDI_processed.rds")
 
 
 
