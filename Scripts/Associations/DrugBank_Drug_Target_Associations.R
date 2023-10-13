@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Drug-Target association from DrugBank
+# Extract the drug-target associations from DrugBank
 
 
 
@@ -61,19 +61,15 @@ DrugBank_Targets_idMap$ensembl_gene_id <- uniprotID_2_ensemblID$ensembl_gene_id[
 # Extract all drug target interactions in human
 DrugBank_Drug_Target <- read.csv("Databases/DrugBank/targets.csv", header = TRUE)
 DrugBank_Drug_Target <- DrugBank_Drug_Target[DrugBank_Drug_Target$organism == "Humans", ]
-colnames(DrugBank_Drug_Target)[colnames(DrugBank_Drug_Target) == "parent_key"] <- "Node1_drugbank_drug_id"
-DrugBank_Drug_Target$Node2_ensembl_gene_id <- DrugBank_Targets_idMap$ensembl_gene_id[match(DrugBank_Drug_Target$id, DrugBank_Targets_idMap$parent_key)]
+colnames(DrugBank_Drug_Target)[colnames(DrugBank_Drug_Target) == "parent_key"] <- "drugbank_drug_id"
+DrugBank_Drug_Target$ensembl_gene_id <- DrugBank_Targets_idMap$ensembl_gene_id[match(DrugBank_Drug_Target$id, DrugBank_Targets_idMap$parent_key)]
 DrugBank_Drug_Target[DrugBank_Drug_Target == ""] <- NA
 
-DrugBank_Drug_Target_Net <- na.exclude(DrugBank_Drug_Target[, c("Node1_drugbank_drug_id", "Node2_ensembl_gene_id")])
-DrugBank_Drug_Target_Net$Node1_type <- "drug"
-DrugBank_Drug_Target_Net$Node2_type <- "gene"
-DrugBank_Drug_Target_Net$Edge_type <- "undirected"
-DrugBank_Drug_Target_Net <- DrugBank_Drug_Target_Net[, c("Node1_drugbank_drug_id", "Node1_type", "Node2_ensembl_gene_id", "Node2_type", "Edge_type")]
+DrugBank_Drug_Target_Net <- na.exclude(DrugBank_Drug_Target[, c("drugbank_drug_id", "ensembl_gene_id")])
 
 
 if(!dir.exists("InputFiles/Associations/")){dir.create("InputFiles/Associations/", recursive = TRUE)} 
-saveRDS(DrugBank_Drug_Target_Net, "InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
+saveRDS(DrugBank_Drug_Target_Net, "InputFiles/Associations/DrugBank_Drug_Target_associations.rds")
 
 
 

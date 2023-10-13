@@ -85,7 +85,7 @@ enrichment_lib <- c(enrichment_lib_1, enrichment_lib_2)
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib)
 
-fgsea_result_final[["combined_efficacy_safety"]] <- fgsea_result
+fgsea_result_final[["combinedEfficacySafety"]] <- fgsea_result
 
 
 

@@ -55,31 +55,31 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(input_network), ", edg
 drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
 cat("\n\nReading drug-target interactions")
 cat(paste0("\n\tNumber of drug-target interactions: ", nrow(drug_target_ixn)))
-cat(paste0("\n\tNumber of drugs: ", length(unique(drug_target_ixn$Node1_drugbank_drug_id))))
-cat(paste0("\n\tNumber of targets: ", length(unique(drug_target_ixn$Node2_ensembl_gene_id))))
+cat(paste0("\n\tNumber of drugs: ", length(unique(drug_target_ixn$drugbank_drug_id))))
+cat(paste0("\n\tNumber of targets: ", length(unique(drug_target_ixn$ensembl_gene_id))))
 
 
 # Keep drug targets that are included in the input network
 drug_target_ixn <- drug_target_ixn %>% 
-  filter(Node2_ensembl_gene_id %in% V(input_network)$name) 
+  filter(ensembl_gene_id %in% V(input_network)$name) 
 cat("\nFiltering drug-target interactions to keep targets in the network")
 cat(paste0("\n\tNumber of drug-target interactions: ", nrow(drug_target_ixn)))
-cat(paste0("\n\tNumber of drugs: ", length(unique(drug_target_ixn$Node1_drugbank_drug_id))))
-cat(paste0("\n\tNumber of targets: ", length(unique(drug_target_ixn$Node2_ensembl_gene_id))))
+cat(paste0("\n\tNumber of drugs: ", length(unique(drug_target_ixn$drugbank_drug_id))))
+cat(paste0("\n\tNumber of targets: ", length(unique(drug_target_ixn$ensembl_gene_id))))
 
 
 # Aggregate the drug targets as a single string
 drugTarget_list <- drug_target_ixn %>%
-  group_by(Node1_drugbank_drug_id) %>%
-  summarise(drugTarget_ensembl_id = paste(Node2_ensembl_gene_id, collapse = ","))
+  group_by(drugbank_drug_id) %>%
+  summarise(drugTarget_ensembl_id = paste(ensembl_gene_id, collapse = ","))
 
 
 # Merge the drug targets information with the drug combinations data
 cat("\nExtracting targets of the drug combinations\n")
 drugCombs_targets <- drugCombs %>%
-  left_join(drugTarget_list, by = c("Drug1_DrugBank_id" = "Node1_drugbank_drug_id")) %>%
+  left_join(drugTarget_list, by = c("Drug1_DrugBank_id" = "drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
-  left_join(drugTarget_list, by = c("Drug2_DrugBank_id" = "Node1_drugbank_drug_id")) %>%
+  left_join(drugTarget_list, by = c("Drug2_DrugBank_id" = "drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_2 = drugTarget_ensembl_id) %>%
   filter(!is.na(drugTarget_ensembl_id_1), !is.na(drugTarget_ensembl_id_2)) %>%  # Remove rows where either drug has zero targets
   dplyr::rowwise() %>%
@@ -151,7 +151,7 @@ CHG_pathways <- CHG_pathways[CHG_pathways != ""]
 
 # # Extract the gene symbols for all the known targets in drug-target interactions
 # all_drug_target_gene_symbols <- select(org.Hs.eg.db, 
-#                                        keys = unique(drug_target_ixn$Node2_ensembl_gene_id), 
+#                                        keys = unique(drug_target_ixn$ensembl_gene_id), 
 #                                        columns = "SYMBOL", 
 #                                        keytype = "ENSEMBL")
 
