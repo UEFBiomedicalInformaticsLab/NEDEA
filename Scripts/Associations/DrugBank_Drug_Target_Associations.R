@@ -14,32 +14,30 @@ library(dbparser)
 
 
 
-
-
 # Download the complete DrugBank database as XML and parse it using dbparser
-# Following that the data is saved as CSV files
 
 if(!dir.exists("Databases/DrugBank")){dir.create("Databases/DrugBank/", recursive = TRUE)} 
 if(!file.exists("Databases/DrugBank/drugbank_all_full_database.xml.zip")){ 
   warning(paste0("ERROR: DrugBank database file not found !!! \n", 
                  "Download file in terminal using:\n", 
-                 "\t curl -Lfv -o filename.zip -u EMAIL:PASSWORD https://go.drugbank.com/releases/5-1-8/downloads/all-full-database"))
+                 "\t curl -Lfv -o filename.zip -u EMAIL:PASSWORD https://go.drugbank.com/releases/5-1-10/downloads/all-full-database"))
 }
 
-if(!file.exists("Databases/DrugBank/drug.csv")){
+if(!file.exists("Databases/DrugBank/parsed_DrugBank_data.rds")){
   require(dbparser)
-  read_drugbank_xml_db("Databases/DrugBank/drugbank_all_full_database.xml.zip")
-  targets <- targets(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
-  drugs <- drugs(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
+  dvobj <- parseDrugBank(db_path = "Databases/DrugBank/drugbank_all_full_database.xml.zip",
+                         drug_options = drug_node_options(),
+                         parse_salts = TRUE,
+                         parse_products = TRUE,
+                         references_options = references_node_options(),
+                         cett_options = cett_nodes_options())
+  saveRDS(dvobj, "Databases/DrugBank/parsed_DrugBank_data.rds")
 }
 
 
 # Extract the biological entities (BE) id from DrugBank for all targets and map to Ensembl Gene ID
-# The targets_polypep_ex_ident() function extracts mapping the BE IDs to several external IDs
-if(!file.exists("Databases/DrugBank/targets_polypeptides_ext_id.csv")){
-  DrugBank_Targets_idMap <- targets_polypep_ex_ident(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
-}
-DrugBank_Targets_idMap <- read.csv("Databases/DrugBank/targets_polypeptides_ext_id.csv", header = TRUE)
+DrugBank_Targets_idMap <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_Targets_idMap <- DrugBank_Targets_idMap$cett$targets$polypeptides$external_identy
 DrugBank_Targets_idMap <- reshape(as.data.frame(DrugBank_Targets_idMap), idvar = "parent_key", timevar = "resource", direction = "wide")
 colnames(DrugBank_Targets_idMap) <- gsub("identifier.", "", colnames(DrugBank_Targets_idMap))
 DrugBank_Targets_idMap <- DrugBank_Targets_idMap[grep("_HUMAN$", x = DrugBank_Targets_idMap$`UniProt Accession`),]
@@ -54,12 +52,9 @@ DrugBank_Targets_idMap$ensembl_gene_id <- uniprotID_2_ensemblID$ensembl_gene_id[
 # All Uniprot Accessions do not map to Ensembl gene ID and leaves NA 
 
 
-# # Extract the DrugBank primary/parent key to cas number mappting
-# DrugBank_Drugs_idMap <- read.csv("Databases/DrugBank/drug.csv", header = TRUE)
-
-
 # Extract all drug target interactions in human
-DrugBank_Drug_Target <- read.csv("Databases/DrugBank/targets.csv", header = TRUE)
+DrugBank_Drug_Target <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_Drug_Target <- DrugBank_Drug_Target$cett$targets$general_information
 DrugBank_Drug_Target <- DrugBank_Drug_Target[DrugBank_Drug_Target$organism == "Humans", ]
 colnames(DrugBank_Drug_Target)[colnames(DrugBank_Drug_Target) == "parent_key"] <- "drugbank_drug_id"
 DrugBank_Drug_Target$ensembl_gene_id <- DrugBank_Targets_idMap$ensembl_gene_id[match(DrugBank_Drug_Target$id, DrugBank_Targets_idMap$parent_key)]

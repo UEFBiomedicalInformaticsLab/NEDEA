@@ -11,24 +11,29 @@ set.seed(5081)
 
 
 
-# Download the complete DrugBank database as XML and parse it using dbparser
 if(!dir.exists("Databases/DrugBank")){dir.create("Databases/DrugBank/", recursive = TRUE)} 
 if(!file.exists("Databases/DrugBank/drugbank_all_full_database.xml.zip")){ 
   warning(paste0("ERROR: DrugBank database file not found !!! \n", 
                  "Download file in terminal using:\n", 
-                 "\t curl -Lfv -o filename.zip -u EMAIL:PASSWORD https://go.drugbank.com/releases/5-1-8/downloads/all-full-database"))
+                 "\t curl -Lfv -o filename.zip -u EMAIL:PASSWORD https://go.drugbank.com/releases/5-1-10/downloads/all-full-database"))
 }
 
-if(!file.exists("Databases/DrugBank/drug_drug_interactions.csv")){
+if(!file.exists("Databases/DrugBank/parsed_DrugBank_data.rds")){
   require(dbparser)
-  read_drugbank_xml_db("Databases/DrugBank/drugbank_all_full_database.xml.zip")
-  targets <- targets(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
-  drugs <- drugs(save_csv = TRUE, csv_path = "Databases/DrugBank/",  override_csv = TRUE)
+  dvobj <- parseDrugBank(db_path = "Databases/DrugBank/drugbank_all_full_database.xml.zip",
+                         drug_options = drug_node_options(),
+                         parse_salts = TRUE,
+                         parse_products = TRUE,
+                         references_options = references_node_options(),
+                         cett_options = cett_nodes_options())
+  saveRDS(dvobj, "Databases/DrugBank/parsed_DrugBank_data.rds")
 }
 
 
 # Read the DrugBank drug-drug interactions
-DrugBank_ddi <- read.csv("Databases/DrugBank/drug_drug_interactions.csv")
+# DrugBank_ddi <- read.csv("Databases/DrugBank/drug_drug_interactions.csv")
+DrugBank_ddi <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_ddi <- DrugBank_ddi$drugs$drug_interactions
 colnames(DrugBank_ddi)[c(1,4)] <- c("Drug1_DrugBank_id", "Drug2_DrugBank_id")
 
 
@@ -142,15 +147,15 @@ names(list_tox_test) <- risk_sev_res$ngrams
 
 
 # Categorize drug combinations based on increased/decreased therapeutic efficacy
-DrugBank_ddi$effVsNeff <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$effVsNeff[test_eff_inc] <- "IncEff"
-DrugBank_ddi$effVsNeff[test_eff_dec] <- "DecEff"
+DrugBank_ddi$class_therapeuticEfficacy <- rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$class_therapeuticEfficacy[test_eff_inc] <- "Increased"
+DrugBank_ddi$class_therapeuticEfficacy[test_eff_dec] <- "Decreased"
 
 
 # Categorize drug combinations based on effect of metabolism
-DrugBank_ddi$phamk <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$phamk[test_meinc | test_scdec | test_absde] <- "PDecEff"
-DrugBank_ddi$phamk[test_medec | test_scinc] <- "PIncEff"
+DrugBank_ddi$class_metabolicEffect <- rep("Unk", nrow(DrugBank_ddi))
+DrugBank_ddi$class_metabolicEffect[test_meinc | test_scdec | test_absde] <- "Decreased"
+DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "Increased"
 
 
 
@@ -191,9 +196,6 @@ sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 25, 31, 47)]))
 DrugBank_ddi$ADR_BreastCancer <- rep("Unk", nrow(DrugBank_ddi))
 DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "Adv"
-
-
-
 
 
 
@@ -280,6 +282,8 @@ sapply(list_tox_test[c(set_adv_ids, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 46)]))
 DrugBank_ddi$ADR_SkinCancer = rep("Unk", nrow(DrugBank_ddi))
 DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "Adv"   
+
+
 
 
 if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)

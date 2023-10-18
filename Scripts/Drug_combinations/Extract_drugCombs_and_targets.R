@@ -30,7 +30,12 @@ opt = parse_args(opt_parser)
 
 if(is.null(opt$disease)){
   print_help(opt_parser)
-  stop("--disease argument needed", call.=FALSE)
+  stop("--disease argument needed", call. = FALSE)
+}
+
+if(!opt$disease %in% c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
+  print_help(opt_parser)
+  stop("--disease must be one of the following: BreastCancer, KidneyCancer, LungCancer, OvaryCancer, ProstateCancer, SkinCancer", call. = FALSE)
 }
 
 
@@ -40,9 +45,20 @@ disease <- opt$disease
 cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
-# Read the drug combinations
-drugCombs <- readRDS("InputFiles/Drug_combinations/Drug_combinations.rds")
-drugCombs <- drugCombs[[disease]]
+# Read the FIMM drug combinations
+FimmDrugComb_drugCombCat <- readRDS("InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
+
+
+# Extract the disease specific drug combinations
+switch(disease,
+       "BreastCancer" = {tissue_select <- "breast"},
+       "KidneyCancer" = {tissue_select <- "kidney"},
+       "LungCancer" = {tissue_select <- "lung"},
+       "OvaryCancer" = {tissue_select <- "ovary"},
+       "ProstateCancer" = {tissue_select <- "prostate"},
+       "SkinCancer" = {tissue_select <- "skin"})
+
+drugCombs <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$tissue_name == tissue_select, ]
 cat(paste0("\n\nNumber of drug combinations: ", nrow(drugCombs), "\n\n"))
 
 
@@ -52,7 +68,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(input_network), ", edg
 
 
 # Read drug target interactions
-drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_Net.rds")
+drug_target_ixn <- readRDS("InputFiles/Associations/DrugBank_Drug_Target_associations.rds")
 cat("\n\nReading drug-target interactions")
 cat(paste0("\n\tNumber of drug-target interactions: ", nrow(drug_target_ixn)))
 cat(paste0("\n\tNumber of drugs: ", length(unique(drug_target_ixn$drugbank_drug_id))))
@@ -167,8 +183,31 @@ drugCombs_targets$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext
 
 
 
-if(!dir.exists("InputFiles/Drug_targets/")){dir.create("InputFiles/Drug_targets/", recursive = TRUE)}
-saveRDS(drugCombs_targets, file = paste0("InputFiles/Drug_targets/Drug_targets_extended_", disease, ".rds"))
+# Save the basic information for the extracted drug combinations
+drugCombs_1 <- drugCombs_targets[, c("Drug1_DrugBank_id", "drug_row", "Drug2_DrugBank_id", "drug_col", 
+                                     "tissue_name", 
+                                     "avgSynSM", "avgSynZIP", "avgSynLoewe", "avgSynHSA", "avgSynBliss", 
+                                     "meanSynS", "sdSynS", "meanSynZIP", "sdSynZIP", "meanSynLoewe", 
+                                     "sdSynLoewe", "meanSynHSA", "sdSynHSA", "meanSynBliss", "sdSynBliss", 
+                                     "cS", "cZIP", "cLoewe", "cHSA", "cBliss", 
+                                     "Syn_level", "class_synergyScore")]
+
+if(!dir.exists("InputFiles/Drug_combination_data/")){dir.create("InputFiles/Drug_combination_data/", recursive = TRUE)}
+saveRDS(drugCombs_1, file = paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
+
+
+
+# Save the targets for the extracted drug combinations
+drugCombs_2 <- drugCombs_targets[, c("Drug1_DrugBank_id", "drug_row", "Drug2_DrugBank_id", "drug_col", 
+                                     "drugTarget_ensembl_id", "drugTarget_count", "drugTarget_geneSymbol", 
+                                     "ext_PS_targets", "ext_PS_tar_cnt", 
+                                     "ext_SIGNOR_targets", "ext_SIGNOR_tar_cnt", 
+                                     "ext_NPA_targets", "ext_NPA_tar_cnt", 
+                                     "ext_RI_targets", "ext_RI_tar_cnt", 
+                                     "ext_KEGG_targets", "ext_KEGG_tar_cnt")]
+
+if(!dir.exists("InputFiles/Drug_combination_targets/")){dir.create("InputFiles/Drug_combination_targets/", recursive = TRUE)}
+saveRDS(drugCombs_2, file = paste0("InputFiles/Drug_combination_targets/drugCombs_targets_extended_", disease, ".rds"))
 
 
 

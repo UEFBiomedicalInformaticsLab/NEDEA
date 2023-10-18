@@ -32,19 +32,19 @@ FimmDrugComb_drugCombCat$synergy_loewe <- as.numeric(FimmDrugComb_drugCombCat$sy
 # Get cell line information
 FimmDrugComb_cellLine <- GET("https://api.drugcomb.org/cell_lines")
 FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
-FimmDrugComb_cellLine$tissue <- sapply(FimmDrugComb_cellLine$ccle_name, function(x) substr(x, gregexpr('\\_', x)[[1]]+1, nchar(x)))
+# FimmDrugComb_cellLine$tissue <- sapply(FimmDrugComb_cellLine$ccle_name, function(x) substr(x, gregexpr('\\_', x)[[1]]+1, nchar(x)))
 write.csv(FimmDrugComb_cellLine, "Databases/FimmDrugComb/cell_lines.csv", quote = TRUE, row.names = FALSE)
 
 
 # Download disease IDs from NCI Thesaurus (NCIt) 
 if(!dir.exists("Databases/NCIt/"))dir.create("Databases/NCIt/", recursive = TRUE)
 if(!file.exists("Databases/NCIt/Thesaurus.txt")){
-  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/archive/2022/22.12d_Release/Thesaurus_22.12d.FLAT.zip",
-                destfile = "Databases/NCIt/Thesaurus_22.12d.FLAT.zip", method = "wget")
-  unzip("Databases/NCIt/Thesaurus_22.12d.FLAT.zip", exdir = "Databases/NCIt/", file = "Thesaurus.txt")
+  download.file(url = "https://evs.nci.nih.gov/ftp1/NCI_Thesaurus/archive/2023/23.06d_Release/Thesaurus.FLAT.zip",
+                destfile = "Databases/NCIt/Thesaurus.FLAT.zip", method = "wget")
+  unzip("Databases/NCIt/Thesaurus.FLAT.zip", exdir = "Databases/NCIt/", file = "Thesaurus.txt")
 }
 NCIthesaurus <- read.table("Databases/NCIt/Thesaurus.txt", sep = "\t", header = FALSE, comment.char = "", fill = TRUE, quote = "")
-colnames(NCIthesaurus) <- c("code", "concept IRI", "parents", "synonyms", "definition", "display name", "concept status", "semantic type")
+colnames(NCIthesaurus) <- c("code", "concept IRI", "parents", "synonyms", "definition", "display name", "concept status", "semantic type", "concept in subset")
 
 
 # Filter drug combinations tested on cancer related cell lines
@@ -55,8 +55,8 @@ FimmDrugComb_cellLine <- FimmDrugComb_cellLine[FimmDrugComb_cellLine$disease_id 
 
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$cell_line_name %in% FimmDrugComb_cellLine$name, ]
 
-FimmDrugComb_drugCombCat <- merge(FimmDrugComb_drugCombCat, FimmDrugComb_cellLine[,c("name", "tissue")], 
-                                  by.x = "cell_line_name", by.y = "name", all.x = TRUE)
+# FimmDrugComb_drugCombCat <- merge(FimmDrugComb_drugCombCat, FimmDrugComb_cellLine[,c("name", "tissue")],
+#                                   by.x = "cell_line_name", by.y = "name", all.x = TRUE)
 
 
 # * ZIP (Zero Interaction Potency):
@@ -97,16 +97,16 @@ FimmDrugComb_drugCombCat <- merge(FimmDrugComb_drugCombCat, FimmDrugComb_cellLin
 
 
 
-# Aggregate scores acroos tissue for each drug combination
+# Aggregate scores across tissue for each drug combination
 # i.e. the mean scores across cell lines are used
 
 dcc_agg_all <- FimmDrugComb_drugCombCat %>%
-  group_by(drug_row, drug_col, tissue)  %>%
-  summarise(AvgSynSM = mean(S_mean, na.rm = TRUE),
-            AvgSynZIP = mean(synergy_zip, na.rm = TRUE),
-            AvgSynLoewe = mean(synergy_loewe, na.rm = TRUE),
-            AvgSynHSA = mean(synergy_hsa, na.rm = TRUE),
-            AvgSynBliss = mean(synergy_bliss, na.rm=  TRUE), 
+  group_by(drug_row, drug_col, tissue_name)  %>%
+  summarise(avgSynSM = mean(S_mean, na.rm = TRUE),
+            avgSynZIP = mean(synergy_zip, na.rm = TRUE),
+            avgSynLoewe = mean(synergy_loewe, na.rm = TRUE),
+            avgSynHSA = mean(synergy_hsa, na.rm = TRUE),
+            avgSynBliss = mean(synergy_bliss, na.rm=  TRUE), 
             .groups="drop")
 
 
@@ -123,12 +123,12 @@ tiff("OutputFiles/Plots/Avg_SynergyScores_byCancer.tiff",
 
 plot_data <- dcc_agg_all %>%
   pivot_longer(
-    cols = starts_with("AvgSyn"), 
+    cols = starts_with("avgSyn"), 
     names_to = "SynergyType", 
     values_to = "Value"
   )
 
-ggplot(plot_data, aes(x = tissue, y = Value, fill = tissue)) +
+ggplot(plot_data, aes(x = tissue_name, y = Value, fill = tissue_name)) +
   geom_boxplot(width = 0.5, 
                lwd = 0.2, 
                outlier.shape = NA, 
@@ -184,53 +184,53 @@ dev.off()
 # but less so than the average for that tumor type.
 
 cancer_stats <- dcc_agg_all %>%
-  group_by(tissue) %>%
-  summarise(meanSynS = mean(AvgSynSM, na.rm = TRUE),
-            sdSynS = sd(AvgSynSM, na.rm = TRUE),
-            meanSynZIP = mean(AvgSynZIP, na.rm = TRUE),
-            sdSynZIP = sd(AvgSynZIP, na.rm = TRUE),
-            meanSynLoewe = mean(AvgSynLoewe, na.rm = TRUE),
-            sdSynLoewe = sd(AvgSynLoewe, na.rm = TRUE),
-            meanSynHSA = mean(AvgSynHSA, na.rm = TRUE),
-            sdSynHSA = sd(AvgSynHSA, na.rm = TRUE),
-            meanSynBliss = mean(AvgSynBliss, na.rm = TRUE),
-            sdSynBliss = sd(AvgSynBliss, na.rm = TRUE))
+  group_by(tissue_name) %>%
+  summarise(meanSynS = mean(avgSynSM, na.rm = TRUE),
+            sdSynS = sd(avgSynSM, na.rm = TRUE),
+            meanSynZIP = mean(avgSynZIP, na.rm = TRUE),
+            sdSynZIP = sd(avgSynZIP, na.rm = TRUE),
+            meanSynLoewe = mean(avgSynLoewe, na.rm = TRUE),
+            sdSynLoewe = sd(avgSynLoewe, na.rm = TRUE),
+            meanSynHSA = mean(avgSynHSA, na.rm = TRUE),
+            sdSynHSA = sd(avgSynHSA, na.rm = TRUE),
+            meanSynBliss = mean(avgSynBliss, na.rm = TRUE),
+            sdSynBliss = sd(avgSynBliss, na.rm = TRUE))
 
-df_with_stats <- left_join(dcc_agg_all, cancer_stats, by = "tissue")
+df_with_stats <- left_join(dcc_agg_all, cancer_stats, by = "tissue_name")
 
 df_with_stats$cS <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
 df_with_stats$cZIP <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
 df_with_stats$cLoewe <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
 df_with_stats$cHSA <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
 df_with_stats$cBliss <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
-df_with_stats$totSyn <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
+df_with_stats$Syn_level <- rep(0, nrow(df_with_stats)) # 0 means 'NEUTRAL'
 
 
 k <- 1
 for(i in 1:nrow(df_with_stats)) {
   
   # S
-  if(df_with_stats$AvgSynSM[i] > df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$AvgSynSM[i] > 0) df_with_stats$cS[i] = 1
-  if(df_with_stats$AvgSynSM[i] < df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$AvgSynSM[i] < 0) df_with_stats$cS[i] = -1
+  if(df_with_stats$avgSynSM[i] > df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$avgSynSM[i] > 0) df_with_stats$cS[i] = 1
+  if(df_with_stats$avgSynSM[i] < df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$avgSynSM[i] < 0) df_with_stats$cS[i] = -1
   
   # ZIP
-  if(df_with_stats$AvgSynZIP[i] > df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$AvgSynZIP[i] > 0) df_with_stats$cZIP[i] = 1
-  if(df_with_stats$AvgSynZIP[i] < df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$AvgSynZIP[i] < 0) df_with_stats$cZIP[i] = -1
+  if(df_with_stats$avgSynZIP[i] > df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$avgSynZIP[i] > 0) df_with_stats$cZIP[i] = 1
+  if(df_with_stats$avgSynZIP[i] < df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$avgSynZIP[i] < 0) df_with_stats$cZIP[i] = -1
   
   # LOEWE
-  if(df_with_stats$AvgSynLoewe[i] > df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$AvgSynLoewe[i] > 0) df_with_stats$cLoewe[i] = 1
-  if(df_with_stats$AvgSynLoewe[i] < df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$AvgSynLoewe[i] < 0) df_with_stats$cLoewe[i] = -1
+  if(df_with_stats$avgSynLoewe[i] > df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$avgSynLoewe[i] > 0) df_with_stats$cLoewe[i] = 1
+  if(df_with_stats$avgSynLoewe[i] < df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$avgSynLoewe[i] < 0) df_with_stats$cLoewe[i] = -1
   
   # HSA
-  if(df_with_stats$AvgSynHSA[i] > df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$AvgSynHSA[i] > 0) df_with_stats$cHSA[i] = 1
-  if(df_with_stats$AvgSynHSA[i] < df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$AvgSynHSA[i] < 0) df_with_stats$cHSA[i] = -1
+  if(df_with_stats$avgSynHSA[i] > df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$avgSynHSA[i] > 0) df_with_stats$cHSA[i] = 1
+  if(df_with_stats$avgSynHSA[i] < df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$avgSynHSA[i] < 0) df_with_stats$cHSA[i] = -1
   
   # BLISS
-  if(df_with_stats$AvgSynBliss[i] > df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$AvgSynBliss[i] > 0) df_with_stats$cBliss[i] = 1
-  if(df_with_stats$AvgSynBliss[i] < df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$AvgSynBliss[i] < 0) df_with_stats$cZIP[i] = -1
+  if(df_with_stats$avgSynBliss[i] > df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] > 0) df_with_stats$cBliss[i] = 1
+  if(df_with_stats$avgSynBliss[i] < df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] < 0) df_with_stats$cZIP[i] = -1
   
   # consensus
-  df_with_stats$totSyn[i] = df_with_stats$cS[i] + df_with_stats$cZIP[i] + df_with_stats$cLoewe[i] + df_with_stats$cHSA[i] + df_with_stats$cBliss[i]
+  df_with_stats$Syn_level[i] = df_with_stats$cS[i] + df_with_stats$cZIP[i] + df_with_stats$cLoewe[i] + df_with_stats$cHSA[i] + df_with_stats$cBliss[i]
 }
 
 
@@ -248,9 +248,9 @@ FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[(FimmDrugComb_drugCombCat$D
                                                         FimmDrugComb_drugCombCat$Drug2_DrugBank_id != ""),]
 
 # Assign the categories
-FimmDrugComb_drugCombCat$drug_class <- rep("neutral", nrow(FimmDrugComb_drugCombCat))
-FimmDrugComb_drugCombCat$drug_class[which(FimmDrugComb_drugCombCat$totSyn >= 3)] <- "synergism"
-FimmDrugComb_drugCombCat$drug_class[which(FimmDrugComb_drugCombCat$totSyn <= -3)] <- "antagonism"
+FimmDrugComb_drugCombCat$class_synergyScore <- rep("neutral", nrow(FimmDrugComb_drugCombCat))
+FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_level >= 3)] <- "synergism"
+FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_level <= -3)] <- "antagonism"
 
 
 if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)
