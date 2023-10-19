@@ -80,6 +80,19 @@ OpenTargets_SkinCancer2Gene_lit_lib <- OpenTargets_SkinCancer2Gene_lit_lib[grep(
 names(OpenTargets_SkinCancer2Gene_lit_lib) <- paste0(names(OpenTargets_SkinCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_SkinCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("skin|EFO_0000756|EFO_0002617|EFO_0000389",
+                                                                           names(OpenTargets_Disease2Gene_SM_lib),
+                                                                           ignore.case = TRUE)]
+OpenTargets_SkinCancer2Gene_SM_lib <- OpenTargets_SkinCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma|melanoma",
+                                                                              names(OpenTargets_SkinCancer2Gene_SM_lib),
+                                                                              ignore.case = TRUE)]
+OpenTargets_SkinCancer2Gene_SM_lib <- OpenTargets_SkinCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition",
+                                                                              names(OpenTargets_SkinCancer2Gene_SM_lib),
+                                                                              ignore.case = TRUE,
+                                                                              invert = TRUE)]
+names(OpenTargets_SkinCancer2Gene_SM_lib) <- paste0(names(OpenTargets_SkinCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
 
 ## Enrichr
 
@@ -114,8 +127,12 @@ names(Enrichr_GeoSkinCancerSignatures_Down) <- paste0(names(Enrichr_GeoSkinCance
 ## Intogen
 
 Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
-Intogen_SkinCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("skin", names(Intogen_Disease2Gene_lib), 
+Intogen_SkinCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("skin|melanoma", names(Intogen_Disease2Gene_lib), 
                                                              ignore.case = TRUE)]
+Intogen_SkinCancer2Gene_lib <- Intogen_SkinCancer2Gene_lib[grep("Uveal", 
+                                                                names(Intogen_SkinCancer2Gene_lib), 
+                                                                ignore.case = TRUE, 
+                                                                invert = TRUE)] 
 Intogen_SkinCancer2Gene_lib <- Intogen_SkinCancer2Gene_lib[grep("cancer|carcinoma|sarcoma|melanoma", 
                                                                 names(Intogen_SkinCancer2Gene_lib), 
                                                                 ignore.case = TRUE)]
@@ -178,6 +195,7 @@ names(ThETA_SkinCancer2Gene_lib) <- paste0("melanoma (EFO_0000756)", "[ThETA]")
 
 Enrichment_SkinCancer2Gene_lib <- c(DisGeNET_SkinCancer2Gene_lib, OpenTargets_SkinCancer2Gene_GA_lib, 
                                     OpenTargets_SkinCancer2Gene_RNA_lib, OpenTargets_SkinCancer2Gene_lit_lib, 
+                                    OpenTargets_SkinCancer2Gene_SM_lib, 
                                     Enrichr_GeoSkinCancerSignatures_Up, Enrichr_GeoSkinCancerSignatures_Down,
                                     PharmGKB_SkinCancer2Gene_lib, Intogen_SkinCancer2Gene_lib,
                                     ThETA_SkinCancer2Gene_lib)

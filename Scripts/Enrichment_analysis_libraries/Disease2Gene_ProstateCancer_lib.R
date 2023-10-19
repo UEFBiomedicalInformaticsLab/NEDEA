@@ -79,6 +79,19 @@ OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_ProstateCancer2Gene_lit_l
 names(OpenTargets_ProstateCancer2Gene_lit_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_ProstateCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("prostate", 
+                                                                               names(OpenTargets_Disease2Gene_SM_lib), 
+                                                                               ignore.case = TRUE)]
+OpenTargets_ProstateCancer2Gene_SM_lib <- OpenTargets_ProstateCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                      names(OpenTargets_ProstateCancer2Gene_SM_lib), 
+                                                                                      ignore.case = TRUE)]
+OpenTargets_ProstateCancer2Gene_SM_lib <- OpenTargets_ProstateCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                      names(OpenTargets_ProstateCancer2Gene_SM_lib), 
+                                                                                      ignore.case = TRUE, 
+                                                                                      invert = TRUE)] 
+names(OpenTargets_ProstateCancer2Gene_SM_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
 
 ## Enrichr
 
@@ -176,6 +189,7 @@ names(ThETA_ProstateCancer2Gene_lib) <- paste0("Prostate carcinoma (EFO_0001663)
 
 Enrichment_ProstateCancer2Gene_lib <- c(DisGeNET_ProstateCancer2Gene_lib, OpenTargets_ProstateCancer2Gene_GA_lib, 
                                         OpenTargets_ProstateCancer2Gene_RNA_lib, OpenTargets_ProstateCancer2Gene_lit_lib, 
+                                        OpenTargets_ProstateCancer2Gene_SM_lib,
                                         Enrichr_GeoProstateCancerSignatures_Up, Enrichr_GeoProstateCancerSignatures_Down,
                                         Intogen_ProstateCancer2Gene_lib, ThETA_ProstateCancer2Gene_lib)
 

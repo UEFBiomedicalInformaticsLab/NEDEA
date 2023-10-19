@@ -95,6 +95,23 @@ OpenTargets_KidneyCancer2Gene_lit_lib <- OpenTargets_KidneyCancer2Gene_lit_lib[g
 names(OpenTargets_KidneyCancer2Gene_lit_lib) <- paste0(names(OpenTargets_KidneyCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_KidneyCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("kidney|renal",
+                                                                             names(OpenTargets_Disease2Gene_SM_lib),
+                                                                             ignore.case = TRUE)]
+OpenTargets_KidneyCancer2Gene_SM_lib <- OpenTargets_KidneyCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma",
+                                                                                  names(OpenTargets_KidneyCancer2Gene_SM_lib),
+                                                                                  ignore.case = TRUE)]
+OpenTargets_KidneyCancer2Gene_SM_lib <- OpenTargets_KidneyCancer2Gene_SM_lib[grep("adrenal", 
+                                                                                  names(OpenTargets_KidneyCancer2Gene_SM_lib), 
+                                                                                  ignore.case = TRUE,
+                                                                                  invert = TRUE)]
+OpenTargets_KidneyCancer2Gene_SM_lib <- OpenTargets_KidneyCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                  names(OpenTargets_KidneyCancer2Gene_SM_lib), 
+                                                                                  ignore.case = TRUE, 
+                                                                                  invert = TRUE)] 
+names(OpenTargets_KidneyCancer2Gene_SM_lib) <- paste0(names(OpenTargets_KidneyCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
 
 # ## Enrichr
 # 
@@ -208,7 +225,7 @@ names(ThETA_KidneyCancer2Gene_lib) <- paste0("Renal carcinoma (EFO:0002890)", "[
 
 Enrichment_KidneyCancer2Gene_lib <- c(DisGeNET_KidneyCancer2Gene_lib, OpenTargets_KidneyCancer2Gene_GA_lib, 
                                       OpenTargets_KidneyCancer2Gene_RNA_lib, OpenTargets_KidneyCancer2Gene_lit_lib, 
-                                      Intogen_KidneyCancer2Gene_lib,
+                                      OpenTargets_KidneyCancer2Gene_SM_lib, Intogen_KidneyCancer2Gene_lib,
                                       PharmGKB_KidneyCancer2Gene_lib, ThETA_KidneyCancer2Gene_lib)
 
 

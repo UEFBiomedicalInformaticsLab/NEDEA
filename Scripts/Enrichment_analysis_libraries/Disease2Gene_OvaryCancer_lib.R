@@ -82,6 +82,19 @@ OpenTargets_OvaryCancer2Gene_lit_lib <- OpenTargets_OvaryCancer2Gene_lit_lib[gre
 names(OpenTargets_OvaryCancer2Gene_lit_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_OvaryCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("ovary|ovarian|serous", 
+                                                                            names(OpenTargets_Disease2Gene_SM_lib), 
+                                                                            ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_SM_lib <- OpenTargets_OvaryCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                names(OpenTargets_OvaryCancer2Gene_SM_lib), 
+                                                                                ignore.case = TRUE)]
+OpenTargets_OvaryCancer2Gene_SM_lib <- OpenTargets_OvaryCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                names(OpenTargets_OvaryCancer2Gene_SM_lib), 
+                                                                                ignore.case = TRUE, 
+                                                                                invert = TRUE)] 
+names(OpenTargets_OvaryCancer2Gene_SM_lib) <- paste0(names(OpenTargets_OvaryCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
 
 ## Enrichr
 
@@ -113,19 +126,19 @@ names(Enrichr_GeoOvaryCancerSignatures_Down) <- paste0(names(Enrichr_GeoOvaryCan
 
 
 
-## Intogen
-
-Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
-Intogen_OvaryCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("ovary|ovarian|serous", names(Intogen_Disease2Gene_lib), 
-                                        ignore.case = TRUE)]
-Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
-                      names(Intogen_OvaryCancer2Gene_lib), 
-                      ignore.case = TRUE)]
-Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
-                      names(Intogen_OvaryCancer2Gene_lib), 
-                      ignore.case = TRUE, 
-                      invert = TRUE)] 
-names(Intogen_OvaryCancer2Gene_lib) <- paste0(names(Intogen_OvaryCancer2Gene_lib), "[Intogen]")
+# ## Intogen [NOT FOUND]
+# 
+# Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
+# Intogen_OvaryCancer2Gene_lib <- Intogen_Disease2Gene_lib[grep("ovary|ovarian|serous", names(Intogen_Disease2Gene_lib), 
+#                                         ignore.case = TRUE)]
+# Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("cancer|carcinoma|sarcoma", 
+#                       names(Intogen_OvaryCancer2Gene_lib), 
+#                       ignore.case = TRUE)]
+# Intogen_OvaryCancer2Gene_lib <- Intogen_OvaryCancer2Gene_lib[grep("hereditary|familial|susceptibility|predisposition", 
+#                       names(Intogen_OvaryCancer2Gene_lib), 
+#                       ignore.case = TRUE, 
+#                       invert = TRUE)] 
+# names(Intogen_OvaryCancer2Gene_lib) <- paste0(names(Intogen_OvaryCancer2Gene_lib), "[Intogen]")
 
 
 
@@ -180,8 +193,9 @@ names(ThETA_OvaryCancer2Gene_lib) <- paste0("Ovarian carcinoma (EFO_0001075)", "
 
 Enrichment_OvaryCancer2Gene_lib <- c(DisGeNET_OvaryCancer2Gene_lib, OpenTargets_OvaryCancer2Gene_GA_lib, 
                                      OpenTargets_OvaryCancer2Gene_RNA_lib, OpenTargets_OvaryCancer2Gene_lit_lib, 
+                                     OpenTargets_OvaryCancer2Gene_SM_lib,
                                      Enrichr_GeoOvaryCancerSignatures_Up, Enrichr_GeoOvaryCancerSignatures_Down,
-                                     Intogen_OvaryCancer2Gene_lib, ThETA_OvaryCancer2Gene_lib)
+                                     ThETA_OvaryCancer2Gene_lib)
 
 
 

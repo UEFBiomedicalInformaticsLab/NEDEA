@@ -8,6 +8,7 @@ set.seed(5081)
 
 # Load libraries
 library(unixtools)
+library(unixtools)
 library(org.Hs.eg.db)
 library(openxlsx)
 
@@ -33,43 +34,31 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 # The ADR ID can be explained as hierchy. The data contains level 3 and 4 ADR IDs.
 
 
-
 if(!dir.exists("Databases/ADReCS/")){dir.create("Databases/ADReCS/", recursive = TRUE)}
 if(!file.exists("Databases/ADReCS/ADRAlert2GENE2ID.xlsx")){
-  download.file(url = "http://bioinf.xmu.edu.cn/ADReCS-Target/files/download/ADRAlert2GENE2ID.xlsx",
+  download.file(url = "http://www.bio-add.org/ADReCS-Target/files/download/ADRAlert2GENE2ID.xlsx",
                 destfile = "Databases/ADReCS/ADRAlert2GENE2ID.xlsx", method = "wget")
 }
 
 ADReCS_Gene_ADR <- read.xlsx("Databases/ADReCS/ADRAlert2GENE2ID.xlsx")
-ADRid_2_ADRterm <- unique(ADReCS_Gene_ADR[, c("ADR.ID", "ADR.Term")])
+ADReCS_Gene_ADR$ADR.Term <- paste0(ADReCS_Gene_ADR$ADR.Term, " (", ADReCS_Gene_ADR$ADR.ID, ")")
+# ADRid_2_ADRterm <- unique(ADReCS_Gene_ADR[, c("ADR.ID", "ADR.Term")])
 ADReCS_Gene_ADR$ensembl_gene_id <- entrezId_2_ensemblId$ensembl_id[match(ADReCS_Gene_ADR$GeneID, entrezId_2_ensemblId$gene_id)]
 ADReCS_Gene_ADR <- na.exclude(ADReCS_Gene_ADR)
 
+
 ### Level 4 ADR IDs library
 ADReCS_Gene_ADR_level4 <- ADReCS_Gene_ADR[lengths(strsplit(ADReCS_Gene_ADR$ADR.ID, split = "\\."))==4,]
-ADReCS_ADR2Gene_level4_lib <- list() # Create empty list
-for(i in unique(ADReCS_Gene_ADR_level4$ADR.ID)) {             
-  ADReCS_ADR2Gene_level4_lib[[i]] <- ADReCS_Gene_ADR_level4[ADReCS_Gene_ADR_level4$ADR.ID == i,]$ensembl_gene_id
-}
-for(i in 1:length(ADReCS_ADR2Gene_level4_lib)){
-  adrName <- paste0(ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level4_lib)[i],]$ADR.Term, " (", 
-                    ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level4_lib)[i],]$ADR.ID, ")")
-  names(ADReCS_ADR2Gene_level4_lib)[i] <- adrName
-}
+
+ADReCS_ADR2Gene_level4_lib <- split(x = ADReCS_Gene_ADR_level4$ensembl_gene_id, f = ADReCS_Gene_ADR_level4$ADR.Term)
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(ADReCS_ADR2Gene_level4_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level4_lib.rds")
 
-
+### Level 3 ADR IDs library
 ADReCS_Gene_ADR_level3 <- ADReCS_Gene_ADR[lengths(strsplit(ADReCS_Gene_ADR$ADR.ID, split = "\\."))==3,]
-ADReCS_ADR2Gene_level3_lib <- list() # Create empty list
-for(i in unique(ADReCS_Gene_ADR_level3$ADR.ID)) {             
-  ADReCS_ADR2Gene_level3_lib[[i]] <- ADReCS_Gene_ADR_level3[ADReCS_Gene_ADR_level3$ADR.ID == i,]$ensembl_gene_id
-}
-for(i in 1:length(ADReCS_ADR2Gene_level3_lib)){
-  adrName <- paste0(ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level3_lib)[i],]$ADR.Term, " (", 
-                    ADRid_2_ADRterm[ADRid_2_ADRterm$ADR.ID == names(ADReCS_ADR2Gene_level3_lib)[i],]$ADR.ID, ")")
-  names(ADReCS_ADR2Gene_level3_lib)[i] <- adrName
-}
+ADReCS_ADR2Gene_level3_lib <- split(x = ADReCS_Gene_ADR_level3$ensembl_gene_id, f = ADReCS_Gene_ADR_level3$ADR.Term)
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(ADReCS_ADR2Gene_level3_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level3_lib.rds")
 

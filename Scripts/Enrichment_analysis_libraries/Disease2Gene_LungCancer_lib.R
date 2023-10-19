@@ -79,6 +79,20 @@ OpenTargets_LungCancer2Gene_lit_lib <- OpenTargets_LungCancer2Gene_lit_lib[grep(
 names(OpenTargets_LungCancer2Gene_lit_lib) <- paste0(names(OpenTargets_LungCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_LungCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("lung", 
+                                                                           names(OpenTargets_Disease2Gene_SM_lib), 
+                                                                           ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_SM_lib <- OpenTargets_LungCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                              names(OpenTargets_LungCancer2Gene_SM_lib), 
+                                                                              ignore.case = TRUE)]
+OpenTargets_LungCancer2Gene_SM_lib <- OpenTargets_LungCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                              names(OpenTargets_LungCancer2Gene_SM_lib), 
+                                                                              ignore.case = TRUE, 
+                                                                              invert = TRUE)] 
+names(OpenTargets_LungCancer2Gene_SM_lib) <- paste0(names(OpenTargets_LungCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
+
 ## Enrichr
 
 Enrichr_Disease2Gene_GeoDiseaseSig_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds")
@@ -174,6 +188,7 @@ names(ThETA_LungCancer2Gene_lib) <- paste0("lung carcinoma (EFO_0001071)", "[ThE
 
 Enrichment_LungCancer2Gene_lib <- c(DisGeNET_LungCancer2Gene_lib, OpenTargets_LungCancer2Gene_GA_lib, 
                                     OpenTargets_LungCancer2Gene_RNA_lib, OpenTargets_LungCancer2Gene_lit_lib, 
+                                    OpenTargets_LungCancer2Gene_SM_lib, 
                                     Enrichr_GeoLungCancerSignatures_Up, Enrichr_GeoLungCancerSignatures_Down,
                                     Intogen_LungCancer2Gene_lib,
                                     PharmGKB_LungCancer2Gene_lib, ThETA_LungCancer2Gene_lib)

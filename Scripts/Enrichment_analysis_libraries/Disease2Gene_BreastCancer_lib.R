@@ -75,6 +75,18 @@ OpenTargets_BreastCancer2Gene_lit_lib <- OpenTargets_BreastCancer2Gene_lit_lib[g
 names(OpenTargets_BreastCancer2Gene_lit_lib) <- paste0(names(OpenTargets_BreastCancer2Gene_lit_lib), "[OpenTargets_literature]")
 
 
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+OpenTargets_BreastCancer2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[grep("breast", names(OpenTargets_Disease2Gene_SM_lib), 
+                                                                             ignore.case = TRUE)]
+OpenTargets_BreastCancer2Gene_SM_lib <- OpenTargets_BreastCancer2Gene_SM_lib[grep("cancer|carcinoma|sarcoma", 
+                                                                                  names(OpenTargets_BreastCancer2Gene_SM_lib), 
+                                                                                  ignore.case = TRUE)]
+OpenTargets_BreastCancer2Gene_SM_lib <- OpenTargets_BreastCancer2Gene_SM_lib[grep("hereditary|familial|susceptibility|predisposition", 
+                                                                                  names(OpenTargets_BreastCancer2Gene_SM_lib), 
+                                                                                  ignore.case = TRUE, 
+                                                                                  invert = TRUE)] 
+names(OpenTargets_BreastCancer2Gene_SM_lib) <- paste0(names(OpenTargets_BreastCancer2Gene_SM_lib), "[OpenTargets_SM]")
+
 
 ## Enrichr
 
@@ -174,6 +186,7 @@ names(ThETA_BreastCancer2Gene_lib) <- paste0("Breast carcinoma (EFO_0000305)", "
 
 Enrichment_BreastCancer2Gene_lib <- c(DisGeNET_BreastCancer2Gene_lib, OpenTargets_BreastCancer2Gene_GA_lib, 
                                       OpenTargets_BreastCancer2Gene_RNA_lib, OpenTargets_BreastCancer2Gene_lit_lib, 
+                                      OpenTargets_BreastCancer2Gene_SM_lib, 
                                       Enrichr_GeoBreastCancerSignatures_Up, Enrichr_GeoBreastCancerSignatures_Down,
                                       Intogen_BreastCancer2Gene_lib, ThETA_BreastCancer2Gene_lib)
 
