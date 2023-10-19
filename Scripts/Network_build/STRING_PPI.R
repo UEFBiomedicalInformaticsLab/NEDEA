@@ -15,14 +15,14 @@ library(igraph)
 # Download the protein-protein interactions from stringdb
 if(!dir.exists("Databases/StringDB/")){dir.create("Databases/StringDB", recursive = TRUE)}
 
-if(!file.exists("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz")){
-  download.file(url = "https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz",
-                destfile = "Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", method = "wget")
+if(!file.exists("Databases/StringDB/9606.protein.links.detailed.v12.0.txt.gz")){
+  download.file(url = "https://stringdb-static.org/download/protein.links.detailed.v12.0/9606.protein.links.detailed.v12.0.txt.gz",
+                destfile = "Databases/StringDB/9606.protein.links.detailed.v12.0.txt.gz", method = "wget")
 }
 
 
 # Read the STRING protein-protein interactions
-String_ppi <- read.table("Databases/StringDB/9606.protein.links.detailed.v11.5.txt.gz", header = TRUE)
+String_ppi <- read.table("Databases/StringDB/9606.protein.links.detailed.v12.0.txt.gz", header = TRUE)
 
 
 # Filter all interactions with scores greater than 0 and sourced from database/experiments
