@@ -20,9 +20,13 @@ func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library){
   # For each drug combination run FGSEA and extract the significant NES
   for(drugComb in colnames(rwr_data)){
     
-    rankedGeneList <- sort(rwr_data[which(rwr_data[,drugComb] > rwr_threshold[drugComb]), drugComb], 
-                           decreasing = TRUE)
+    # rankedGeneList <- sort(rwr_data[which(rwr_data[,drugComb] > rwr_threshold[drugComb]), drugComb], 
+    #                        decreasing = TRUE)
     
+    rwr_data_select <- rwr_data[, drugComb]
+    rankedGeneList <- sort(rwr_data_select[rwr_data_select > rwr_threshold[drugComb]], decreasing = TRUE)
+    
+
     skip_iteration <- FALSE  # Initialize flag variable
     
     tryCatch({
