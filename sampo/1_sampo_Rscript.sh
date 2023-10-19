@@ -3,7 +3,7 @@
 #
 # Name: sampo_Rscript.sh
 # Desc.: Run Rscripts in SAMPO
-# Updated: 25 April 2023
+# Updated: 19 October 2023
 #
 #
 #SBATCH --exclusive
@@ -19,10 +19,10 @@
 
 
 
-~/miniconda3/envs/interactome/bin/R --version
-~/miniconda3/envs/interactome/bin/Rscript --version
+/opt/R/4.2.2/bin/R --version
+/opt/R/4.2.2/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
 echo "Prepare drug combinations for " $1 " ---------------------"
 
-~/miniconda3/envs/interactome/bin/Rscript Scripts/Drug_combinations/DrugCombinations.R --disease $1
+/opt/R/4.2.2/bin/Rscript Scripts/Drug_combinations/Extract_drugCombs_and_targets.R --disease $1
