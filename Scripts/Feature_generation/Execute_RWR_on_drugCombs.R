@@ -5,6 +5,7 @@ set.seed(5081)
 
 
 # Load libraries
+library(unixtools)
 library(optparse)
 library(igraph)
 library(org.Hs.eg.db)
@@ -13,6 +14,9 @@ library(foreach)
 library(doParallel)
 source("Scripts/Functions/Functions_parallelprocesses.R")
 
+# Set temporary directory
+if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
+set.tempdir("tmp_dir/")
 
 
 # Get arguments
@@ -63,7 +67,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ",
 
 
 # Read the extended drug target data
-drugCombs_targets <- readRDS(paste0("InputFiles/Drug_targets/Drug_targets_extended_", disease, ".rds"))
+drugCombs_targets <- readRDS(paste0("InputFiles/Drug_combination_targets/drugCombs_targets_extended_", disease, ".rds"))
 
 
 # Select the column containing the drug target based on th user input

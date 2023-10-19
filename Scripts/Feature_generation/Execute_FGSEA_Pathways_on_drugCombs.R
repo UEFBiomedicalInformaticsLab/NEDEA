@@ -1,7 +1,8 @@
 set.seed(5081)
 
 
-# Script to execute FGSEA on the RWR results using the efficacy and safety library
+
+# Script to execute FGSEA on the RWR results using pathway library
 
 
 # Load libraries
@@ -56,40 +57,39 @@ rwr_result <- readRDS(file = rwr_result_file_path)
 
 fgsea_result_final <- list()
 
-# FGSEA on efficacy library
-cat("\n--- Executing FGSEA on efficacy library")
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
-names(enrichment_lib) <- paste0("[DISEASE] ", names(enrichment_lib))
+# FGSEA on KEGG pathways liked to cancer hallmarks
+cat("\n--- Executing FGSEA on KEGG pathways liked to cancer hallmarks")
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds")
+names(enrichment_lib) <- paste0("[KEGG] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib)
 
-fgsea_result_final[["efficacy"]] <- fgsea_result
+fgsea_result_final[["kegg"]] <- fgsea_result
 
 
-# FGSEA on safety library
-cat("\n--- Executing FGSEA on safety library")
-enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-names(enrichment_lib) <- paste0("[ADR] ", names(enrichment_lib))
-
-fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
-
-fgsea_result_final[["safety"]] <- fgsea_result
-
-
-# FGSEA on combined efficacy-safety library
-cat("\n--- Executing FGSEA on combined efficacy-safety library")
-enrichment_lib_1 <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
-names(enrichment_lib_1) <- paste0("[DISEASE] ", names(enrichment_lib_1))
-enrichment_lib_2 <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-names(enrichment_lib_2) <- paste0("[ADR] ", names(enrichment_lib_2))
-enrichment_lib <- c(enrichment_lib_1, enrichment_lib_2)
+# FGSEA on SMPDB pathways (drug metabolism)
+cat("\n--- Executing FGSEA on SMPDB pathways (drug metabolism)")
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds")
+enrichment_lib <- enrichment_lib$`Drug Metabolism`
+names(enrichment_lib) <- paste0("[SMPDB_DRUG_METABOLISM] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib)
 
-fgsea_result_final[["combinedEfficacySafety"]] <- fgsea_result
+fgsea_result_final[["smpdbDrugMet"]] <- fgsea_result
+
+
+# FGSEA on SMPDB pathways (drug action)
+cat("\n--- Executing FGSEA on SMPDB pathways (drug action)")
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds")
+enrichment_lib <- enrichment_lib$`Drug Action`
+names(enrichment_lib) <- paste0("[SMPDB_DRUG_ACTION] ", names(enrichment_lib))
+
+fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
+                                      enrichment_library = enrichment_lib)
+
+fgsea_result_final[["smpdbDrugAct"]] <- fgsea_result
 
 
 
@@ -97,7 +97,7 @@ fgsea_result_final[["combinedEfficacySafety"]] <- fgsea_result
 if(!dir.exists("OutputFiles/FGSEA_results/")){
   dir.create("OutputFiles/FGSEA_results/", recursive = TRUE)
 } 
-saveRDS(fgsea_result_final, paste0("OutputFiles/FGSEA_results/fgseaNES_EfficacySafety_", disease, "_", drug_target_type, ".rds"))
+saveRDS(fgsea_result_final, paste0("OutputFiles/FGSEA_results/fgseaNES_Pathway_", disease, "_", drug_target_type, ".rds"))
 
 
 

@@ -1,7 +1,8 @@
 set.seed(5081)
 
 
-# Script to execute FGSEA on the RWR results using the efficacy and safety library
+
+# Script to execute FGSEA on the RWR results using miscellaneous gene set library
 
 
 # Load libraries
@@ -56,48 +57,21 @@ rwr_result <- readRDS(file = rwr_result_file_path)
 
 fgsea_result_final <- list()
 
-# FGSEA on efficacy library
-cat("\n--- Executing FGSEA on efficacy library")
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
-names(enrichment_lib) <- paste0("[DISEASE] ", names(enrichment_lib))
+# FGSEA on miscellaneous gene set library
+cat("\n--- Executing FGSEA on miscellaneous gene set library")
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/miscellaneous_gene_lib.rds")
+names(enrichment_lib) <- paste0("[MISC.] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib)
 
-fgsea_result_final[["efficacy"]] <- fgsea_result
-
-
-# FGSEA on safety library
-cat("\n--- Executing FGSEA on safety library")
-enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-names(enrichment_lib) <- paste0("[ADR] ", names(enrichment_lib))
-
-fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
-
-fgsea_result_final[["safety"]] <- fgsea_result
-
-
-# FGSEA on combined efficacy-safety library
-cat("\n--- Executing FGSEA on combined efficacy-safety library")
-enrichment_lib_1 <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
-names(enrichment_lib_1) <- paste0("[DISEASE] ", names(enrichment_lib_1))
-enrichment_lib_2 <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-names(enrichment_lib_2) <- paste0("[ADR] ", names(enrichment_lib_2))
-enrichment_lib <- c(enrichment_lib_1, enrichment_lib_2)
-
-fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
-
-fgsea_result_final[["combinedEfficacySafety"]] <- fgsea_result
-
-
+fgsea_result_final[["misc"]] <- fgsea_result
 
 
 if(!dir.exists("OutputFiles/FGSEA_results/")){
   dir.create("OutputFiles/FGSEA_results/", recursive = TRUE)
 } 
-saveRDS(fgsea_result_final, paste0("OutputFiles/FGSEA_results/fgseaNES_EfficacySafety_", disease, "_", drug_target_type, ".rds"))
+saveRDS(fgsea_result_final, paste0("OutputFiles/FGSEA_results/fgseaNES_Miscellaneous_", disease, "_", drug_target_type, ".rds"))
 
 
 
