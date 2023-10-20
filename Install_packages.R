@@ -1,7 +1,10 @@
 # Install packages
 
-cran_pkgs <- c("caret", "dbparser", "dnet", "doParallel", "foreach", "glmnet", "httr", "igraph", "jsonlite", "MLmetrics", "msigdbr", "naivebayes", "openxlsx", "optparse", "RSQLite", "sparklyr", "sparklyr.nested", "pheatmap", "tidyverse", "TopKLists", "xml2")
-bioc_pkgs <- c("XVector", "AnnotationDbi", "BiocParallel", "biomaRt", "Biostrings", "fgsea", "org.Hs.eg.db", "Rgraphviz", "supraHex")
+cran_pkgs <- c("caret", "dbparser", "devtools", "dnet", "doParallel", "foreach", "httr", 
+               "igraph", "jsonlite", "msigdbr", "openxlsx", "optparse", "readxl", 
+               "sparklyr", "sparklyr.nested", "tidyverse", "unixtools")
+
+bioc_pkgs <- c("BiocParallel", "biomaRt", "fgsea", "OmnipathR", "org.Hs.eg.db", "RCy3", "Rgraphviz", "supraHex")
 
 cran_pkgs_install <- cran_pkgs[!(cran_pkgs %in% row.names(installed.packages()))]
 bioc_pkgs_install <- bioc_pkgs[!(bioc_pkgs %in% row.names(installed.packages()))]
@@ -11,7 +14,7 @@ bioc_pkgs_install <- bioc_pkgs[!(bioc_pkgs %in% row.names(installed.packages()))
 # CRAN packages
 if(length(cran_pkgs_install) > 0 ){
   cat(paste0("\n\nInstalling packages: ", paste0(cran_pkgs_install, collapse = ", "), " \n\n"))
-  install.packages(cran_pkgs_install, dependencies = TRUE, repos = "https://cloud.r-project.org/")
+  install.packages(cran_pkgs_install, dependencies = TRUE, repos = c("https://cloud.r-project.org/", "http://rforge.net/"))
 }
 
 
@@ -38,8 +41,6 @@ if(length(c(bioc_pkgs_install)) > 0){
 
 
 
-# 
-# 
-# install.packages("doParallel", repos="http://R-Forge.R-project.org")
-# 
-# install.packages("unixtools","http://rforge.net/", type = "source")
+# Install OmniPath from source
+require(devtools)
+install_github("saezlab/OmnipathR")

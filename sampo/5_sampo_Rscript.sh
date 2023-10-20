@@ -8,7 +8,7 @@
 #
 #SBATCH --exclusive
 #SBATCH --distribution=cyclic
-#SBATCH --ntasks 20   # Number of task
+#SBATCH --ntasks 80   # Number of task
 #SBATCH --time 01:00:00   # Runtime
 #SBATCH --mem=50000   # Reserve 50 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
