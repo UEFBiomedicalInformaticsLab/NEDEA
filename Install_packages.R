@@ -1,10 +1,10 @@
 # Install packages
 
-cran_pkgs <- c("caret", "dbparser", "devtools", "dnet", "doParallel", "foreach", "httr", 
+cran_pkgs <- c("caret", "dbparser", "devtools", "dnet", "doParallel", "foreach", "ggpubr", "httr", 
                "igraph", "jsonlite", "msigdbr", "openxlsx", "optparse", "readxl", 
                "sparklyr", "sparklyr.nested", "tidyverse", "unixtools")
 
-bioc_pkgs <- c("BiocParallel", "biomaRt", "fgsea", "OmnipathR", "org.Hs.eg.db", "RCy3", "Rgraphviz", "supraHex")
+bioc_pkgs <- c("BiocParallel", "biomaRt", "fgsea", "org.Hs.eg.db", "RCy3", "Rgraphviz", "supraHex")
 
 cran_pkgs_install <- cran_pkgs[!(cran_pkgs %in% row.names(installed.packages()))]
 bioc_pkgs_install <- bioc_pkgs[!(bioc_pkgs %in% row.names(installed.packages()))]
