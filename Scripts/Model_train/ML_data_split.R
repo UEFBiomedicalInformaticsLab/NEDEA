@@ -54,18 +54,10 @@ cat(paste0("Repeats: ", repeats, "\n\n"))
 
 
 # Read the drug combinations
-drugCombs <- readRDS(paste0("InputFiles/DrugCombinations/DrugComb_", disease, ".rds"))
+drugCombs <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
+drugCombs <- drugCombs[!is.na(drugCombs$class_EffAdv), ]
 cat("\n\nNumber of drug combinations:\n")
-lapply(drugCombs, nrow)
-
-
-drugCombs <- do.call(rbind, drugCombs)
-drugCombs$Class <- substr(x = row.names(drugCombs), start = 1, stop = 3) 
-drugCombs$Class <- gsub(pattern = "^eff", replacement = "Eff", x = drugCombs$Class)
-drugCombs$Class <- gsub(pattern = "^adv", replacement = "Adv", x = drugCombs$Class)
-drugCombs$Name <- paste(drugCombs$Class, drugCombs$Drug1_DrugBank_drug_id, drugCombs$Drug2_DrugBank_drug_id, sep = "__")
-row.names(drugCombs) <- NULL
-
+print(table(drugCombs$class_EffAdv))
 
 
 # Creating folds with repeats
@@ -77,7 +69,7 @@ for(j in seq(repeats)){
   
   set.seed(5081 + j)
   
-  fldIndex <- createFolds(y = drugCombs$Class, k = folds, list = TRUE, returnTrain = FALSE)
+  fldIndex <- createFolds(y = drugCombs$class_EffAdv, k = folds, list = TRUE, returnTrain = FALSE)
   
   for(i in 1:length(fldIndex)) {
     testData <- drugCombs[fldIndex[[i]], ]
@@ -93,7 +85,8 @@ ML_data_split_repeat <- unlist(ML_data_split_repeat, recursive = FALSE, )
 
 names(ML_data_split_repeat) <- gsub("\\.", "_", names(ML_data_split_repeat))
 
-saveRDS(ML_data_split_repeat, file = paste0("OutputFiles/Model_train/", disease, "/ML_dataSplit_", disease, ".rds"))
+
+saveRDS(ML_data_split_repeat, file = paste0("OutputFiles/ML_data_split/ML_dataSplit_", disease, ".rds"))
 
 
 

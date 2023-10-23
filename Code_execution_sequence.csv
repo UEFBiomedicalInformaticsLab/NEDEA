@@ -37,3 +37,9 @@
 ,6,Scripts/Plots/Plot_mean_NES_byDrugCategory.R,1,0,1,1,1,1,1,1
 ,0,Scripts/Plots/plot_drugComb_category_distribution.R,1,1,,,,,,
 ,,Scripts/Network_visualization/RWR_probs_in_network.R,0,,,,,,,
+,,,,,,,,,,
+,0,Scripts/Plots/plot_NES_combinedEfficacySafety_topFeature_byVar.R,,1,,,,,,
+,0,Scripts/Plots/plot_NES_kegg_topFeature_byVar.R,,1,,,,,,
+,0,Scripts/Plots/plot_NES_smpdbDrugMet_topFeature_byVar.R,,1,,,,,,
+,,,,,,,,,,
+,8,Scripts/Model_train/ML_data_split.R,,,,,,,,
