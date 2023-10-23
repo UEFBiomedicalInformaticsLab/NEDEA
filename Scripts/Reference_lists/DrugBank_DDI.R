@@ -147,15 +147,15 @@ names(list_tox_test) <- risk_sev_res$ngrams
 
 
 # Categorize drug combinations based on increased/decreased therapeutic efficacy
-DrugBank_ddi$class_therapeuticEfficacy <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$class_therapeuticEfficacy[test_eff_inc] <- "Increased"
-DrugBank_ddi$class_therapeuticEfficacy[test_eff_dec] <- "Decreased"
+DrugBank_ddi$class_therapeuticEfficacy <- rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$class_therapeuticEfficacy[test_eff_inc] <- "increased"
+DrugBank_ddi$class_therapeuticEfficacy[test_eff_dec] <- "decreased"
 
 
 # Categorize drug combinations based on effect of metabolism
-DrugBank_ddi$class_metabolicEffect <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$class_metabolicEffect[test_meinc | test_scdec | test_absde] <- "Decreased"
-DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "Increased"
+DrugBank_ddi$class_metabolicEffect <- rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$class_metabolicEffect[test_meinc | test_scdec | test_absde] <- "decreased"
+DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "increased"
 
 
 
@@ -194,8 +194,8 @@ set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49)
 names(list_tox_test)[c(set_adv_ids, 25, 31, 47)]
 sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 25, 31, 47)]))
-DrugBank_ddi$ADR_BreastCancer <- rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "Adv"
+DrugBank_ddi$ADR_BreastCancer <- rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "adr_positive"
 
 
 
@@ -212,8 +212,8 @@ DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])]
 names(list_tox_test)[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]
 sapply(list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]))
-DrugBank_ddi$ADR_LungCancer = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "Adv"
+DrugBank_ddi$ADR_LungCancer = rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "adr_positive"
 
 
 
@@ -228,8 +228,8 @@ DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 3
 names(list_tox_test)[c(set_adv_ids, 31, 38, 42, 43)]
 sapply(list_tox_test[c(set_adv_ids, 31, 38, 42, 43)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)]))
-DrugBank_ddi$ADR_ProstateCancer = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "Adv"                
+DrugBank_ddi$ADR_ProstateCancer = rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "adr_positive"                
 
 
 
@@ -245,8 +245,8 @@ DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 
 names(list_tox_test)[c(set_adv_ids, 3, 25, 42, 43, 46)]
 sapply(list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)]))
-DrugBank_ddi$ADR_OvaryCancer = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "Adv"                
+DrugBank_ddi$ADR_OvaryCancer = rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "adr_positive"                
 
 
 
@@ -266,8 +266,8 @@ DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 
 names(list_tox_test)[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]
 sapply(list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]))
-DrugBank_ddi$ADR_KidneyCancer = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "Adv"   
+DrugBank_ddi$ADR_KidneyCancer = rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "adr_positive"   
 
 
 
@@ -280,8 +280,8 @@ DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 3
 names(list_tox_test)[c(set_adv_ids, 46)]
 sapply(list_tox_test[c(set_adv_ids, 46)], sum)
 sum(Reduce("|",list_tox_test[c(set_adv_ids, 46)]))
-DrugBank_ddi$ADR_SkinCancer = rep("Unk", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "Adv"   
+DrugBank_ddi$ADR_SkinCancer = rep("unknown", nrow(DrugBank_ddi))
+DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "adr_positive"   
 
 
 

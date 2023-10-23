@@ -27,7 +27,7 @@ option_list = list(
   make_option(c("--feature_type"), type = "character", default = NULL,
               help = "The feature type to use for plotting. Possible values: efficacy, safety, combinedEfficacySafety, kegg, smpdbDrugMet, smpdbDrugAct, misc. Default: NULL", metavar = "character"),
   make_option(c("--drugComb_category_type"), type = "character", default = NULL,
-              help = "The drug category type that will be plotted. Possible values: SL (synergy level), SS (class synergy score), TE (therapeutic efficacy), ME (metabolic effect), ADR (disease specific ADr status). Default: NULL", metavar = "character"),
+              help = "The drug category type that will be plotted. Possible values: SL (synergy level), SS (class synergy score), TE (therapeutic efficacy), ME (metabolic effect), ADR (disease specific ADR status), EA (effective vs adverse). Default: NULL", metavar = "character"),
   make_option(c("--top9varying"), type = "logical", default = TRUE,
               help = "Plots the top nine features with most variance. Set FALSE to plot all features above variance 0.01. Default: TRUE", metavar = "character")
 )
@@ -66,9 +66,9 @@ if(is.null(opt$drugComb_category_type)){
   stop("--drugComb_category_type argument needed", call.=FALSE)
 }
 
-if(!opt$drugComb_category_type %in% c("SL", "SS", "TE", "ME", "ADR")){
+if(!opt$drugComb_category_type %in% c("SL", "SS", "TE", "ME", "ADR", "EA")){
   print_help(opt_parser)
-  stop("--drugComb_category_type should be: SL, SS, TE, ME, ADR", call. = FALSE)
+  stop("--drugComb_category_type should be: SL, SS, TE, ME, ADR, EA", call. = FALSE)
 }
 
 
@@ -112,7 +112,8 @@ switch(drugComb_category_type,
        "SS" = {plot_col <- "class_synergyScore"},
        "TE" = {plot_col <- "class_therapeuticEfficacy"},
        "ME" = {plot_col <- "class_metabolicEffect"},
-       "ADR" = {plot_col <- paste0("ADR_", disease)})
+       "ADR" = {plot_col <- paste0("ADR_", disease)},
+       "EA" = {plot_col <- "class_EffAdv"})
 
 
 if(drugComb_category_type %in% c("SL", "SS")){
@@ -127,11 +128,18 @@ if(drugComb_category_type %in% c("TE", "ME", "ADR")){
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
 }
 
+if(drugComb_category_type %in% c("EA")){
+  drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
+  drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+  drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
+}
+
 
 
 
 # Get the plot data
 plot_data <- fgsea_result
+# plot_data <- plot_data[, colnames(plot_data) %in% drugCombs_cat$comb_name]
 
 
 # Find the features with top variance (executed only if top9varying is TRUE)
@@ -139,14 +147,20 @@ if(isTRUE(top9varying)){
   feature_vars <- apply(plot_data, 1, var)
   feature_vars <- sort(feature_vars, decreasing = TRUE)
   feature_vars <- feature_vars[1:9]
-  plot_data <- plot_data[row.names(plot_data) %in% names(feature_vars), ]
+  plot_data <- plot_data[row.names(plot_data) %in% names(feature_vars), ,  drop = FALSE]
 }
 
 # Find the features with variance above 0.01 (executed only if top9varying is FALSE)
 if(isFALSE(top9varying)){
   feature_vars <- apply(plot_data, 1, var)
   feature_vars <- feature_vars[feature_vars > 0.01]
-  plot_data <- plot_data[row.names(plot_data) %in% names(feature_vars), ]
+  plot_data <- plot_data[row.names(plot_data) %in% names(feature_vars), , drop = FALSE]
+  
+  if(nrow(plot_data) == 0){
+    write("No features with variance > 0.01. No output generated.", 
+          paste0("OutputFiles/Plots/mean_NES_barPlot_all/meanNES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".txt"))
+    quit()
+  }
 }
 
 
@@ -194,7 +208,7 @@ if(isFALSE(top9varying)){
   }
   tiff(paste0("OutputFiles/Plots/mean_NES_barPlot_all/meanNES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
        width = 30, 
-       height = length(unique(plot_data$feature))/5 * 5 + 1,
+       height = length(unique(plot_data$feature))/6 + 10,
        units = "cm", compression = "lzw", res = 1200)
 }
 
