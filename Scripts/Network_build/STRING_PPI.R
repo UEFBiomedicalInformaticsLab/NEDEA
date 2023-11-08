@@ -72,10 +72,32 @@ String_ppi_Net <- induced.subgraph(String_ppi_Net, which(ppi_comps$membership ==
 
 print(paste("Network size (vertices, edges):", vcount(String_ppi_Net), ecount(String_ppi_Net)))
 
-
 if(!dir.exists("InputFiles/Networks/")){dir.create("InputFiles/Networks/", recursive = TRUE)}
-saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net_database.rds")
+saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net.rds")
 
+
+network_parameters <- data.frame(t(data.frame(nodeNumber = vcount(String_ppi_Net),
+                                              edgeNumber = ecount(String_ppi_Net),
+                                              diameter = diameter(graph = String_ppi_Net, directed = FALSE),
+                                              radius = radius(graph = String_ppi_Net),
+                                              averagePathLength = mean_distance(graph = String_ppi_Net),
+                                              clusteringCoefficient = transitivity(graph = String_ppi_Net, type = "global", isolates = "zero"),
+                                              density = edge_density(graph = String_ppi_Net),
+                                              connectedComponents = count_components(graph = String_ppi_Net),
+                                              largest_component_size = components(String_ppi_Net)$csize[1],
+                                              powerFit = fit_power_law(x = degree(String_ppi_Net)+1)$alpha,
+                                              degree = centr_degree(graph = String_ppi_Net)$centralization,
+                                              closeness = centr_clo(graph = String_ppi_Net)$centralization,
+                                              betweenness = centr_betw(graph = String_ppi_Net)$centralization)))
+
+network_parameters <- tibble::rownames_to_column(network_parameters, "Parameters")
+colnames(network_parameters) <- c("Parameters", "Value")
+network_parameters$Value <- round(network_parameters$Value, 3)
+
+if(!dir.exists("OutputFiles/Tables/")){
+  dir.create("OutputFiles/Tables/", recursive = TRUE)
+}
+write.csv(network_parameters, "OutputFiles/Tables/STRING_PPI_Net_params.csv", row.names = FALSE)
 
 
 print(warnings())
