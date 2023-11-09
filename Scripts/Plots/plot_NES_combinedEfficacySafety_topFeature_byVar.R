@@ -13,7 +13,7 @@ library(ggpubr)
 plot_list <- list()
 
 
-for(drug_target_type in c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "all")){
+for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
   for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
     drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
     drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
