@@ -128,11 +128,12 @@ plot_data <- dcc_agg_all %>%
     values_to = "Value"
   )
 
-ggplot(plot_data, aes(x = tissue_name, y = Value, fill = tissue_name)) +
+ggplot(plot_data, aes(x = tissue_name, y = Value)) +
   geom_boxplot(width = 0.5, 
                lwd = 0.2, 
                outlier.shape = NA, 
-               show.legend = FALSE) +
+               show.legend = FALSE,
+               fill = "grey") +
   facet_wrap(~ SynergyType, scales = "free_y") +
   labs(title = "Average Synergy Scores Across Cancer Types",
        x = "Cancer Type",
@@ -242,6 +243,7 @@ FimmDrugComb_drugCombCat <- df_with_stats
 
 FimmDrugComb_drugCombCat$Drug1_DrugBank_id <- FimmDrugComb_drugs$drugbank_id[match(FimmDrugComb_drugCombCat$drug_row, FimmDrugComb_drugs$dname)]
 FimmDrugComb_drugCombCat$Drug2_DrugBank_id <- FimmDrugComb_drugs$drugbank_id[match(FimmDrugComb_drugCombCat$drug_col, FimmDrugComb_drugs$dname)]
+
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[(FimmDrugComb_drugCombCat$Drug1_DrugBank_id != "NA" & 
                                                         FimmDrugComb_drugCombCat$Drug2_DrugBank_id != "NA"),]
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[(FimmDrugComb_drugCombCat$Drug1_DrugBank_id != "" & 
