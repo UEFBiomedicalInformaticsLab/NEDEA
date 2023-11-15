@@ -64,6 +64,11 @@ cat(paste0("\n\nNumber of drug combinations: ", nrow(drugCombs), "\n\n"))
 
 # Read the network
 input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net.rds")
+input_network_nodes <- suppressMessages(select(org.Hs.eg.db, 
+                                         keys = V(input_network)$name, 
+                                         columns = "SYMBOL", 
+                                         keytype = "ENSEMBL"))
+input_network_nodes <- input_network_nodes$SYMBOL
 cat(paste0("\n\nInput network size:: vertices = ", vcount(input_network), ", edges = ", ecount(input_network), "\n\n"))
 
 
@@ -112,7 +117,7 @@ drugCombs_targets$drugTarget_ensembl_id <- sapply(drugCombs_targets$drugTarget_e
 
 # Convert Ensembl IDs of the targets to gene symbols
 drugCombs_targets$drugTarget_geneSymbol <- sapply(drugCombs_targets$drugTarget_ensembl_id, convert_ensembl_to_symbol, USE.NAMES = FALSE)
-
+ 
 
 # Extract known gene/protein interactions from various databases 
 ixns_PS <- import_omnipath_interactions(resources = c("PhosphoSite","phosphoELM","PhosphoNetworks","PhosphoSite_MIMP",
@@ -121,6 +126,13 @@ ixns_PS <- import_omnipath_interactions(resources = c("PhosphoSite","phosphoELM"
 ixns_SIGNOR <- import_omnipath_interactions(resources = c("SIGNOR","SIGNOR_ProtMapper","SIGNOR_CollecTRI"))
 ixns_NPA <- import_omnipath_interactions(resources = c("NetPath"))
 ixns_RIs <- import_transcriptional_interactions()
+
+
+# Filter interactions to keep only nodes in the input network
+ixns_PS <- ixns_PS[ixns_PS$source_genesymbol %in% input_network_nodes & ixns_PS$target_genesymbol %in% input_network_nodes, ]
+ixns_SIGNOR <- ixns_SIGNOR[ixns_SIGNOR$source_genesymbol %in% input_network_nodes & ixns_SIGNOR$target_genesymbol %in% input_network_nodes, ]
+ixns_NPA <- ixns_NPA[ixns_NPA$source_genesymbol %in% input_network_nodes & ixns_NPA$target_genesymbol %in% input_network_nodes, ]
+ixns_RIs <- ixns_RIs[ixns_RIs$source_genesymbol %in% input_network_nodes & ixns_RIs$target_genesymbol %in% input_network_nodes, ]
 
 
 # Extend the drug targets based on protein phosphorylation
@@ -151,7 +163,6 @@ drugCombs_targets$ext_RI_targets <- sapply(reg_result_list, function(x) x$ext_ta
 drugCombs_targets$ext_RI_tar_cnt <- sapply(reg_result_list, function(x) x$ext_tar_cnt)
 
 
-
 # Read the list of KEGG pathways linked to Cancer hallmarks
 if(!dir.exists("Databases/CHG/")){dir.create("Databases/CHG/", recursive = TRUE)}
 if(!file.exists("Databases/CHG/Table_1.xls")){
@@ -171,8 +182,9 @@ CHG_pathways <- CHG_pathways[CHG_pathways != ""]
 #                                        columns = "SYMBOL", 
 #                                        keytype = "ENSEMBL")
 
-# Download protein interactions from KEGG
+# Download protein interactions from KEGG and filter to keep proteins in the network
 ixns_KEGG <- download_KEGG_ixns(pathway_ids = CHG_pathways)
+ixns_KEGG <- lapply(ixns_KEGG, function(x){x[x$genesymbol_source %in% input_network_nodes & x$genesymbol_target %in% input_network_nodes,]})
 
 
 # Extend the drug targets using interactions from KEGG 
