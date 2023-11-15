@@ -228,11 +228,90 @@ for(i in 1:nrow(df_with_stats)) {
   
   # BLISS
   if(df_with_stats$avgSynBliss[i] > df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] > 0) df_with_stats$cBliss[i] = 1
-  if(df_with_stats$avgSynBliss[i] < df_with_stats$meanSynBliss[i] - k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] < 0) df_with_stats$cZIP[i] = -1
+  if(df_with_stats$avgSynBliss[i] < df_with_stats$meanSynBliss[i] - k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] < 0) df_with_stats$cBliss[i] = -1
   
   # consensus
   df_with_stats$Syn_level[i] = df_with_stats$cS[i] + df_with_stats$cZIP[i] + df_with_stats$cLoewe[i] + df_with_stats$cHSA[i] + df_with_stats$cBliss[i]
 }
+
+
+
+# Plot the average synergy scores as points along with class
+if(!dir.exists("OutputFiles/Plots/")){
+  dir.create("OutputFiles/Plots/", recursive = TRUE)
+}
+
+tiff("OutputFiles/Plots/Avg_SynergyScores_scatter_byCancer.tiff",
+     width = 25, height = 10,
+     units = "cm", compression = "lzw", res = 1200)
+
+plot_data_1 <- df_with_stats %>%
+  select(c("drug_row", "drug_col", "tissue_name"), starts_with("avgSyn")) %>%
+  pivot_longer(
+    cols = starts_with("avgSyn"), 
+    names_to = "SynergyType", 
+    values_to = "synergy_value"
+  )
+plot_data_1$SynergyType <- gsub("avgSyn", "", plot_data_1$SynergyType)
+plot_data_1$SynergyType <- gsub("SM", "S", plot_data_1$SynergyType)
+
+
+plot_data_2 <- df_with_stats %>%
+  select(c("drug_row", "drug_col", "tissue_name"), starts_with("c")) %>%
+  pivot_longer(
+    cols = starts_with("c"), 
+    names_to = "SynergyType", 
+    values_to = "synergy_class"
+  )
+plot_data_2$SynergyType <- gsub("c", "", plot_data_2$SynergyType)
+
+
+
+plot_data_3 <- df_with_stats %>%
+  select(c("drug_row", "drug_col", "tissue_name", "Syn_level")) 
+
+plot_data <- merge(plot_data_1, plot_data_2, by = c("drug_row", "drug_col", "tissue_name", "SynergyType"))
+plot_data <- plot_data %>% left_join(plot_data_3, by = c("drug_row", "drug_col", "tissue_name"))
+
+plot_data <- plot_data[plot_data$tissue_name %in% c("breast", "kidney", "liver", "lung", "ovary", "prostate", "skin"), ]
+
+plot_data$synergy_class <- as.factor(plot_data$synergy_class)
+plot_data$Syn_level <- as.factor(plot_data$Syn_level)
+
+row.names(plot_data) <- NULL
+
+ggplot(data = plot_data, mapping = aes(x = tissue_name, y = synergy_value, color = synergy_class)) +
+  geom_point(size = 0.5, shape = 3) +
+  facet_wrap(~ SynergyType, scales = "free_y") +
+  stat_summary(
+    geom = "point",
+    fun.y = "mean",
+    col = "black",
+    size = 0.75,
+    shape = 2,
+    fill = "red"
+  ) +
+  labs(x = "Cancer Type",
+       y = "Average Synergy Value") 
+  theme(panel.background = element_rect(fill = "white", 
+                                        colour = "black", 
+                                        linewidth = 0.25, 
+                                        linetype = NULL),
+        panel.grid = element_line(colour = "grey", 
+                                  linewidth = 0.05),
+        panel.spacing = unit(0.1, "cm"),
+        strip.background = element_rect(color = "black", 
+                                        linewidth = 0.25,),
+        strip.text = element_text(size = 5, 
+                                  margin = margin(1,1,1,1)),
+        text = element_text(size = 5), 
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(size = 4, 
+                                   angle = 45, 
+                                   hjust = 1), 
+        axis.ticks = element_line(colour = "black", 
+                                  linewidth = 0.2))
+dev.off()
 
 
 # Map drugs to DrugBank drug ID
