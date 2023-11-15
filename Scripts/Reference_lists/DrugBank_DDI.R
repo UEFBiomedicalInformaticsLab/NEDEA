@@ -10,6 +10,10 @@ set.seed(5081)
 
 
 
+# Load libraries
+library(ggwordcloud)
+
+
 
 if(!dir.exists("Databases/DrugBank")){dir.create("Databases/DrugBank/", recursive = TRUE)} 
 if(!file.exists("Databases/DrugBank/drugbank_all_full_database.xml.zip")){ 
@@ -104,6 +108,33 @@ top_freq <- find_top_k_frequent_sequences(DrugBank_ddi$description, n = 4, k = 1
 risk_sev_res <- find_top_k_sequences_with_keyword(DrugBank_ddi$description, 
                                                   keyword = "The risk or severity", n = 6, k = 50)
 
+
+
+# Plot the extracted terms as word cloud
+tiff("OutputFiles/Plots/DDI_freq_ngram.tiff",
+     width = 30, height = 25,
+     units = "cm", compression = "lzw", res = 1200)
+plot_data <- data.frame(top_freq)
+ggplot(plot_data, aes(label = ngrams, size = counts)) +
+  geom_text_wordcloud_area(shape = "square", max_grid_size = 200) +
+  labs(title = "Top 100 most frequent word sequences in DDI") + 
+  scale_size_area(max_size = 50) +
+  theme_minimal() +
+  theme(title = element_text(size = 12))
+dev.off()
+
+
+tiff("OutputFiles/Plots/DDI_freq_risk_terms.tiff",
+     width = 30, height = 25,
+     units = "cm", compression = "lzw", res = 1200)
+plot_data <- data.frame(risk_sev_res)
+ggplot(plot_data, aes(label = ngrams, size = counts)) +
+  geom_text_wordcloud_area(shape = "square", max_grid_size = 200) +
+  labs(title = "Most frequest risk associated DDI") + 
+  scale_size_area(max_size = 50) +
+  theme_minimal() +
+  theme(title = element_text(size = 12))
+dev.off()
 
 
 test_eff_inc <- grepl("The therapeutic efficacy of", DrugBank_ddi$description) & grepl("can be increased when used in combination", DrugBank_ddi$description)

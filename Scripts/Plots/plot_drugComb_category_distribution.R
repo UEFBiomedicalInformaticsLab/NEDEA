@@ -28,6 +28,11 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                          by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id"),
                          all.y = TRUE)
   
+  # Replace the missing categories as unknown
+  drugCombs_cat <- drugCombs_cat %>% 
+    mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease)), 
+              ~replace_na(., "unknown"))
+  
 
   row.names(drugCombs_cat) <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("Syn_level", "class_synergyScore", "class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease))]

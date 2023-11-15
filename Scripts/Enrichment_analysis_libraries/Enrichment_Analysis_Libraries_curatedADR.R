@@ -64,8 +64,7 @@ names(CTD_curatedAdr_lib) <- paste0(names(CTD_curatedAdr_lib), " [CTD]")
 
 # Extract ADRs from DisGeNET -----------------------------------------------------------
 
-ADR_terms <- c("Carcinomatosis (C0205699)", 
-               "Cardiotoxicity (C0876994)",
+ADR_terms <- c("Cardiotoxicity (C0876994)",
                "Chemically-Induced Liver Toxicity (C4279912)",
                "Drug toxicity (C0013221)",
                "Neurotoxicity Syndromes (C0235032)")
