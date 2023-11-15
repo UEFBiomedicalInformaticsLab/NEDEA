@@ -212,23 +212,23 @@ for(i in 1:nrow(df_with_stats)) {
   
   # S
   if(df_with_stats$avgSynSM[i] > df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$avgSynSM[i] > 0) df_with_stats$cS[i] = 1
-  if(df_with_stats$avgSynSM[i] < df_with_stats$meanSynS[i] + k * df_with_stats$sdSynS[i] & df_with_stats$avgSynSM[i] < 0) df_with_stats$cS[i] = -1
+  if(df_with_stats$avgSynSM[i] < df_with_stats$meanSynS[i] - k * df_with_stats$sdSynS[i] & df_with_stats$avgSynSM[i] < 0) df_with_stats$cS[i] = -1
   
   # ZIP
   if(df_with_stats$avgSynZIP[i] > df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$avgSynZIP[i] > 0) df_with_stats$cZIP[i] = 1
-  if(df_with_stats$avgSynZIP[i] < df_with_stats$meanSynZIP[i] + k * df_with_stats$sdSynZIP[i] & df_with_stats$avgSynZIP[i] < 0) df_with_stats$cZIP[i] = -1
+  if(df_with_stats$avgSynZIP[i] < df_with_stats$meanSynZIP[i] - k * df_with_stats$sdSynZIP[i] & df_with_stats$avgSynZIP[i] < 0) df_with_stats$cZIP[i] = -1
   
   # LOEWE
   if(df_with_stats$avgSynLoewe[i] > df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$avgSynLoewe[i] > 0) df_with_stats$cLoewe[i] = 1
-  if(df_with_stats$avgSynLoewe[i] < df_with_stats$meanSynLoewe[i] + k * df_with_stats$sdSynLoewe[i] & df_with_stats$avgSynLoewe[i] < 0) df_with_stats$cLoewe[i] = -1
+  if(df_with_stats$avgSynLoewe[i] < df_with_stats$meanSynLoewe[i] - k * df_with_stats$sdSynLoewe[i] & df_with_stats$avgSynLoewe[i] < 0) df_with_stats$cLoewe[i] = -1
   
   # HSA
   if(df_with_stats$avgSynHSA[i] > df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$avgSynHSA[i] > 0) df_with_stats$cHSA[i] = 1
-  if(df_with_stats$avgSynHSA[i] < df_with_stats$meanSynHSA[i] + k * df_with_stats$sdSynHSA[i] & df_with_stats$avgSynHSA[i] < 0) df_with_stats$cHSA[i] = -1
+  if(df_with_stats$avgSynHSA[i] < df_with_stats$meanSynHSA[i] - k * df_with_stats$sdSynHSA[i] & df_with_stats$avgSynHSA[i] < 0) df_with_stats$cHSA[i] = -1
   
   # BLISS
   if(df_with_stats$avgSynBliss[i] > df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] > 0) df_with_stats$cBliss[i] = 1
-  if(df_with_stats$avgSynBliss[i] < df_with_stats$meanSynBliss[i] + k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] < 0) df_with_stats$cZIP[i] = -1
+  if(df_with_stats$avgSynBliss[i] < df_with_stats$meanSynBliss[i] - k * df_with_stats$sdSynBliss[i] & df_with_stats$avgSynBliss[i] < 0) df_with_stats$cZIP[i] = -1
   
   # consensus
   df_with_stats$Syn_level[i] = df_with_stats$cS[i] + df_with_stats$cZIP[i] + df_with_stats$cLoewe[i] + df_with_stats$cHSA[i] + df_with_stats$cBliss[i]
