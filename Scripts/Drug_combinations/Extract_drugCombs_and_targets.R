@@ -63,7 +63,7 @@ cat(paste0("\n\nNumber of drug combinations: ", nrow(drugCombs), "\n\n"))
 
 
 # Read the network
-input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net_database.rds")
+input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net.rds")
 cat(paste0("\n\nInput network size:: vertices = ", vcount(input_network), ", edges = ", ecount(input_network), "\n\n"))
 
 
