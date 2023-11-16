@@ -30,6 +30,13 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   drugCombs_cat <- column_to_rownames(drugCombs_cat, "comb_name")
   
   
+  
+  # Replace the missing categories as unknown
+  drugCombs_cat <- drugCombs_cat %>% 
+    mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", "ADR_status", "class_EffAdv"), 
+              ~replace_na(., "unknown"))
+  
+  
   drugCombs_cat <- apply(drugCombs_cat, 2, function(x){as.data.frame(table(x, useNA = "ifany"))})
   drugCombs_cat <- bind_rows(drugCombs_cat, .id = "category_type")
   drugCombs_cat$disease <- disease
@@ -41,7 +48,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 
 summary_df <- summary_df[order(summary_df$category_type, decreasing = TRUE), ]
-summary_df <- summary_df %>% select(c("category_type", "disease", "NA", everything()))
+summary_df <- summary_df %>% select(c("category_type", "disease", "unknown", everything()))
 summary_df$total_combs <- rowSums(summary_df[, -c(1:2)], na.rm = TRUE)
 summary_df <- apply(summary_df, 2, as.character)
 summary_df[is.na(summary_df)] <- ""

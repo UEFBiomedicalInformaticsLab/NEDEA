@@ -285,14 +285,14 @@ ggplot(data = plot_data, mapping = aes(x = tissue_name, y = synergy_value, color
   facet_wrap(~ SynergyType, scales = "free_y") +
   stat_summary(
     geom = "point",
-    fun.y = "mean",
+    fun = "mean",
     col = "black",
-    size = 0.75,
-    shape = 2,
+    size = 1,
+    shape = 24,
     fill = "red"
   ) +
   labs(x = "Cancer Type",
-       y = "Average Synergy Value") 
+       y = "Average Synergy Value") +
   theme(panel.background = element_rect(fill = "white", 
                                         colour = "black", 
                                         linewidth = 0.25, 

@@ -1,6 +1,6 @@
 # Install packages
 
-cran_pkgs <- c("caret", "dbparser", "devtools", "dnet", "doParallel", "foreach", "ggpubr", "httr", 
+cran_pkgs <- c("caret", "dbparser", "devtools", "dnet", "doParallel", "foreach", "ggpubr", "ggwordcloud", "httr", 
                "igraph", "jsonlite", "msigdbr", "openxlsx", "optparse", "readxl", 
                "sparklyr", "sparklyr.nested", "tidyverse", "unixtools")
 
