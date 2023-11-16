@@ -48,6 +48,7 @@ keggId_2_keggName <- GET("https://rest.kegg.jp/list/pathway/hsa")
 keggId_2_keggName <- content(keggId_2_keggName)
 keggId_2_keggName <- data.frame(str_split(keggId_2_keggName, pattern = "\n"))
 colnames(keggId_2_keggName) <- "kegg_pathway_id"
+keggId_2_keggName <- keggId_2_keggName[keggId_2_keggName$kegg_pathway_id != "",, drop = FALSE]
 keggId_2_keggName <- na.exclude(separate(keggId_2_keggName, col = "kegg_pathway_id", into = c("kegg_pathway_id", "kegg_pathway_name"), sep = "\t"))
 
 
@@ -60,6 +61,7 @@ for(pathway in CHG_pathways){
   response <- content(response)
   response <- data.frame(str_split(response, pattern = "\n"))
   colnames(response) <- "kegg_pathway_id"
+  response <- response[response$kegg_pathway_id != "",, drop = FALSE]
   response <- na.exclude(separate(response, col = "kegg_pathway_id", into = c("kegg_pathway_id", "entrez_gene_id"), sep = "\t"))
   response$kegg_pathway_id <- gsub("^path:", "", response$kegg_pathway_id)
   response$entrez_gene_id <- gsub("^hsa:", "", response$entrez_gene_id)
