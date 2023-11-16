@@ -120,18 +120,21 @@ if(drugComb_category_type %in% c("SL", "SS")){
   drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
+  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 if(drugComb_category_type %in% c("TE", "ME", "ADR")){
   drugCombs_cat <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
+  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 if(drugComb_category_type %in% c("EA")){
   drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
+  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 
