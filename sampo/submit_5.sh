@@ -4,7 +4,7 @@
 disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "KidneyCancer" "SkinCancer") 
 drug_target_type_list=("known" "PS" "SIGNOR" "NPA" "RI" "KEGG" "all")
 feature_type_list=("efficacy" "safety" "combinedEfficacySafety" "kegg" "smpdbDrugMet" "smpdbDrugAct" "misc")
-drugComb_category_type_list=("SL" "SS" "TE" "ME" "ADR")
+drugComb_category_type_list=("SL" "SS" "TE" "ME" "ADR" "EA")
 top9varying_list=("TRUE" "FALSE")
 
 

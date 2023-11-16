@@ -120,21 +120,18 @@ if(drugComb_category_type %in% c("SL", "SS")){
   drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
-  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 if(drugComb_category_type %in% c("TE", "ME", "ADR")){
   drugCombs_cat <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
-  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 if(drugComb_category_type %in% c("EA")){
   drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
-  drugCombs_cat <- drugCombs_cat %>% mutate_at(plot_col, ~replace_na(., "unknown"))
 }
 
 
@@ -172,6 +169,7 @@ plot_data <- as.data.frame(t(plot_data))
 plot_data <- rownames_to_column(plot_data, "comb_name")
 
 plot_data$category <- drugCombs_cat[,c(plot_col), drop = TRUE][match(plot_data$comb_name, drugCombs_cat$comb_name)]
+plot_data <- plot_data %>% mutate_at("category", ~replace_na(., "unknown"))
 plot_data$category <- as.factor(plot_data$category)
 
 plot_data <- pivot_longer(data = plot_data, 
@@ -179,6 +177,54 @@ plot_data <- pivot_longer(data = plot_data,
                           cols_vary = "fastest", 
                           names_to = "feature", 
                           values_to = "value")
+
+
+# Plot the NES as violin plot
+if(isTRUE(top9varying)){
+  if(!dir.exists("OutputFiles/Plots/NES_violinPlot_top9Var/")){
+    dir.create("OutputFiles/Plots/NES_violinPlot_top9Var/", recursive = TRUE)
+  }
+  tiff(paste0("OutputFiles/Plots/NES_violinPlot_top9Var/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
+       width = 30,
+       height = 15,
+       units = "cm", compression = "lzw", res = 1200)
+}
+
+if(isFALSE(top9varying)){
+  if(!dir.exists("OutputFiles/Plots/NES_violinPlot_all/")){
+    dir.create("OutputFiles/Plots/NES_violinPlot_all/", recursive = TRUE)
+  }
+  tiff(paste0("OutputFiles/Plots/NES_violinPlot_all/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
+       width = 30, 
+       height = length(unique(plot_data$feature))/6 + 10,
+       units = "cm", compression = "lzw", res = 1200)
+}
+
+ggplot(plot_data, aes(x = category, y = value)) +
+  geom_violin(fill = "grey", lwd = 0.1) +
+  facet_wrap(~ feature, scales = "free_y", labeller = label_wrap_gen(width = 30, 
+                                                  multi_line = TRUE)) +
+  stat_summary(fun = "mean",
+               geom = "point",
+               color = "red") +
+  theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
+        panel.grid = element_blank(),
+        panel.spacing = unit(0.1, "cm"),
+        strip.background = element_rect(color = "black", linewidth = 0.25,),
+        strip.text = element_text(size = 6, margin = margin(1,1,1,1)),
+        text = element_text(size = 8), 
+        plot.title = element_text(size = 8, hjust = 0.5, face = "plain"),
+        axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5), 
+        axis.ticks = element_line(colour = "black", linewidth = 0.2),
+        legend.position = "bottom",
+        legend.key = element_blank(),
+        legend.key.size = unit(0.1, 'cm'),
+        legend.text = element_text(size = 5),
+        legend.margin = margin(1,1,1,1),
+        legend.box.spacing = unit(0.1, 'cm'),
+        legend.box.background = element_rect(colour = "black", linewidth = 0.1))
+
+dev.off()
 
 
 # Calculate the mean and SD for each category for each feature
@@ -190,8 +236,8 @@ plot_data <- plot_data %>%
 
 # plot_data <- plot_data[!is.na(plot_data$category), ]
 
-# Wrap long feature names
-plot_data$feature <- str_wrap(plot_data$feature, width = 30)
+# # Wrap long feature names
+# plot_data$feature <- str_wrap(plot_data$feature, width = 30)
 
 
 # Plot 
@@ -222,7 +268,8 @@ ggplot(plot_data, aes(x = category, y = mean_value)) +
                     ymax = mean_value + se), 
                 width = 0.2, 
                 position = position_dodge(0.9)) +
-  facet_wrap(~ feature) +
+  facet_wrap(~ feature, labeller = label_wrap_gen(width = 30, 
+                                                  multi_line = TRUE)) +
   labs(title = paste0("Disease: ", disease, 
                       "; Drug target: ", drug_target_type,
                       "; Feature: ", feature_type,

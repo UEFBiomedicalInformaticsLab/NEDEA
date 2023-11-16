@@ -10,14 +10,14 @@ drug_target_type_list=("known" "PS" "SIGNOR" "NPA" "RI" "KEGG" "all")
   
 
 
-# Execute RWR on drug combinations
-for disease in ${disease_list[@]}
-do
-  for drug_target_type in ${drug_target_type_list[@]}
-  do
-    sbatch --job-name=RWR_$disease\_$drug_target_type --output=Trash/sampo_out/RWR_$disease\_$drug_target_type.out --export=disease=$disease,drug_target_type=$drug_target_type sampo/2_sampo_Rscript.sh $disease $drug_target_type
-  done
-done
+# # Execute RWR on drug combinations
+# for disease in ${disease_list[@]}
+# do
+#   for drug_target_type in ${drug_target_type_list[@]}
+#   do
+#     sbatch --job-name=RWR_$disease\_$drug_target_type --output=Trash/sampo_out/RWR_$disease\_$drug_target_type.out --export=disease=$disease,drug_target_type=$drug_target_type sampo/2_sampo_Rscript.sh $disease $drug_target_type
+#   done
+# done
 
 
 
@@ -29,9 +29,9 @@ do
     sbatch --job-name=FGSEA_effsaf_$disease\_$drug_target_type --output=Trash/sampo_out/FGSEA_effsaf_$disease\_$drug_target_type.out --export=disease=$disease,drug_target_type=$drug_target_type sampo/3_sampo_Rscript.sh $disease $drug_target_type
   done
 done
-  
-  
-  
+
+
+
 # Execute FGSEA (pathways) on drug combinations
 for disease in ${disease_list[@]}
 do

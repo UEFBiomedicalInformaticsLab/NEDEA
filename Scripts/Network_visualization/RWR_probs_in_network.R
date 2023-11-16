@@ -19,7 +19,7 @@ cat(paste0("\nDrug target type: ", drug_target_type, "\n\n"))
 
 
 # Read the network on which to execute RWR
-rwr_input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net_database.rds")
+rwr_input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net.rds")
 cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ", edges = ", ecount(rwr_input_network), "\n\n"))
 
 
