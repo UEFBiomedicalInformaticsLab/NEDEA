@@ -5,10 +5,10 @@ set.seed(5081)
 # Script to check the number of drug combinations that produce enrichment scores
 
 
-# Load librarier
+# Load libraries
 library(foreach)
 library(doParallel)
-
+source("Scripts/Functions/Functions_parallelprocesses.R")
 
 
 cl <- makeCluster(10)
@@ -107,6 +107,8 @@ summary_df <- foreach(drug_target_type=c("known", "KEGG", "NPA", "PS", "RI", "SI
           }
 
 stopCluster(cl)
+unregister_dopar()
+
 
 summary_df <- unlist(unlist(summary_df, recursive = FALSE), recursive = FALSE)
 summary_df <- plyr::rbind.fill(summary_df)
