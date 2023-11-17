@@ -23,6 +23,7 @@
 /opt/R/4.2.2/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
-echo "Running FGSEA (allADR) for " $1 "- " $2 " ---------------------"
+echo "Running FGSEA (other) for " $1 "- " $2 " ---------------------"
 
-/opt/R/4.2.2/bin/Rscript Syn_Adr/Execute_FGSEA_allADR_on_drugCombs.R --disease $1 --drug_target_type $2
+# /opt/R/4.2.2/bin/Rscript Syn_Adr/Execute_FGSEA_allADR_on_drugCombs.R --disease $1 --drug_target_type $2
+/opt/R/4.2.2/bin/Rscript Syn_Adr/Execute_FGSEA_other_on_drugCombs.R --disease $1 --drug_target_type $2

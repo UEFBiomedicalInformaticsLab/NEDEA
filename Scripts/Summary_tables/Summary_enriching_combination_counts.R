@@ -112,7 +112,7 @@ summary_df <- unlist(unlist(summary_df, recursive = FALSE), recursive = FALSE)
 summary_df <- plyr::rbind.fill(summary_df)
 
 
-write.csv(summary_df, "OutputFiles/Tables/Summary_enriching_drugComb_count.csv")
+write.csv(summary_df, "OutputFiles/Tables/Summary_enriching_drugComb_count.csv", row.names = FALSE)
 
 
 
