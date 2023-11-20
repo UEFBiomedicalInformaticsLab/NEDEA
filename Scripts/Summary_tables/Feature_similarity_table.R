@@ -33,35 +33,35 @@ enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# # Compile KEGG library
-# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds"))
-# names(enrichment_lib) <- paste0("[KEGG] ", names(enrichment_lib))
-# enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
+# Compile KEGG library
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds"))
+names(enrichment_lib) <- paste0("[KEGG] ", names(enrichment_lib))
+enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# # Compile SMPDB (Drug Metabolsim) library
-# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
-# enrichment_lib <- enrichment_lib$`Drug Metabolism`
-# names(enrichment_lib) <- paste0("[SMPDB_DrugMetabolism] ", names(enrichment_lib))
-# enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
+# Compile SMPDB (Drug Metabolsim) library
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+enrichment_lib <- enrichment_lib$`Drug Metabolism`
+names(enrichment_lib) <- paste0("[SMPDB_DrugMetabolism] ", names(enrichment_lib))
+enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# # Compile SMPDB (Drug Action) library
-# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
-# enrichment_lib <- enrichment_lib$`Drug Action`
-# names(enrichment_lib) <- paste0("[SMPDB_DrugAction] ", names(enrichment_lib))
-# enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
+# Compile SMPDB (Drug Action) library
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+enrichment_lib <- enrichment_lib$`Drug Action`
+names(enrichment_lib) <- paste0("[SMPDB_DrugAction] ", names(enrichment_lib))
+enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# Compile miscelleneous library
+# Compile miscellaneous library
 enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/miscellaneous_gene_lib.rds"))
 names(enrichment_lib) <- paste0("[miscellaneous] ", names(enrichment_lib))
 enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
-
+enrichment_lib_list <- lapply(enrichment_lib_list, unique)
 
 # Read the network on which to calculate the separation
 input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net.rds")
