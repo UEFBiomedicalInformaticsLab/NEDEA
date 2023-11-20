@@ -230,6 +230,7 @@ Intogen_data$CANCER_NAME <- Intogen_cancers$CANCER_NAME[match(Intogen_data$CANCE
 Intogen_data$CANCER_TYPE <- paste0(Intogen_data$CANCER_NAME, " (", Intogen_data$CANCER_TYPE, ")")
 
 Intogen_Disease2Gene_lib <- split(Intogen_data$ensembl_gene_id, f = Intogen_data$CANCER_TYPE)
+Intogen_Disease2Gene_lib <- lapply(Intogen_Disease2Gene_lib, unique)
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(Intogen_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
