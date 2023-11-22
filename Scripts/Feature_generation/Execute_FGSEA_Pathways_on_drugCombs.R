@@ -63,7 +63,9 @@ enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/CHG_keggPath
 names(enrichment_lib) <- paste0("[KEGG] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["kegg"]] <- fgsea_result
 
@@ -75,7 +77,9 @@ enrichment_lib <- enrichment_lib$`Drug Metabolism`
 names(enrichment_lib) <- paste0("[SMPDB_DRUG_METABOLISM] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["smpdbDrugMet"]] <- fgsea_result
 
@@ -87,7 +91,9 @@ enrichment_lib <- enrichment_lib$`Drug Action`
 names(enrichment_lib) <- paste0("[SMPDB_DRUG_ACTION] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["smpdbDrugAct"]] <- fgsea_result
 

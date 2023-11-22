@@ -62,7 +62,9 @@ enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disea
 names(enrichment_lib) <- paste0("[DISEASE] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["efficacy"]] <- fgsea_result
 
@@ -73,7 +75,9 @@ enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2G
 names(enrichment_lib) <- paste0("[ADR] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["safety"]] <- fgsea_result
 
@@ -87,7 +91,9 @@ names(enrichment_lib_2) <- paste0("[ADR] ", names(enrichment_lib_2))
 enrichment_lib <- c(enrichment_lib_1, enrichment_lib_2)
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["combinedEfficacySafety"]] <- fgsea_result
 

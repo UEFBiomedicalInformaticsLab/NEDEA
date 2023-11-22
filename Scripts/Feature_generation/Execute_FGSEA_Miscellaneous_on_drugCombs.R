@@ -63,7 +63,9 @@ enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/miscellaneou
 names(enrichment_lib) <- paste0("[MISC.] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
-                                      enrichment_library = enrichment_lib)
+                                      enrichment_library = enrichment_lib,
+                                      disease = disease,
+                                      drug_target_type = drug_target_type)
 
 fgsea_result_final[["misc"]] <- fgsea_result
 
