@@ -1,11 +1,12 @@
 
 
 require(shiny)
+require(igraph)
 require(visNetwork)
+require(org.Hs.eg.db)
 
-
-source("serverFunc__enrichLib_net.R")
-
+source("serverFunc__enrichLibNet.R")
+source("serverFunc__targetEffSafNet.R")
 
 
 
@@ -13,9 +14,13 @@ source("serverFunc__enrichLib_net.R")
 server <- function(input, output, session) {
   
   
-  serverFunc__enrichLib_net(input, output, session)
+  serverFunc__enrichLibNet(input, output, session)
 
+
+  serverFunc__targetEffSafNet(input, output, session)
   
+  
+
   
   # output$OUT_output_contents <- renderText({ 
   #   paste(class(output))
