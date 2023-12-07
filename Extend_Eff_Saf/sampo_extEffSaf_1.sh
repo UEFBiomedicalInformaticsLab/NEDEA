@@ -23,11 +23,11 @@
 /opt/R/4.2.2/bin/Rscript --version
 grep -c ^processor /proc/cpuinfo
 
-# echo "Extend efficacy safety library for " $1 " ---------------------"
-# /opt/R/4.2.2/bin/Rscript Extend_Eff_Saf/Build_EfficacySafety_lib.R --disease $1 --nproc 20
+echo "Extend efficacy safety library for " $1 " ---------------------"
+/opt/R/4.2.2/bin/Rscript Extend_Eff_Saf/Build_EfficacySafety_lib.R --disease $1 --nproc 20
 
 
 
 
-echo "Running FGSEA (extended-efficacy-safety) for " $1 "- " $2 " ---------------------"
-/opt/R/4.2.2/bin/Rscript Extend_Eff_Saf/Run_FGSEA.R --disease $1 --drug_target_type $2
+# echo "Running FGSEA (extended-efficacy-safety) for " $1 "- " $2 " ---------------------"
+# /opt/R/4.2.2/bin/Rscript Extend_Eff_Saf/Run_FGSEA.R --disease $1 --drug_target_type $2

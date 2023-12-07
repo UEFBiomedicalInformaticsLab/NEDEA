@@ -65,18 +65,29 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ",
 
 # Read the libraries and extract gene list
 enrichment_lib_efficacy <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
-enrichment_lib_efficacy <- unique(unlist(enrichment_lib_efficacy, use.names = FALSE))
+
+
+
+
+# enrichment_lib_efficacy <- unique(unlist(enrichment_lib_efficacy, use.names = FALSE))
 
 enrichment_lib_safety <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-enrichment_lib_safety <- unique(unlist(enrichment_lib_safety, use.names = FALSE))
+# enrichment_lib_safety <- unique(unlist(enrichment_lib_safety, use.names = FALSE))
 
 
 # prepare the seed matrix for RWR
-rwr_seed_matrix  <- do.call(cbind, lapply(list("Efficacy" = enrichment_lib_efficacy,
-                                               "Safety" = enrichment_lib_safety), 
+# rwr_seed_matrix  <- do.call(cbind, lapply(list("Efficacy" = enrichment_lib_efficacy,
+#                                                "Safety" = enrichment_lib_safety), 
+#                                           function(x){
+#                                             sapply(V(rwr_input_network)$name, function(y) ifelse(y %in% x, 1, 0))
+#                                           }))
+
+rwr_seed_matrix  <- do.call(cbind, lapply(c(enrichment_lib_efficacy, enrichment_lib_safety),
                                           function(x){
                                             sapply(V(rwr_input_network)$name, function(y) ifelse(y %in% x, 1, 0))
                                           }))
+
+
 
 
 # Run RWR using dRWR
@@ -110,7 +121,6 @@ for(col_select in colnames(rwr_result)){
   rankedGeneList <- sort(rwr_data_select[rwr_data_select > rwr_threshold[col_select]], decreasing = TRUE)
   extended_enrichment_lib[[col_select]] <- names(rankedGeneList)
 }
-
 
 
 
