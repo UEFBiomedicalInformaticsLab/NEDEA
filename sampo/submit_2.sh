@@ -1,7 +1,7 @@
 #!/bin/bash
 
 disease_list=("LungCancer" "BreastCancer" "ProstateCancer" "OvaryCancer" "KidneyCancer" "SkinCancer")
-drug_target_type_list=("known" "PS" "SIGNOR" "NPA" "RI" "KEGG" "all")
+drug_target_type_list=("all" "known" "PS" "SIGNOR" "NPA" "RI" "KEGG")
 
 # data_balance_method=("none")
 # metric_list=("BalancedAccuracy" "F1" "PRAUC")

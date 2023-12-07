@@ -6,10 +6,9 @@
 # Updated: 19 October 2023
 #
 #
-#SBATCH --exclusive
 #SBATCH --distribution=cyclic
 #SBATCH --ntasks 80   # Number of task
-#SBATCH --time 01:00:00   # Runtime
+#SBATCH --time 05:00:00   # Runtime
 #SBATCH --mem=50000   # Reserve 50 GB RAM for the job
 #SBATCH --partition serial   # Partition to submit
 #SBATCH --mail-user arindam.ghosh@uef.fi      # this is the email you wish to be notified at
