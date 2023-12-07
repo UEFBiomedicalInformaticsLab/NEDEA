@@ -4,7 +4,7 @@
 
 # Function to convert Ensembl IDs to gene symbol
 convert_ensembl_to_symbol <- function(ids_str) {
-  ids <- unlist(strsplit(ids_str, ","))
+  ids <- unique(unlist(strsplit(ids_str, ",")))
   suppressMessages(mapping <- select(org.Hs.eg.db, 
                                      keys = ids, 
                                      columns = "SYMBOL", 
@@ -16,7 +16,7 @@ convert_ensembl_to_symbol <- function(ids_str) {
 
 # Function to convert gene symbol to Ensembl IDs
 convert_symbol_to_ensembl <- function(ids_str) {
-  ids <- unlist(strsplit(ids_str, ","))
+  ids <- unique(unlist(strsplit(ids_str, ",")))
   suppressMessages(mapping <- select(org.Hs.eg.db, keys = ids, 
                                      columns = "ENSEMBL", 
                                      keytype = "SYMBOL"))
@@ -27,7 +27,7 @@ convert_symbol_to_ensembl <- function(ids_str) {
 
 # Function to extend known drug targets with any 'interaction' database
 extend_targets_ixns_database <- function(ids_str, ixns_data) {
-  known_drug_targets <- unlist(strsplit(ids_str, ","))
+  known_drug_targets <- unique(unlist(strsplit(ids_str, ",")))
   # Extend drug targets using the provided interaction database
   extended_targets <- ixns_data[ixns_data$source_genesymbol %in% known_drug_targets,]
   extended_targets <- extended_targets[which(extended_targets$curation_effort > 1 & extended_targets$is_directed),]
@@ -41,7 +41,7 @@ extend_targets_ixns_database <- function(ids_str, ixns_data) {
 # Function to extend drug targets by using a kegg pathway
 extend_targets_kegg <- function(initial_targets, kegg_data) {
   
-  extended_targets <- unlist(strsplit(initial_targets, ","))
+  extended_targets <- unique(unlist(strsplit(initial_targets, ",")))
   
   # Continue until no new targets are found
   new_targets_found <- TRUE

@@ -37,7 +37,10 @@ func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library, disease, drug_ta
     
     # Extract the targets of the drug combination
     target_set <- drugCombs_targets[drugCombs_targets$comb_name %in% drugComb, drug_target_col, drop = TRUE]
-    target_set <- unlist(strsplit(target_set, ","))
+    if(drug_target_type == "all"){
+      target_set <- apply(target_set, 1, function(x){paste(x, collapse = ",")})
+    }
+    target_set <- unique(unlist(strsplit(target_set, ",")))
     suppressMessages(target_set <- select(org.Hs.eg.db, 
                                           keys = target_set, 
                                           columns = "ENSEMBL", 
