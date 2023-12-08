@@ -32,7 +32,17 @@ for(disease in diseases){
   size <- as.data.frame(lengths(enrichment_lib))
   colnames(size) <- "inNet_size"
   size_2 <- rownames_to_column(size, "Description")
-  size <- merge(size_1, size_2)
+  if(file.exists(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))){
+    extended_enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))
+    size <- as.data.frame(lengths(extended_enrichment_lib))
+    colnames(size) <- "extended_size"
+    size_3 <- rownames_to_column(size, "Description")
+  }else{
+    size_3 <- size_1
+    colnames(size_3) <- c("Description", "extended_size")
+    size_3$extended_size <- NA
+  }
+  size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
   library_size[[paste0("Efficacy_", disease)]] <- size
 }
 
@@ -47,13 +57,23 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-size <- merge(size_1, size_2)
+if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")){
+  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")
+  size <- as.data.frame(lengths(extended_enrichment_lib))
+  colnames(size) <- "extended_size"
+  size_3 <- rownames_to_column(size, "Description")
+}else{
+  size_3 <- size_1
+  colnames(size_3) <- c("Description", "extended_size")
+  size_3$extended_size <- NA
+}
+size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
 library_size[["Safety"]] <- size
 
 
 
 # Compile KEGG library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds"))
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds")
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "all_size"
 size_1 <- rownames_to_column(size, "Description")
@@ -61,13 +81,23 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-size <- merge(size_1, size_2)
+if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/CHG_keggPath2Gene_extendedLib.rds")){
+  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/CHG_keggPath2Gene_extendedLib.rds")
+  size <- as.data.frame(lengths(extended_enrichment_lib))
+  colnames(size) <- "extended_size"
+  size_3 <- rownames_to_column(size, "Description")
+}else{
+  size_3 <- size_1
+  colnames(size_3) <- c("Description", "extended_size")
+  size_3$extended_size <- NA
+}
+size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
 library_size[["KEGG"]] <- size
 
 
 
 # Compile SMPDB (Drug Metabolsim) library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds")
 enrichment_lib <- enrichment_lib$`Drug Metabolism`
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "all_size"
@@ -76,13 +106,24 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-size <- merge(size_1, size_2)
+if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")){
+  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_extendedLib.rds")
+  extended_enrichment_lib <- extended_enrichment_lib$`Drug Metabolism`
+  size <- as.data.frame(lengths(extended_enrichment_lib))
+  colnames(size) <- "extended_size"
+  size_3 <- rownames_to_column(size, "Description")
+}else{
+  size_3 <- size_1
+  colnames(size_3) <- c("Description", "extended_size")
+  size_3$extended_size <- NA
+}
+size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
 library_size[["SMPDB_DrugMetabolism"]] <- size
 
 
 
 # Compile SMPDB (Drug Action) library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds")
 enrichment_lib <- enrichment_lib$`Drug Action`
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "all_size"
@@ -91,13 +132,25 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-size <- merge(size_1, size_2)
+
+if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")){
+  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")
+  extended_enrichment_lib <- extended_enrichment_lib$`Drug Action`
+  size <- as.data.frame(lengths(extended_enrichment_lib))
+  colnames(size) <- "extended_size"
+  size_3 <- rownames_to_column(size, "Description")
+}else{
+  size_3 <- size_1
+  colnames(size_3) <- c("Description", "extended_size")
+  size_3$extended_size <- NA
+}
+size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
 library_size[["SMPDB_DrugAction"]] <- size
 
 
 
 # Compile miscelleneous library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/miscellaneous_gene_lib.rds"))
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/miscellaneous_gene_lib.rds")
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "all_size"
 size_1 <- rownames_to_column(size, "Description")
@@ -105,7 +158,17 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-size <- merge(size_1, size_2)
+if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/miscellaneous_gene_extendedLib.rds")){
+  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/miscellaneous_gene_extendedLib.rds")
+  size <- as.data.frame(lengths(extended_enrichment_lib))
+  colnames(size) <- "extended_size"
+  size_3 <- rownames_to_column(size, "Description")
+}else{
+  size_3 <- size_1
+  colnames(size_3) <- c("Description", "extended_size")
+  size_3$extended_size <- NA
+}
+size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
 library_size[["miscellaneous"]] <- size
 
 
@@ -125,8 +188,8 @@ plot_data$all_size[plot_data$all_size >= 500] <- 500
 plot_data$inNet_size[plot_data$inNet_size >= 500] <- 500
 
 plot_data$Source <- factor(plot_data$Source, 
-                           levels = c("Efficacy_LungCancer", "Efficacy_BreastCancer", "Efficacy_ProstateCancer", 
-                                      "Efficacy_OvaryCancer", "Efficacy_KidneyCancer", "Efficacy_SkinCancer", 
+                           levels = c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer",  
+                                      "Efficacy_OvaryCancer",  "Efficacy_ProstateCancer","Efficacy_SkinCancer", 
                                       "Safety", "KEGG", "SMPDB_DrugMetabolism", "SMPDB_DrugAction", "miscellaneous"))
 
 
@@ -136,10 +199,11 @@ plot_data_summary <- plot_data %>% group_by(Source) %>% summarise(n = n())
 
 
 plot_data <- pivot_longer(plot_data, 
-                          cols = c("all_size", "inNet_size"), 
+                          cols = c("all_size", "inNet_size", "extended_size"), 
                           names_to = "type", 
                           values_to = "size")
 
+plot_data$type <- factor(plot_data$type, levels = c("all_size", "inNet_size", "extended_size"))
 
 ggplot() +
   geom_boxplot(data = plot_data, 
