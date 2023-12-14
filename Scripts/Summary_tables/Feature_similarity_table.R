@@ -16,7 +16,7 @@ source("Scripts/Functions/Functions_parallelprocesses.R")
 enrichment_lib_list <- c()
 
 # Compile efficacy libraries
-diseases <- c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", "KidneyCancer", "SkinCancer")
+diseases <- c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")
 
 for(disease in diseases){
   enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))

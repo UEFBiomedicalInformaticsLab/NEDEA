@@ -6,7 +6,7 @@ require(org.Hs.eg.db)
 source("Scripts/Functions/Functions_RWR.R")
 
 
-func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library, disease, drug_target_type){
+func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library, disease, drug_target_type, nproc){
   
   # Extract the drug targets 
   drugCombs_targets <- readRDS(paste0("InputFiles/Drug_combination_targets/drugCombs_targets_extended_", disease, ".rds"))
@@ -62,9 +62,10 @@ func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library, disease, drug_ta
       enrichment_result <- fgseaMultilevel(pathways = enrichment_library,
                                            stats = rankedGeneList,
                                            minSize = 5, 
-                                           maxSize = 500, 
+                                           maxSize = 1000, 
                                            scoreType = "pos", 
-                                           BPPARAM = SerialParam())
+                                           nproc = nproc,
+                                           BPPARAM = MulticoreParam(progressbar = FALSE))
       
       enrichment_result$NES[which(enrichment_result$padj > 0.05)] <- 0
       

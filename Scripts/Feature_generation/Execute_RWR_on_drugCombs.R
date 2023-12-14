@@ -84,7 +84,7 @@ switch(drug_target_type,
 
 
 # Extract the targets for the drug combinations
-seed_matrix_targets <- drugCombs_targets[,drug_target_col]
+seed_matrix_targets <- drugCombs_targets[,drug_target_col, drop = FALSE]
 seed_matrix_targets <- apply(seed_matrix_targets, 1, function(x){paste(x, collapse = ",")})
 
 

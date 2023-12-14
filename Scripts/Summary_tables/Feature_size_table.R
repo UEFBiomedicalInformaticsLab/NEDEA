@@ -21,7 +21,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(input_network), ", edg
 
 
 # Compile efficacy libraries
-diseases <- c("LungCancer", "BreastCancer", "ProstateCancer", "OvaryCancer", "KidneyCancer", "SkinCancer")
+diseases <- c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")
 
 for(disease in diseases){
   enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
@@ -184,8 +184,9 @@ tiff("OutputFiles/Plots/Enrichment_library_size.tiff",
 
 plot_data <- bind_rows(library_size, .id = "Source")
 
-plot_data$all_size[plot_data$all_size >= 500] <- 500
-plot_data$inNet_size[plot_data$inNet_size >= 500] <- 500
+plot_data$all_size[plot_data$all_size >= 2000] <- 2000
+plot_data$inNet_size[plot_data$inNet_size >= 2000] <- 2000
+plot_data$extended_size[plot_data$extended_size >= 2000] <- 2000
 
 plot_data$Source <- factor(plot_data$Source, 
                            levels = c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer",  

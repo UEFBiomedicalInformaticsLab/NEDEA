@@ -24,10 +24,15 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
   
   # Extend the library
-  extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
-                                                                    input_network = input_network, 
-                                                                    ST_type = "KB", 
-                                                                    nproc = 10)
+  # extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
+  #                                                                   input_network = input_network, 
+  #                                                                   ST_type = "KB", 
+  #                                                                   nproc = 10)
+  
+  
+  extended_enrichment_lib <- func_extendEnrichmentLib_byRWR(enrichment_library = enrichment_lib, 
+                                                            input_network = input_network, 
+                                                            nproc = 10)
   
   extended_enrichment_lib <- extended_enrichment_lib[names(which(!unlist(lapply(extended_enrichment_lib, anyNA))))]
   
@@ -39,10 +44,14 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 # Extend the safety library
 print(paste0(" -- Extending safety library"))
 enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
-                                                                  input_network = input_network, 
-                                                                  ST_type = "SP", 
-                                                                  nproc = 10)
+# extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
+#                                                                   input_network = input_network, 
+#                                                                   ST_type = "SP", 
+#                                                                   nproc = 10)
+
+extended_enrichment_lib <- func_extendEnrichmentLib_byRWR(enrichment_library = enrichment_lib,
+                                                          input_network = input_network,
+                                                          nproc = 10)
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries_extended/")){dir.create("InputFiles/Enrichment_analysis_libraries_extended/", recursive = TRUE)}
 saveRDS(extended_enrichment_lib, "InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")
 
