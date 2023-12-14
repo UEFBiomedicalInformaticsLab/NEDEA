@@ -28,7 +28,9 @@ sampo/
 tmp_dir/
 Trash/
 Trash*/
+Run_Vittorio_edits/
+Thumbs.db
 derby.log
 !/Databases/Directory_Structure_Databases.txt
-!Code_execution_sequence.csv
+!Code_execution_sequence.xlsx
 
