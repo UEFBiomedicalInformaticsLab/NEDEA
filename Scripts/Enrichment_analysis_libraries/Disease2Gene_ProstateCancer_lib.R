@@ -31,7 +31,7 @@ DisGeNET_ProstateCancer2Gene_lib <- DisGeNET_ProstateCancer2Gene_lib[grep("hered
                       names(DisGeNET_ProstateCancer2Gene_lib), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(DisGeNET_ProstateCancer2Gene_lib) <- paste0(names(DisGeNET_ProstateCancer2Gene_lib), "[DisGeNET_curated]")
+names(DisGeNET_ProstateCancer2Gene_lib) <- paste0(names(DisGeNET_ProstateCancer2Gene_lib), " [DisGeNET_curated]")
 
 
 
@@ -48,7 +48,7 @@ OpenTargets_ProstateCancer2Gene_GA_lib <- OpenTargets_ProstateCancer2Gene_GA_lib
                       names(OpenTargets_ProstateCancer2Gene_GA_lib), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(OpenTargets_ProstateCancer2Gene_GA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_GA_lib), "[OpenTargets_GA]")
+names(OpenTargets_ProstateCancer2Gene_GA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_GA_lib), " [OpenTargets_GA]")
 
 
 OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
@@ -62,21 +62,21 @@ OpenTargets_ProstateCancer2Gene_RNA_lib <- OpenTargets_ProstateCancer2Gene_RNA_l
                       names(OpenTargets_ProstateCancer2Gene_RNA_lib), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(OpenTargets_ProstateCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
+names(OpenTargets_ProstateCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_RNA_lib), " [OpenTargets_RNA]")
 
 
-OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
-OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("prostate", 
-                                                names(OpenTargets_Disease2Gene_lit_lib), 
-                                                ignore.case = TRUE)]
-OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_ProstateCancer2Gene_lit_lib[grep("cancer|carcinoma|sarcoma", 
-                      names(OpenTargets_ProstateCancer2Gene_lit_lib), 
-                      ignore.case = TRUE)]
-OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_ProstateCancer2Gene_lit_lib[grep("hereditary|familial|susceptibility|predisposition", 
-                      names(OpenTargets_ProstateCancer2Gene_lit_lib), 
-                      ignore.case = TRUE, 
-                      invert = TRUE)] 
-names(OpenTargets_ProstateCancer2Gene_lit_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_lit_lib), "[OpenTargets_literature]")
+# OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+# OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[grep("prostate", 
+#                                                 names(OpenTargets_Disease2Gene_lit_lib), 
+#                                                 ignore.case = TRUE)]
+# OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_ProstateCancer2Gene_lit_lib[grep("cancer|carcinoma|sarcoma", 
+#                       names(OpenTargets_ProstateCancer2Gene_lit_lib), 
+#                       ignore.case = TRUE)]
+# OpenTargets_ProstateCancer2Gene_lit_lib <- OpenTargets_ProstateCancer2Gene_lit_lib[grep("hereditary|familial|susceptibility|predisposition", 
+#                       names(OpenTargets_ProstateCancer2Gene_lit_lib), 
+#                       ignore.case = TRUE, 
+#                       invert = TRUE)] 
+# names(OpenTargets_ProstateCancer2Gene_lit_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_lit_lib), " [OpenTargets_literature]")
 
 
 OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
@@ -90,7 +90,7 @@ OpenTargets_ProstateCancer2Gene_SM_lib <- OpenTargets_ProstateCancer2Gene_SM_lib
                                                                                       names(OpenTargets_ProstateCancer2Gene_SM_lib), 
                                                                                       ignore.case = TRUE, 
                                                                                       invert = TRUE)] 
-names(OpenTargets_ProstateCancer2Gene_SM_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_SM_lib), "[OpenTargets_SM]")
+names(OpenTargets_ProstateCancer2Gene_SM_lib) <- paste0(names(OpenTargets_ProstateCancer2Gene_SM_lib), " [OpenTargets_SM]")
 
 
 ## Enrichr
@@ -107,7 +107,7 @@ Enrichr_GeoProstateCancerSignatures_Up <- Enrichr_GeoProstateCancerSignatures_Up
                       names(Enrichr_GeoProstateCancerSignatures_Up), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(Enrichr_GeoProstateCancerSignatures_Up) <- paste0(names(Enrichr_GeoProstateCancerSignatures_Up), "[Enrichr_GeoDiseaseSig_Up]")
+names(Enrichr_GeoProstateCancerSignatures_Up) <- paste0(names(Enrichr_GeoProstateCancerSignatures_Up), " [Enrichr_GeoDiseaseSig_Up]")
 
 Enrichr_GeoProstateCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep("prostate", 
                                                                 names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down), 
@@ -119,7 +119,7 @@ Enrichr_GeoProstateCancerSignatures_Down <- Enrichr_GeoProstateCancerSignatures_
                       names(Enrichr_GeoProstateCancerSignatures_Down), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(Enrichr_GeoProstateCancerSignatures_Down) <- paste0(names(Enrichr_GeoProstateCancerSignatures_Down), "[Enrichr_GeoDiseaseSig_Down]")
+names(Enrichr_GeoProstateCancerSignatures_Down) <- paste0(names(Enrichr_GeoProstateCancerSignatures_Down), " [Enrichr_GeoDiseaseSig_Down]")
 
 
 
@@ -135,7 +135,7 @@ Intogen_ProstateCancer2Gene_lib <- Intogen_ProstateCancer2Gene_lib[grep("heredit
                       names(Intogen_ProstateCancer2Gene_lib), 
                       ignore.case = TRUE, 
                       invert = TRUE)] 
-names(Intogen_ProstateCancer2Gene_lib) <- paste0(names(Intogen_ProstateCancer2Gene_lib), "[Intogen]")
+names(Intogen_ProstateCancer2Gene_lib) <- paste0(names(Intogen_ProstateCancer2Gene_lib), " [Intogen]")
 
 
 
@@ -152,7 +152,7 @@ names(Intogen_ProstateCancer2Gene_lib) <- paste0(names(Intogen_ProstateCancer2Ge
 #                                                                           names(PharmGKB_ProstateCancer2Gene_lib),
 #                                                                           ignore.case = TRUE,
 #                                                                           invert = TRUE)]
-# names(PharmGKB_ProstateCancer2Gene_lib) <- paste0(names(PharmGKB_ProstateCancer2Gene_lib), "[PharmGKB_associated]")
+# names(PharmGKB_ProstateCancer2Gene_lib) <- paste0(names(PharmGKB_ProstateCancer2Gene_lib), " [PharmGKB_associated]")
 
 
 
@@ -181,15 +181,14 @@ ProstateCancer_Tscores <- tissue.specific.scores(disease_genes = ProstateCancer_
 
 ThETA_ProstateCancer2Gene_lib <- row.names(ProstateCancer_Tscores[order(ProstateCancer_Tscores$avg_tissue_score, decreasing = TRUE)[1:50],])
 ThETA_ProstateCancer2Gene_lib <- list(entrezId_2_ensemblId[entrezId_2_ensemblId$gene_id %in% ThETA_ProstateCancer2Gene_lib, c("ensembl_id")])
-names(ThETA_ProstateCancer2Gene_lib) <- paste0("Prostate carcinoma (EFO_0001663)", "[ThETA]")
+names(ThETA_ProstateCancer2Gene_lib) <- paste0("Prostate carcinoma (EFO_0001663)", " [ThETA]")
 
 
 
 # Merge and save into one
 
 Enrichment_ProstateCancer2Gene_lib <- c(DisGeNET_ProstateCancer2Gene_lib, OpenTargets_ProstateCancer2Gene_GA_lib, 
-                                        OpenTargets_ProstateCancer2Gene_RNA_lib, OpenTargets_ProstateCancer2Gene_lit_lib, 
-                                        OpenTargets_ProstateCancer2Gene_SM_lib,
+                                        OpenTargets_ProstateCancer2Gene_RNA_lib, OpenTargets_ProstateCancer2Gene_SM_lib,
                                         Enrichr_GeoProstateCancerSignatures_Up, Enrichr_GeoProstateCancerSignatures_Down,
                                         Intogen_ProstateCancer2Gene_lib, ThETA_ProstateCancer2Gene_lib)
 

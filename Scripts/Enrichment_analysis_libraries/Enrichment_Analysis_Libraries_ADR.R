@@ -51,6 +51,7 @@ ADReCS_Gene_ADR <- na.exclude(ADReCS_Gene_ADR)
 ADReCS_Gene_ADR_level4 <- ADReCS_Gene_ADR[lengths(strsplit(ADReCS_Gene_ADR$ADR.ID, split = "\\."))==4,]
 
 ADReCS_ADR2Gene_level4_lib <- split(x = ADReCS_Gene_ADR_level4$ensembl_gene_id, f = ADReCS_Gene_ADR_level4$ADR.Term)
+ADReCS_ADR2Gene_level4_lib <- ADReCS_ADR2Gene_level4_lib[lengths(ADReCS_ADR2Gene_level4_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(ADReCS_ADR2Gene_level4_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level4_lib.rds")
@@ -58,6 +59,7 @@ saveRDS(ADReCS_ADR2Gene_level4_lib, "InputFiles/Enrichment_analysis_libraries/AD
 ### Level 3 ADR IDs library
 ADReCS_Gene_ADR_level3 <- ADReCS_Gene_ADR[lengths(strsplit(ADReCS_Gene_ADR$ADR.ID, split = "\\."))==3,]
 ADReCS_ADR2Gene_level3_lib <- split(x = ADReCS_Gene_ADR_level3$ensembl_gene_id, f = ADReCS_Gene_ADR_level3$ADR.Term)
+ADReCS_ADR2Gene_level3_lib <- ADReCS_ADR2Gene_level3_lib[lengths(ADReCS_ADR2Gene_level3_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(ADReCS_ADR2Gene_level3_lib, "InputFiles/Enrichment_analysis_libraries/ADReCS_ADR2Gene_level3_lib.rds")

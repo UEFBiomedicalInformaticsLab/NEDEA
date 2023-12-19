@@ -70,6 +70,9 @@ for(pathway in CHG_pathways){
   tmp <- gsub("* - Homo sapiens \\(human\\)*", "", tmp)
   CHG_keggPath2Gene_lib[[tmp]] <- sort(na.exclude(unique(response$ensembl_gene_id)))
 }
+
+CHG_keggPath2Gene_lib <- CHG_keggPath2Gene_lib[lengths(CHG_keggPath2Gene_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(CHG_keggPath2Gene_lib, "InputFiles/Enrichment_analysis_libraries/CHG_keggPath2Gene_lib.rds")
 
@@ -113,6 +116,14 @@ for(pathway_subject in unique(SMPDb_pathways$Subject)){
       print(paste0("File not found: ", path))
     }
   }
+}
+
+
+
+for(pathway_subject in names(SMPDb_Pathway2Gene)){
+  tmp1 <- SMPDb_Pathway2Gene[[pathway_subject]]
+  tmp1 <- tmp1[lengths(tmp1) >= 5]
+  SMPDb_Pathway2Gene[[pathway_subject]] <- tmp1
 }
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}

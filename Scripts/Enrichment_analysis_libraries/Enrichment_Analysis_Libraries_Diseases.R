@@ -63,6 +63,7 @@ DisGeNET_Gene_Disease <- na.exclude(DisGeNET_data[DisGeNET_data$diseaseType == "
 DisGeNET_Gene_Disease$diseaseName <- paste0(DisGeNET_Gene_Disease$diseaseName, " (", DisGeNET_Gene_Disease$diseaseId, ")")
 
 DisGeNET_Disease2Gene_lib <- split(x = DisGeNET_Gene_Disease$ensembl_gene_id, f = DisGeNET_Gene_Disease$diseaseName)
+DisGeNET_Disease2Gene_lib <- DisGeNET_Disease2Gene_lib[lengths(DisGeNET_Disease2Gene_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(DisGeNET_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
@@ -74,6 +75,7 @@ DisGeNET_Gene_Phenotype <- na.exclude(DisGeNET_data[DisGeNET_data$diseaseType ==
 DisGeNET_Gene_Phenotype$diseaseName <- paste0(DisGeNET_Gene_Phenotype$diseaseName, " (", DisGeNET_Gene_Phenotype$diseaseId, ")")
 
 DisGeNET_Phenotype2Gene_lib <- split(x = DisGeNET_Gene_Phenotype$ensembl_gene_id, f = DisGeNET_Gene_Phenotype$diseaseName)
+DisGeNET_Phenotype2Gene_lib <- DisGeNET_Phenotype2Gene_lib[lengths(DisGeNET_Phenotype2Gene_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(DisGeNET_Phenotype2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_Phenotype2Gene_lib.rds")
@@ -85,6 +87,7 @@ DisGeNET_Gene_DiseaseGroup <- na.exclude(DisGeNET_data[DisGeNET_data$diseaseType
 DisGeNET_Gene_DiseaseGroup$diseaseName <- paste0(DisGeNET_Gene_DiseaseGroup$diseaseName, " (", DisGeNET_Gene_DiseaseGroup$diseaseId, ")")
 
 DisGeNET_DiseaseGroup2Gene_lib <- split(x = DisGeNET_Gene_DiseaseGroup$ensembl_gene_id, f = DisGeNET_Gene_DiseaseGroup$diseaseName)
+DisGeNET_DiseaseGroup2Gene_lib <- DisGeNET_DiseaseGroup2Gene_lib[lengths(DisGeNET_DiseaseGroup2Gene_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(DisGeNET_DiseaseGroup2Gene_lib, "InputFiles/Enrichment_analysis_libraries/DisGeNET_DiseaseGroup2Gene_lib.rds")
@@ -133,6 +136,8 @@ OpenTargets_Target_Disease_GA$diseaseLabel  <- OpenTargets_Diseases$name[match(O
 OpenTargets_Target_Disease_GA$diseaseLabel <- paste0(OpenTargets_Target_Disease_GA$diseaseLabel, " (", OpenTargets_Target_Disease_GA$diseaseId, ")")
 OpenTargets_Disease2Gene_GA_lib <- split(OpenTargets_Target_Disease_GA$targetId, OpenTargets_Target_Disease_GA$diseaseLabel)
 
+OpenTargets_Disease2Gene_GA_lib <- OpenTargets_Disease2Gene_GA_lib[lengths(OpenTargets_Disease2Gene_GA_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(OpenTargets_Disease2Gene_GA_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
 
@@ -148,6 +153,8 @@ OpenTargets_Target_Disease_RNA$diseaseLabel  <- OpenTargets_Diseases$name[match(
 OpenTargets_Target_Disease_RNA$diseaseLabel <- paste0(OpenTargets_Target_Disease_RNA$diseaseLabel, " (", OpenTargets_Target_Disease_RNA$diseaseId, ")")
 OpenTargets_Disease2Gene_RNA_lib <- split(OpenTargets_Target_Disease_RNA$targetId, OpenTargets_Target_Disease_RNA$diseaseLabel)
 
+OpenTargets_Disease2Gene_RNA_lib <- OpenTargets_Disease2Gene_RNA_lib[lengths(OpenTargets_Disease2Gene_RNA_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(OpenTargets_Disease2Gene_RNA_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
 
@@ -162,6 +169,9 @@ OpenTargets_Target_Disease_lit <- OpenTargets_Target_Disease_lit[OpenTargets_Tar
 OpenTargets_Target_Disease_lit$diseaseLabel  <- OpenTargets_Diseases$name[match(OpenTargets_Target_Disease_lit$diseaseId, OpenTargets_Diseases$id)]
 OpenTargets_Target_Disease_lit$diseaseLabel <- paste0(OpenTargets_Target_Disease_lit$diseaseLabel, " (", OpenTargets_Target_Disease_lit$diseaseId, ")")
 OpenTargets_Disease2Gene_lit_lib <- split(OpenTargets_Target_Disease_lit$targetId, OpenTargets_Target_Disease_lit$diseaseLabel)
+
+OpenTargets_Disease2Gene_lit_lib <- OpenTargets_Disease2Gene_lit_lib[lengths(OpenTargets_Disease2Gene_lit_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(OpenTargets_Disease2Gene_lit_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
 
@@ -176,6 +186,9 @@ OpenTargets_Target_Disease_SM <- OpenTargets_Target_Disease_SM[OpenTargets_Targe
 OpenTargets_Target_Disease_SM$diseaseLabel  <- OpenTargets_Diseases$name[match(OpenTargets_Target_Disease_SM$diseaseId, OpenTargets_Diseases$id)]
 OpenTargets_Target_Disease_SM$diseaseLabel <- paste0(OpenTargets_Target_Disease_SM$diseaseLabel, " (", OpenTargets_Target_Disease_SM$diseaseId, ")")
 OpenTargets_Disease2Gene_SM_lib <- split(OpenTargets_Target_Disease_SM$targetId, OpenTargets_Target_Disease_SM$diseaseLabel)
+
+OpenTargets_Disease2Gene_SM_lib <- OpenTargets_Disease2Gene_SM_lib[lengths(OpenTargets_Disease2Gene_SM_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(OpenTargets_Disease2Gene_SM_lib, "InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
 
@@ -232,6 +245,8 @@ Intogen_data$CANCER_TYPE <- paste0(Intogen_data$CANCER_NAME, " (", Intogen_data$
 Intogen_Disease2Gene_lib <- split(Intogen_data$ensembl_gene_id, f = Intogen_data$CANCER_TYPE)
 Intogen_Disease2Gene_lib <- lapply(Intogen_Disease2Gene_lib, unique)
 
+Intogen_Disease2Gene_lib <- Intogen_Disease2Gene_lib[lengths(Intogen_Disease2Gene_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(Intogen_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
 
@@ -266,6 +281,7 @@ for(i in 1:nrow(Enrichr_GeoDiseaseSignatures_Up)){
   names(result)[i] <- Enrichr_GeoDiseaseSignatures_Up[i,1]
 }
 Enrichr_GeoDiseaseSignatures_Up <- result
+Enrichr_GeoDiseaseSignatures_Up <- Enrichr_GeoDiseaseSignatures_Up[lengths(Enrichr_GeoDiseaseSignatures_Up) >= 5]
 
 Enrichr_GeoDiseaseSignatures_Down <- read.table("Databases/Enrichr/Disease_Signatures_from_GEO_down_2014.txt", sep = "\t", quote = "", fill = TRUE)
 result <- list()
@@ -277,6 +293,7 @@ for(i in 1:nrow(Enrichr_GeoDiseaseSignatures_Down)){
   names(result)[i] <- Enrichr_GeoDiseaseSignatures_Down[i,1]
 }
 Enrichr_GeoDiseaseSignatures_Down <- result
+Enrichr_GeoDiseaseSignatures_Down <- Enrichr_GeoDiseaseSignatures_Down[lengths(Enrichr_GeoDiseaseSignatures_Down) >= 5]
 
 Enrichr_Disease2Gene_GeoDiseaseSig_lib <- list()
 Enrichr_Disease2Gene_GeoDiseaseSig_lib$Up <- Enrichr_GeoDiseaseSignatures_Up
@@ -311,6 +328,8 @@ PharmGKB_Gene_Disease <- na.exclude(PharmGKB_Gene_Disease)
 
 PharmGKB_Disease2Gene_lib <- split(x = PharmGKB_Gene_Disease$Entity1_ensembl_gene_id, f = PharmGKB_Gene_Disease$Entity2_name)
 
+PharmGKB_Disease2Gene_lib <- PharmGKB_Disease2Gene_lib[lengths(PharmGKB_Disease2Gene_lib) >= 5]
+
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(PharmGKB_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
 
@@ -342,6 +361,7 @@ CTD_Gene_Disease <- CTD_Gene_Disease[!is.na(CTD_Gene_Disease$ensembl_gene_id),]
 CTD_Gene_Disease$DiseaseName <- paste0(CTD_Gene_Disease$DiseaseName, " (", CTD_Gene_Disease$DiseaseID, ")")
 CTD_Disease2Gene_lib <- split(x = CTD_Gene_Disease$ensembl_gene_id, f = CTD_Gene_Disease$DiseaseName)
 
+CTD_Disease2Gene_lib <- CTD_Disease2Gene_lib[lengths(CTD_Disease2Gene_lib) >= 5]
 
 if(!dir.exists("InputFiles/Enrichment_analysis_libraries/")){dir.create("InputFiles/Enrichment_analysis_libraries/", recursive = TRUE)}
 saveRDS(CTD_Disease2Gene_lib, "InputFiles/Enrichment_analysis_libraries/CTD_Disease2Gene_lib.rds")

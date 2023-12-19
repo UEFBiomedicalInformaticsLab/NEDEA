@@ -23,13 +23,6 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   # Read the enrichment library
   enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
   
-  # Extend the library
-  # extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
-  #                                                                   input_network = input_network, 
-  #                                                                   ST_type = "KB", 
-  #                                                                   nproc = 10)
-  
-  
   extended_enrichment_lib <- func_extendEnrichmentLib_byRWR(enrichment_library = enrichment_lib, 
                                                             input_network = input_network, 
                                                             nproc = 10)
@@ -44,10 +37,6 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 # Extend the safety library
 print(paste0(" -- Extending safety library"))
 enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
-# extended_enrichment_lib <- func_extendEnrichmentLib_bySteinerTree(enrichment_library = enrichment_lib, 
-#                                                                   input_network = input_network, 
-#                                                                   ST_type = "SP", 
-#                                                                   nproc = 10)
 
 extended_enrichment_lib <- func_extendEnrichmentLib_byRWR(enrichment_library = enrichment_lib,
                                                           input_network = input_network,

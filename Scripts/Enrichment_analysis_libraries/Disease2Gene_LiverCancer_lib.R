@@ -31,7 +31,7 @@ DisGeNET_LiverCancer2Gene_lib <- DisGeNET_LiverCancer2Gene_lib[grep("hereditary|
                                                                     names(DisGeNET_LiverCancer2Gene_lib), 
                                                                     ignore.case = TRUE, 
                                                                     invert = TRUE)] 
-names(DisGeNET_LiverCancer2Gene_lib) <- paste0(names(DisGeNET_LiverCancer2Gene_lib), "[DisGeNET_curated]")
+names(DisGeNET_LiverCancer2Gene_lib) <- paste0(names(DisGeNET_LiverCancer2Gene_lib), " [DisGeNET_curated]")
 
 
 
@@ -48,7 +48,7 @@ OpenTargets_LiverCancer2Gene_GA_lib <- OpenTargets_LiverCancer2Gene_GA_lib[grep(
                                                                                 names(OpenTargets_LiverCancer2Gene_GA_lib), 
                                                                                 ignore.case = TRUE, 
                                                                                 invert = TRUE)] 
-names(OpenTargets_LiverCancer2Gene_GA_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_GA_lib), "[OpenTargets_GA]")
+names(OpenTargets_LiverCancer2Gene_GA_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_GA_lib), " [OpenTargets_GA]")
 
 
 OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
@@ -62,7 +62,7 @@ OpenTargets_LiverCancer2Gene_RNA_lib <- OpenTargets_LiverCancer2Gene_RNA_lib[gre
                                                                                   names(OpenTargets_LiverCancer2Gene_RNA_lib), 
                                                                                   ignore.case = TRUE, 
                                                                                   invert = TRUE)] 
-names(OpenTargets_LiverCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_RNA_lib), "[OpenTargets_RNA]")
+names(OpenTargets_LiverCancer2Gene_RNA_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_RNA_lib), " [OpenTargets_RNA]")
 
 
 OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
@@ -76,7 +76,7 @@ OpenTargets_LiverCancer2Gene_lit_lib <- OpenTargets_LiverCancer2Gene_lit_lib[gre
                                                                                   names(OpenTargets_LiverCancer2Gene_lit_lib), 
                                                                                   ignore.case = TRUE, 
                                                                                   invert = TRUE)] 
-names(OpenTargets_LiverCancer2Gene_lit_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_lit_lib), "[OpenTargets_literature]")
+names(OpenTargets_LiverCancer2Gene_lit_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_lit_lib), " [OpenTargets_literature]")
 
 
 OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
@@ -90,7 +90,7 @@ OpenTargets_LiverCancer2Gene_SM_lib <- OpenTargets_LiverCancer2Gene_SM_lib[grep(
                                                                                 names(OpenTargets_LiverCancer2Gene_SM_lib), 
                                                                                 ignore.case = TRUE, 
                                                                                 invert = TRUE)] 
-names(OpenTargets_LiverCancer2Gene_SM_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_SM_lib), "[OpenTargets_SM]")
+names(OpenTargets_LiverCancer2Gene_SM_lib) <- paste0(names(OpenTargets_LiverCancer2Gene_SM_lib), " [OpenTargets_SM]")
 
 
 ## Enrichr
@@ -107,7 +107,7 @@ Enrichr_GeoLiverCancerSignatures_Up <- Enrichr_GeoLiverCancerSignatures_Up[grep(
                                                                                 names(Enrichr_GeoLiverCancerSignatures_Up), 
                                                                                 ignore.case = TRUE, 
                                                                                 invert = TRUE)] 
-names(Enrichr_GeoLiverCancerSignatures_Up) <- paste0(names(Enrichr_GeoLiverCancerSignatures_Up), "[Enrichr_GeoDiseaseSig_Up]")
+names(Enrichr_GeoLiverCancerSignatures_Up) <- paste0(names(Enrichr_GeoLiverCancerSignatures_Up), " [Enrichr_GeoDiseaseSig_Up]")
 
 Enrichr_GeoLiverCancerSignatures_Down <- Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down[grep("liver|hepato|hepatic", 
                                                                                           names(Enrichr_Disease2Gene_GeoDiseaseSig_lib$Down), 
@@ -119,7 +119,7 @@ Enrichr_GeoLiverCancerSignatures_Down <- Enrichr_GeoLiverCancerSignatures_Down[g
                                                                                     names(Enrichr_GeoLiverCancerSignatures_Down), 
                                                                                     ignore.case = TRUE, 
                                                                                     invert = TRUE)] 
-names(Enrichr_GeoLiverCancerSignatures_Down) <- paste0(names(Enrichr_GeoLiverCancerSignatures_Down), "[Enrichr_GeoDiseaseSig_Down]")
+names(Enrichr_GeoLiverCancerSignatures_Down) <- paste0(names(Enrichr_GeoLiverCancerSignatures_Down), " [Enrichr_GeoDiseaseSig_Down]")
 
 
 
@@ -135,7 +135,7 @@ Intogen_LiverCancer2Gene_lib <- Intogen_LiverCancer2Gene_lib[grep("hereditary|fa
                                                                   names(Intogen_LiverCancer2Gene_lib), 
                                                                   ignore.case = TRUE, 
                                                                   invert = TRUE)] 
-names(Intogen_LiverCancer2Gene_lib) <- paste0(names(Intogen_LiverCancer2Gene_lib), "[Intogen]")
+names(Intogen_LiverCancer2Gene_lib) <- paste0(names(Intogen_LiverCancer2Gene_lib), " [Intogen]")
 
 
 
@@ -152,7 +152,7 @@ PharmGKB_LiverCancer2Gene_lib <- PharmGKB_LiverCancer2Gene_lib[grep("hereditary|
                                                                     names(PharmGKB_LiverCancer2Gene_lib),
                                                                     ignore.case = TRUE,
                                                                     invert = TRUE)]
-names(PharmGKB_LiverCancer2Gene_lib) <- paste0(names(PharmGKB_LiverCancer2Gene_lib), "[PharmGKB_associated]")
+names(PharmGKB_LiverCancer2Gene_lib) <- paste0(names(PharmGKB_LiverCancer2Gene_lib), " [PharmGKB_associated]")
 
 
 
@@ -181,7 +181,7 @@ LiverCancer_Tscores <- tissue.specific.scores(disease_genes = LiverCancer_genes$
 
 ThETA_LiverCancer2Gene_lib <- row.names(LiverCancer_Tscores[order(LiverCancer_Tscores$avg_tissue_score, decreasing = TRUE)[1:50],])
 ThETA_LiverCancer2Gene_lib <- list(entrezId_2_ensemblId[entrezId_2_ensemblId$gene_id %in% ThETA_LiverCancer2Gene_lib, c("ensembl_id")])
-names(ThETA_LiverCancer2Gene_lib) <- paste0("hepatocellular carcinoma (EFO_0000182)", "[ThETA]")
+names(ThETA_LiverCancer2Gene_lib) <- paste0("hepatocellular carcinoma (EFO_0000182)", " [ThETA]")
 
 
 
