@@ -20,7 +20,9 @@ option_list = list(
   make_option(c("--disease"), type = "character", default = NULL, 
               help = "Name of the disease. The disease name will also be used as file name. e.g.: LungCancer, BreastCancer, etc.", metavar = "character"),
   make_option(c("--drug_target_type"), type = "character", default = "known", 
-              help = "The type of drug target to use. Possible values: known, PS, SIGNOR, NPA, RI, KEGG, all. Default: known", metavar = "character")
+              help = "The type of drug target to use. Possible values: known, PS, SIGNOR, NPA, RI, KEGG, all. Default: known", metavar = "character"),
+  make_option(c("--nproc"), type = "numeric", default = NULL, 
+              help = "Number of processes to use. Default: NULL", metavar = "numeric")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -36,10 +38,21 @@ if(!opt$drug_target_type %in% c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "a
   stop("--drug_target_type should be: known, PS, SIGNOR, NPA, RI, KEGG, all", call. = FALSE)
 }
 
+if(!is.null(opt$nproc)){
+  if(!is.numeric(opt$nproc) | (opt$nproc %% 1 != 0)){
+    print_help(opt_parser)
+    stop("--nproc should be be an integer.", call.=FALSE)
+  }
+}
+
+if(is.null(opt$nproc)){
+  opt$nproc <- detectCores()/2
+}
 
 # Define global options for this script 
 disease <- opt$disease
 drug_target_type <- opt$drug_target_type
+nproc <- opt$nproc
 
 
 cat("\n\nUsing the following parameters: ")
@@ -65,7 +78,8 @@ names(enrichment_lib) <- paste0("[KEGG] ", names(enrichment_lib))
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib,
                                       disease = disease,
-                                      drug_target_type = drug_target_type)
+                                      drug_target_type = drug_target_type,
+                                      nproc = nproc)
 
 fgsea_result_final[["kegg"]] <- fgsea_result
 
@@ -79,7 +93,8 @@ names(enrichment_lib) <- paste0("[SMPDB_DRUG_METABOLISM] ", names(enrichment_lib
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib,
                                       disease = disease,
-                                      drug_target_type = drug_target_type)
+                                      drug_target_type = drug_target_type,
+                                      nproc = nproc)
 
 fgsea_result_final[["smpdbDrugMet"]] <- fgsea_result
 
@@ -93,7 +108,8 @@ names(enrichment_lib) <- paste0("[SMPDB_DRUG_ACTION] ", names(enrichment_lib))
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
                                       enrichment_library = enrichment_lib,
                                       disease = disease,
-                                      drug_target_type = drug_target_type)
+                                      drug_target_type = drug_target_type,
+                                      nproc = nproc)
 
 fgsea_result_final[["smpdbDrugAct"]] <- fgsea_result
 
