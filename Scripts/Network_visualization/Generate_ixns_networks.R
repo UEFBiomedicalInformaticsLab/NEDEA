@@ -4,8 +4,8 @@ source("Scripts/Functions/Functions_RWR.R")
 
 
 disease <- "BreastCancer"
-drug_target_type <- "KEGG"
-drug_comb_name <- "DB07101_DB05482"
+drug_target_type <- "known"
+drug_comb_name <- "DB11689_DB00675"
 
 show_efficacy <- TRUE
 efficacy_lib_select <-"Breast adenocarcinoma (C0858252)[DisGeNET_curated]"
