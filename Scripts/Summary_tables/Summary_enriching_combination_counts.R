@@ -15,7 +15,7 @@ cl <- makeCluster(10)
 registerDoParallel(cl) 
 
 summary_df <- foreach(drug_target_type=c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all"), 
-                               .packages = c("tidyverse")) %:%
+                      .packages = c("tidyverse")) %:%
   foreach(disease=c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer"), 
           .packages = c("tidyverse")) %:%
   foreach(feature_type=c("efficacy", "safety", "combinedEfficacySafety", "kegg", "smpdbDrugMet", "smpdbDrugAct", "misc"), 
@@ -57,7 +57,7 @@ summary_df <- foreach(drug_target_type=c("known", "KEGG", "NPA", "PS", "RI", "SI
               tmp1 <- fgsea_result %>% 
                 rowwise() %>% 
                 mutate(all_total_NES = sum(c_across(!"comb_name"))
-                       ) %>%
+                ) %>%
                 select(starts_with("all_total_"))
               
               tmp2 <- colSums(tmp1 != 0)
@@ -93,15 +93,27 @@ summary_df <- foreach(drug_target_type=c("known", "KEGG", "NPA", "PS", "RI", "SI
               tmp4 <- colSums(tmp3 != 0)
             }
             
-            tmp5 <- data.frame(feature_type = feature_type,
-                               drug_target_type = drug_target_type,
-                               disease = disease,
-                               all_combs = nrow(tmp1),
-                               rbind(tmp2), 
-                               filtered_combs = nrow(tmp3),
-                               rbind(tmp4))
-            row.names(tmp5) <- NULL
-            tmp5
+            
+            # Check the number of drug combinations per class having NES
+            tmp5 <- fgsea_result %>% select(-comb_name) %>% rowSums()  
+            names(tmp5) <- fgsea_result$comb_name
+            tmp5 <- as.data.frame(tmp5)
+            tmp5 <- merge(drugCombs_cat, tmp5, by.x = "comb_name", by.y = 0)
+            tmp5 <- tmp5[tmp5$tmp5 != 0, ]
+            tmp5$class_EffAdv <- paste0(tmp5$class_EffAdv, "_with_NES")
+            tmp5 <- table(tmp5$class_EffAdv)
+
+            
+            res_df <- data.frame(feature_type = feature_type,
+                                 drug_target_type = drug_target_type,
+                                 disease = disease,
+                                 all_combs = nrow(tmp1),
+                                 rbind(tmp2), 
+                                 filtered_combs = nrow(tmp3),
+                                 rbind(tmp4),
+                                 rbind(tmp5))
+            row.names(res_df) <- NULL
+            res_df
             
             
           }
