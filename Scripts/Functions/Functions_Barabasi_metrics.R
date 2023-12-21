@@ -63,8 +63,7 @@ calc_set_pair_distances <- function(gene_network, geneSet1, geneSet2){
                                  algorithm = "dijkstra")
     
     distance_matrix[is.infinite(distance_matrix)] <- NA
-    distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
-    
+
     # minimum distances from each gene in geneSet1
     geneSet_min_distance <- data.frame()
     for(gene in row.names(distance_matrix)){
@@ -144,8 +143,7 @@ Barabasi_proximity_closest <- function(gene_network, geneSet1, geneSet2){
       
       
       distance_matrix[is.infinite(distance_matrix)] <- NA
-      distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
-      
+
       
       # sum of minimum distances from each geneSet1 genes to the geneSet2 genes
       geneSet1_min_distance <- data.frame()
@@ -200,8 +198,7 @@ Barabasi_proximity_shortest <- function(gene_network, geneSet1, geneSet2){
                                    algorithm = "dijkstra")
       
       distance_matrix[is.infinite(distance_matrix)] <- NA
-      # distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
-      
+
       proximity_shortest <- sum(distance_matrix, na.rm = TRUE)/(length(geneSet1) * length(geneSet2))
       
       return(proximity_shortest)
@@ -312,8 +309,7 @@ Barabasi_proximity_kernel <- function(gene_network, geneSet1, geneSet2){
       
       
       distance_matrix[is.infinite(distance_matrix)] <- NA
-      # distance_matrix[distance_matrix == 0] <- NA # Since distance from the same gene will be 0
-      
+
       
       transform_matrix <- function(x, size){
         y = exp(-(x+1))/size
