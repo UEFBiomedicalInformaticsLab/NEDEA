@@ -5,7 +5,7 @@ func_calculate_proximity <- function(input_network = input_network,
                                      disease = disease,
                                      drug_target_type = drug_target_type,
                                      nproc = 5){
-
+  
   require(org.Hs.eg.db, quietly = TRUE)
   source("Scripts/Functions/Functions_Barabasi_metrics.R")
   
@@ -25,72 +25,65 @@ func_calculate_proximity <- function(input_network = input_network,
                                         "ext_SIGNOR_targets", "ext_NPA_targets", 
                                         "ext_RI_targets", "ext_KEGG_targets") })
   
-  
   result <- foreach(drugComb=drugCombs_targets$comb_name, 
                     .combine = "rbind", 
+                    .inorder = FALSE,
                     .packages = c("org.Hs.eg.db", "igraph"), 
                     .verbose = FALSE) %:%
     foreach(lib_name=names(enrichment_library), 
             .combine = "rbind", 
+            .inorder = FALSE,
+            .packages = c("org.Hs.eg.db", "igraph"), 
+            .verbose = FALSE) %:% 
+    foreach(prox_type=c("Separation", "Closest", "Shortest", "Centre", "Kernel"), 
+            .combine = "rbind",
+            .inorder = FALSE,
             .packages = c("org.Hs.eg.db", "igraph"), 
             .verbose = FALSE) %dopar% {
-      
-      source("Scripts/Functions/Functions_Barabasi_metrics.R")
-      
-      
-      # Extract the targets of the drug combination
-      if(drug_target_type == "all"){
-        target_set <- drugCombs_targets[drugCombs_targets$comb_name %in% drugComb, drug_target_col, drop = FALSE]
-        target_set <- apply(target_set, 1, function(x){paste(x, collapse = ",")})
-      }else{
-        target_set <- drugCombs_targets[drugCombs_targets$comb_name %in% drugComb, drug_target_col, drop = TRUE]
-      }
-      target_set <- unique(unlist(strsplit(target_set, ",")))
-      suppressMessages(target_set <- select(org.Hs.eg.db, 
-                                            keys = target_set, 
-                                            columns = "ENSEMBL", 
-                                            keytype = "SYMBOL"))
-      target_set <- target_set$ENSEMBL
-      
-      
-      # Extract the enrichment library genes
-      enrichment_library_genes <- enrichment_library[[lib_name]]
-      
-      
-      # Calculate the proximities
-      prox_separation <- Barabasi_proximity_separation(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)
-      prox_closest <- Barabasi_proximity_closest(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)
-      prox_shortest <- Barabasi_proximity_shortest(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)
-      prox_centre <- Barabasi_proximity_centre(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)
-      prox_kernel <- Barabasi_proximity_kernel(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)
-      
-      
-      # Prepare as dataframe
-      tmp1 <- data.frame("drugComb" = drugComb,
-                         "lib_name" = lib_name,
-                         "prox_Separation" = prox_separation,
-                         "prox_Closest" = prox_closest,
-                         "prox_Shortest" = prox_shortest,
-                         "prox_Centre" = prox_centre,
-                         "prox_Kernel" = prox_kernel)
-      
-      tmp1
-    }
+              
+              source("Scripts/Functions/Functions_Barabasi_metrics.R")
+              
+              
+              # Extract the targets of the drug combination
+              if(drug_target_type == "all"){
+                target_set <- drugCombs_targets[drugCombs_targets$comb_name %in% drugComb, drug_target_col, drop = FALSE]
+                target_set <- apply(target_set, 1, function(x){paste(x, collapse = ",")})
+              }else{
+                target_set <- drugCombs_targets[drugCombs_targets$comb_name %in% drugComb, drug_target_col, drop = TRUE]
+              }
+              target_set <- unique(unlist(strsplit(target_set, ",")))
+              suppressMessages(target_set <- select(org.Hs.eg.db, 
+                                                    keys = target_set, 
+                                                    columns = "ENSEMBL", 
+                                                    keytype = "SYMBOL"))
+              target_set <- target_set$ENSEMBL
+              
+              # Extract the enrichment library genes
+              enrichment_library_genes <- enrichment_library[[lib_name]]
+              
+              # Calculate the proximities
+              if(prox_type == "Separation"){  proximity <- Barabasi_proximity_separation(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)  }
+              if(prox_type == "Closest"){  proximity <- Barabasi_proximity_closest(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)  }
+              if(prox_type == "Shortest"){  proximity <- Barabasi_proximity_shortest(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)  }
+              if(prox_type == "Centre"){  proximity <- Barabasi_proximity_centre(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)  }
+              if(prox_type == "Kernel"){  proximity <- Barabasi_proximity_kernel(gene_network = input_network, geneSet1 = target_set, geneSet2 = enrichment_library_genes)  }
+              
+              # Prepare as dataframe
+              tmp1 <- data.frame("drugComb" = drugComb,
+                                 "lib_name" = lib_name,
+                                 "proximity_type" = prox_type,
+                                 "proximity" = proximity)
+              
+              tmp1
+            }
   
-
   
-
   # Restructure the result as matrix
-  result_list <- list()
-  for(proximity in c("Centre", "Closest", "Kernel", "Separation", "Shortest")){
-    tmp1 <- result[, c("drugComb", "lib_name", paste0("prox_", proximity))]
-    tmp1 <- pivot_wider(tmp1, names_from = "drugComb", values_from = paste0("prox_", proximity))
-    tmp1 <- column_to_rownames(tmp1, "lib_name")
-    result_list[[proximity]] <- tmp1
-  }
+  result_list <- split(x = result, f = result$proximity_type)
+  result_list <- lapply(result_list, function(x){
+    x %>% dplyr::select(c("drugComb", "lib_name", "proximity")) %>% pivot_wider(names_from = "drugComb", values_from = "proximity")
+  })
   
   return(result_list)
-
+  
 }
-
-
