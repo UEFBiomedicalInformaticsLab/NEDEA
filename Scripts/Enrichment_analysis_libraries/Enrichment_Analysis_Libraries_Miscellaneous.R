@@ -33,7 +33,7 @@ geneSymbol_2_ensemblId <- merge(entrezId_2_ensemblId, entrezId_2_geneSymbol, by 
 # Retrieve the gene categories
 if(!dir.exists("Databases/DGIdb")){dir.create("Databases/DGIdb", recursive = TRUE)}
 if(!file.exists("Databases/DGIdb/categories.tsv")){
-  download.file(url = "https://www.dgidb.org/data/monthly_tsvs/2022-Feb/categories.tsv",
+  download.file(url = "https://old.dgidb.org/data/monthly_tsvs/2022-Feb/categories.tsv",
                 destfile = "Databases/DGIdb/categories.tsv", method = "wget")
 }
 

@@ -10,7 +10,7 @@ set.seed(5081)
 library(unixtools)
 library(optparse)
 library(tidyverse)
-
+library(ggpubr)
 
 # Set temporary directory
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
@@ -179,34 +179,48 @@ plot_data <- pivot_longer(data = plot_data,
                           values_to = "value")
 
 
-# Plot the NES as violin plot
+# Plot the NES as box plot
 if(isTRUE(top9varying)){
-  if(!dir.exists("OutputFiles/Plots/NES_violinPlot_top9Var/")){
-    dir.create("OutputFiles/Plots/NES_violinPlot_top9Var/", recursive = TRUE)
+  if(!dir.exists("OutputFiles/Plots/NES_boxPlot_top9Var/")){
+    dir.create("OutputFiles/Plots/NES_boxPlot_top9Var/", recursive = TRUE)
   }
-  tiff(paste0("OutputFiles/Plots/NES_violinPlot_top9Var/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
+  tiff(paste0("OutputFiles/Plots/NES_boxPlot_top9Var/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
        width = 30,
-       height = 15,
+       height = 20,
        units = "cm", compression = "lzw", res = 1200)
 }
 
 if(isFALSE(top9varying)){
-  if(!dir.exists("OutputFiles/Plots/NES_violinPlot_all/")){
-    dir.create("OutputFiles/Plots/NES_violinPlot_all/", recursive = TRUE)
+  if(!dir.exists("OutputFiles/Plots/NES_boxPlot_all/")){
+    dir.create("OutputFiles/Plots/NES_boxPlot_all/", recursive = TRUE)
   }
-  tiff(paste0("OutputFiles/Plots/NES_violinPlot_all/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
+  tiff(paste0("OutputFiles/Plots/NES_boxPlot_all/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
        width = 30, 
-       height = length(unique(plot_data$feature))/6 + 10,
+       height = length(unique(plot_data$feature))/6 + 20,
        units = "cm", compression = "lzw", res = 1200)
 }
 
+
+stat_comparisons <- combn(unique(plot_data$category), 2, simplify = FALSE)
+stat_comparisons <- lapply(stat_comparisons, as.character)
+
+
 ggplot(plot_data, aes(x = category, y = value)) +
-  geom_violin(fill = "grey", lwd = 0.1) +
+  geom_boxplot(width = 0.5, 
+               lwd = 0.1,
+               outlier.shape = 3, 
+               outlier.size = 1) +
   facet_wrap(~ feature, scales = "free_y", labeller = label_wrap_gen(width = 30, 
                                                   multi_line = TRUE)) +
   stat_summary(fun = "mean",
                geom = "point",
                color = "red") +
+  stat_compare_means(label = "p.signif", 
+                     method = "wilcox.test", 
+                     hide.ns = TRUE, 
+                     comparisons = stat_comparisons, 
+                     vjust = 0.5, 
+                     color = "blue") +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),

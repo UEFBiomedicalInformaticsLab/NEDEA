@@ -60,7 +60,7 @@ plot_list <- list()
 
 
 for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
-  for(disease in c("BreastCancer", "LungCancer")){ # "BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer"
+  for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
     
     # Read the drug combination category
     drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
@@ -72,16 +72,19 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
     if(feature_type %in% c("efficacy", "safety", "combinedEfficacySafety")){
       proximity_result <- readRDS(paste0("OutputFiles/Network_proximity_results/netProx_EfficacySafety_", disease, "_", drug_target_type, ".rds"))
       proximity_result <- proximity_result[[feature_type]][[proximity_type]]
+      proximity_result <-  as.matrix(column_to_rownames(proximity_result, "lib_name"))
     }
     
     if(feature_type %in% c("kegg", "smpdbDrugMet", "smpdbDrugAct")){
       proximity_result <- readRDS(paste0("OutputFiles/Network_proximity_results/netProx_Pathway_", disease, "_", drug_target_type, ".rds"))
       proximity_result <- proximity_result[[feature_type]][[proximity_type]]
+      proximity_result <-  as.matrix(column_to_rownames(proximity_result, "lib_name"))
     }
     
     if(feature_type %in% c("misc")){
       proximity_result <- readRDS(paste0("OutputFiles/Network_proximity_results/netProx_Miscellaneous_", disease, "_", drug_target_type, ".rds"))
       proximity_result <- proximity_result[[feature_type]][[proximity_type]]
+      proximity_result <-  as.matrix(column_to_rownames(proximity_result, "lib_name"))
     }
     
     plot_data <- proximity_result

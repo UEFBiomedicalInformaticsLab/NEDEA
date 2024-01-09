@@ -129,9 +129,13 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR")){
       geom_boxplot(width = 0.5, lwd = 0.1, 
                    outlier.shape = 3, 
                    outlier.size = 0.5) +
+      stat_compare_means(aes(group = NES),
+                         label = "p.signif", 
+                         method = "wilcox.test", 
+                         hide.ns = TRUE, 
+                         vjust = 0.5, 
+                         color = "blue") +
       theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
-            # panel.grid = element_blank(),
-            # panel.spacing = unit(0.1, "cm"),
             text = element_text(size = 4),
             plot.title = element_text(hjust = 0.5, size = 4),
             axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5),
@@ -161,7 +165,7 @@ if(!dir.exists("OutputFiles/Plots/target_count_enriching_combs/")){
 
 
 tiff(paste0("OutputFiles/Plots/target_count_enriching_combs/target_count_enriching_combs_", feature_type, ".tiff"),
-     width = 30, height = 25,
+     width = 30, height = 30,
      units = "cm", compression = "lzw", res = 1200)
 
 
