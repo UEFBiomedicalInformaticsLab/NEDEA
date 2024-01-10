@@ -129,12 +129,12 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR")){
       geom_boxplot(width = 0.5, lwd = 0.1, 
                    outlier.shape = 3, 
                    outlier.size = 0.5) +
-      stat_compare_means(aes(group = NES),
-                         label = "p.signif", 
-                         method = "wilcox.test", 
-                         hide.ns = TRUE, 
-                         vjust = 0.5, 
-                         color = "blue") +
+      geom_pwc(aes(group = NES),
+               method = "wilcox_test",
+               label = "p.signif", 
+               hide.ns = TRUE, 
+               vjust = 0.5, 
+               color = "blue") +
       theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
             text = element_text(size = 4),
             plot.title = element_text(hjust = 0.5, size = 4),
@@ -154,7 +154,7 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR")){
            y = "Number of drug targets",
            color = "NES")
     
-      }}
+  }}
 
 
 

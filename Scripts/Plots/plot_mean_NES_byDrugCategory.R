@@ -201,9 +201,6 @@ if(isFALSE(top9varying)){
 }
 
 
-stat_comparisons <- combn(unique(plot_data$category), 2, simplify = FALSE)
-stat_comparisons <- lapply(stat_comparisons, as.character)
-
 
 ggplot(plot_data, aes(x = category, y = value)) +
   geom_boxplot(width = 0.5, 
@@ -211,16 +208,15 @@ ggplot(plot_data, aes(x = category, y = value)) +
                outlier.shape = 3, 
                outlier.size = 1) +
   facet_wrap(~ feature, scales = "free_y", labeller = label_wrap_gen(width = 30, 
-                                                  multi_line = TRUE)) +
+                                                                     multi_line = TRUE)) +
   stat_summary(fun = "mean",
                geom = "point",
                color = "red") +
-  stat_compare_means(label = "p.signif", 
-                     method = "wilcox.test", 
-                     hide.ns = TRUE, 
-                     comparisons = stat_comparisons, 
-                     vjust = 0.5, 
-                     color = "blue") +
+  geom_pwc(method = "wilcox_test",
+           label = "p.signif",
+           hide.ns = TRUE,
+           vjust = 0.5, 
+           color = "blue") +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
