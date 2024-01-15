@@ -63,7 +63,7 @@ drugCombs_cat <- merge(DrugBank_ddi, drugCombs_data,
 # Assign the drug combination categories
 drugCombs_cat$class_EffAdv <- NA
 drugCombs_cat[drugCombs_cat$Syn_level >= 3 & drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-drugCombs_cat[drugCombs_cat$Syn_level <= -3 & drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv  <- "Adv"
+drugCombs_cat[drugCombs_cat$Syn_level <= -2 & drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv  <- "Adv"
 
 # drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat$class_EffAdv), c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
 drugCombs_cat <- drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
