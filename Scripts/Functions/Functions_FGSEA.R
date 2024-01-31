@@ -67,7 +67,7 @@ func_run_FGSEA_on_RWR <- function(rwr_data, enrichment_library, disease, drug_ta
                                            nproc = nproc,
                                            BPPARAM = MulticoreParam(progressbar = FALSE))
       
-      enrichment_result$NES[which(enrichment_result$padj > 0.05)] <- 0
+      # enrichment_result$NES[which(enrichment_result$padj > 0.05)] <- 0
       
       enrichment_result_mat[enrichment_result$pathway, drugComb] <- enrichment_result$NES
       

@@ -273,7 +273,7 @@ plot_data_3 <- df_with_stats %>%
 plot_data <- merge(plot_data_1, plot_data_2, by = c("drug_row", "drug_col", "tissue_name", "SynergyType"))
 plot_data <- plot_data %>% left_join(plot_data_3, by = c("drug_row", "drug_col", "tissue_name"))
 
-plot_data <- plot_data[plot_data$tissue_name %in% c("breast", "kidney", "liver", "lung", "ovary", "prostate", "skin"), ]
+plot_data <- plot_data[plot_data$tissue_name %in% c("breast", "kidney", "lung", "ovary", "prostate", "skin"), ]
 
 plot_data$synergy_class <- as.factor(plot_data$synergy_class)
 plot_data$Syn_level <- as.factor(plot_data$Syn_level)

@@ -71,7 +71,7 @@ fgsea_result_final <- list()
 
 # FGSEA on efficacy library
 cat("\n--- Executing FGSEA on efficacy library")
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))
+enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
 names(enrichment_lib) <- paste0("[DISEASE] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
@@ -85,7 +85,7 @@ fgsea_result_final[["efficacy"]] <- fgsea_result
 
 # FGSEA on safety library
 cat("\n--- Executing FGSEA on safety library")
-enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")
+enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
 names(enrichment_lib) <- paste0("[ADR] ", names(enrichment_lib))
 
 fgsea_result <- func_run_FGSEA_on_RWR(rwr_data = rwr_result, 
@@ -99,9 +99,9 @@ fgsea_result_final[["safety"]] <- fgsea_result
 
 # FGSEA on combined efficacy-safety library
 cat("\n--- Executing FGSEA on combined efficacy-safety library")
-enrichment_lib_1 <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))
+enrichment_lib_1 <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/Disease2Gene_", disease, "_lib.rds"))
 names(enrichment_lib_1) <- paste0("[DISEASE] ", names(enrichment_lib_1))
-enrichment_lib_2 <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")
+enrichment_lib_2 <- readRDS("InputFiles/Enrichment_analysis_libraries/curatedAdr2Gene_lib.rds")
 names(enrichment_lib_2) <- paste0("[ADR] ", names(enrichment_lib_2))
 enrichment_lib <- c(enrichment_lib_1, enrichment_lib_2)
 

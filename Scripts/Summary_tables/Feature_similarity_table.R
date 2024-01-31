@@ -40,19 +40,19 @@ enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# Compile SMPDB (Drug Metabolsim) library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
-enrichment_lib <- enrichment_lib$`Drug Metabolism`
-names(enrichment_lib) <- paste0("[SMPDB_DrugMetabolism] ", names(enrichment_lib))
-enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
+# # Compile SMPDB (Drug Metabolsim) library
+# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+# enrichment_lib <- enrichment_lib$`Drug Metabolism`
+# names(enrichment_lib) <- paste0("[SMPDB_DrugMetabolism] ", names(enrichment_lib))
+# enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
-# Compile SMPDB (Drug Action) library
-enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
-enrichment_lib <- enrichment_lib$`Drug Action`
-names(enrichment_lib) <- paste0("[SMPDB_DrugAction] ", names(enrichment_lib))
-enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
+# # Compile SMPDB (Drug Action) library
+# enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_lib.rds"))
+# enrichment_lib <- enrichment_lib$`Drug Action`
+# names(enrichment_lib) <- paste0("[SMPDB_DrugAction] ", names(enrichment_lib))
+# enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 
 
