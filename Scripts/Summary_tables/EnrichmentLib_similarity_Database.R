@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Script to calculate the similarity between enrichment gene sets
+# Script to calculate the similarity between enrichment gene sets and genesets from the databases
 
 
 # Load libraries
@@ -63,6 +63,29 @@ enrichment_lib_list <- c(enrichment_lib_list, enrichment_lib)
 
 enrichment_lib_list <- lapply(enrichment_lib_list, unique)
 
+
+
+
+# Compile database libraries
+DisGeNET_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/DisGeNET_Disease2Gene_lib.rds")
+OpenTargets_Disease2Gene_GA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_GA_lib.rds")
+OpenTargets_Disease2Gene_RNA_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_RNA_lib.rds")
+OpenTargets_Disease2Gene_lit_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_lit_lib.rds")
+OpenTargets_Disease2Gene_SM_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/OpenTargets_Disease2Gene_SM_lib.rds")
+Intogen_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/Intogen_Disease2Gene_lib.rds")
+PharmGKB_Disease2Gene_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/PharmGKB_Disease2Gene_lib.rds")
+
+database_lib_list <- c(DisGeNET_Disease2Gene_lib, OpenTargets_Disease2Gene_GA_lib, 
+                    OpenTargets_Disease2Gene_RNA_lib, OpenTargets_Disease2Gene_lit_lib, 
+                    OpenTargets_Disease2Gene_SM_lib, Intogen_Disease2Gene_lib, 
+                    PharmGKB_Disease2Gene_lib)
+
+names(database_lib_list) <- paste0("[Database] ", names(database_lib_list))
+
+database_lib_list <- lapply(database_lib_list, unique)
+
+
+
 # Read the network on which to calculate the separation
 input_network <- readRDS("InputFiles/Networks/STRING_PPI_Net.rds")
 
@@ -74,13 +97,13 @@ registerDoParallel(cl)
 lib_term_similarity <- foreach(lib1=names(enrichment_lib_list), 
                                .combine = "rbind", 
                                .packages = c("igraph")) %:%
-  foreach(lib2=names(enrichment_lib_list), 
+  foreach(lib2=names(database_lib_list), 
           .combine = "rbind", 
           .packages = c("igraph")) %dopar% {
             
             # Get the gene list
             lib1_genes <- enrichment_lib_list[[lib1]]
-            lib2_genes <- enrichment_lib_list[[lib2]]
+            lib2_genes <- database_lib_list[[lib2]]
             
             len_lib1_genes <- length(lib1_genes)
             len_lib2_genes <- length(lib2_genes)
@@ -134,15 +157,12 @@ stopCluster(cl)
 unregister_dopar()
 
 
-
-
-
 # Export to file
 if(!dir.exists("OutputFiles/Tables/")){
   dir.create("OutputFiles/Tables/", recursive = TRUE)
 }
-write.csv(lib_term_similarity, "OutputFiles/Tables/Enrichment_library_similarity.csv", row.names = FALSE)
-saveRDS(lib_term_similarity, "OutputFiles/Tables/Enrichment_library_similarity.rds")
+write.csv(lib_term_similarity, "OutputFiles/Tables/EnrichmentLib_similarity_Database.csv", row.names = FALSE)
+saveRDS(lib_term_similarity, "OutputFiles/Tables/EnrichmentLib_similarity_Database.rds")
 
 
 print(warnings())

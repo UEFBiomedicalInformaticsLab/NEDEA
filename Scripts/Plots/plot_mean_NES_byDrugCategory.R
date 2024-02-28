@@ -195,8 +195,8 @@ if(isFALSE(top9varying)){
     dir.create("OutputFiles/Plots/NES_boxPlot_all/", recursive = TRUE)
   }
   tiff(paste0("OutputFiles/Plots/NES_boxPlot_all/NES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
-       width = 30, 
-       height = length(unique(plot_data$feature))/6 + 20,
+       width = ifelse(length(unique(plot_data$feature))/6 + 20 > 69, 69, length(unique(plot_data$feature))/6 + 20), 
+       height = ifelse(length(unique(plot_data$feature))/6 + 20 > 69, 69, length(unique(plot_data$feature))/6 + 20),
        units = "cm", compression = "lzw", res = 1200)
 }
 
@@ -266,8 +266,8 @@ if(isFALSE(top9varying)){
     dir.create("OutputFiles/Plots/mean_NES_barPlot_all/", recursive = TRUE)
   }
   tiff(paste0("OutputFiles/Plots/mean_NES_barPlot_all/meanNES_", disease, "_", drug_target_type, "_", feature_type, "_", drugComb_category_type, ".tiff"),
-       width = 30, 
-       height = length(unique(plot_data$feature))/6 + 10,
+       width = ifelse(length(unique(plot_data$feature))/6 + 20 > 69, 69, length(unique(plot_data$feature))/6 + 20), 
+       height = ifelse(length(unique(plot_data$feature))/6 + 20 > 69, 69, length(unique(plot_data$feature))/6 + 20),
        units = "cm", compression = "lzw", res = 1200)
 }
 
