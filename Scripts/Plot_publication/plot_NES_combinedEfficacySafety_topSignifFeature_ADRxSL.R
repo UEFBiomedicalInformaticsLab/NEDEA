@@ -140,13 +140,13 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                        size = 0.5,
                        position = position_dodge(width = 0.5),
                        show.legend = FALSE) +
-          stat_summary(fun.data = "mean_se",
-                       geom = "errorbar",
-                       color = "red",
-                       width = 0.4,
-                       linewidth = 0.1,
-                       position = position_dodge(width = 0.5),
-                       show.legend = FALSE)  +
+          # stat_summary(fun.data = "mean_se",
+          #              geom = "errorbar",
+          #              color = "red",
+          #              width = 0.4,
+          #              linewidth = 0.1,
+          #              position = position_dodge(width = 0.5),
+          #              show.legend = FALSE)  +
           geom_pwc(method = "wilcox_test",
                    group.by = "category",
                    label = "p.signif",

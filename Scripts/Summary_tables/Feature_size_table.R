@@ -32,17 +32,7 @@ for(disease in diseases){
   size <- as.data.frame(lengths(enrichment_lib))
   colnames(size) <- "inNet_size"
   size_2 <- rownames_to_column(size, "Description")
-  if(file.exists(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))){
-    extended_enrichment_lib <- readRDS(paste0("InputFiles/Enrichment_analysis_libraries_extended/Disease2Gene_", disease, "_extendedLib.rds"))
-    size <- as.data.frame(lengths(extended_enrichment_lib))
-    colnames(size) <- "extended_size"
-    size_3 <- rownames_to_column(size, "Description")
-  }else{
-    size_3 <- size_1
-    colnames(size_3) <- c("Description", "extended_size")
-    size_3$extended_size <- NA
-  }
-  size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+  size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
   library_size[[paste0("Efficacy_", disease)]] <- size
 }
 
@@ -57,17 +47,7 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")){
-  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/curatedAdr2Gene_extendedLib.rds")
-  size <- as.data.frame(lengths(extended_enrichment_lib))
-  colnames(size) <- "extended_size"
-  size_3 <- rownames_to_column(size, "Description")
-}else{
-  size_3 <- size_1
-  colnames(size_3) <- c("Description", "extended_size")
-  size_3$extended_size <- NA
-}
-size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["Safety"]] <- size
 
 
@@ -81,17 +61,7 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/CHG_keggPath2Gene_extendedLib.rds")){
-  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/CHG_keggPath2Gene_extendedLib.rds")
-  size <- as.data.frame(lengths(extended_enrichment_lib))
-  colnames(size) <- "extended_size"
-  size_3 <- rownames_to_column(size, "Description")
-}else{
-  size_3 <- size_1
-  colnames(size_3) <- c("Description", "extended_size")
-  size_3$extended_size <- NA
-}
-size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["KEGG"]] <- size
 
 
@@ -106,18 +76,7 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")){
-  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries/SMPDb_Pathway2Gene_extendedLib.rds")
-  extended_enrichment_lib <- extended_enrichment_lib$`Drug Metabolism`
-  size <- as.data.frame(lengths(extended_enrichment_lib))
-  colnames(size) <- "extended_size"
-  size_3 <- rownames_to_column(size, "Description")
-}else{
-  size_3 <- size_1
-  colnames(size_3) <- c("Description", "extended_size")
-  size_3$extended_size <- NA
-}
-size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["SMPDB_DrugMetabolism"]] <- size
 
 
@@ -132,19 +91,7 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-
-if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")){
-  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/SMPDb_Pathway2Gene_extendedLib.rds")
-  extended_enrichment_lib <- extended_enrichment_lib$`Drug Action`
-  size <- as.data.frame(lengths(extended_enrichment_lib))
-  colnames(size) <- "extended_size"
-  size_3 <- rownames_to_column(size, "Description")
-}else{
-  size_3 <- size_1
-  colnames(size_3) <- c("Description", "extended_size")
-  size_3$extended_size <- NA
-}
-size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["SMPDB_DrugAction"]] <- size
 
 
@@ -158,17 +105,7 @@ enrichment_lib <- lapply(enrichment_lib, function(x){x[x %in% V(input_network)$n
 size <- as.data.frame(lengths(enrichment_lib))
 colnames(size) <- "inNet_size"
 size_2 <- rownames_to_column(size, "Description")
-if(file.exists("InputFiles/Enrichment_analysis_libraries_extended/miscellaneous_gene_extendedLib.rds")){
-  extended_enrichment_lib <- readRDS("InputFiles/Enrichment_analysis_libraries_extended/miscellaneous_gene_extendedLib.rds")
-  size <- as.data.frame(lengths(extended_enrichment_lib))
-  colnames(size) <- "extended_size"
-  size_3 <- rownames_to_column(size, "Description")
-}else{
-  size_3 <- size_1
-  colnames(size_3) <- c("Description", "extended_size")
-  size_3$extended_size <- NA
-}
-size <- reduce(list(size_1, size_2, size_3), merge, by = "Description", all = TRUE)
+size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["miscellaneous"]] <- size
 
 
@@ -186,7 +123,6 @@ plot_data <- bind_rows(library_size, .id = "Source")
 
 plot_data$all_size[plot_data$all_size >= 2000] <- 2000
 plot_data$inNet_size[plot_data$inNet_size >= 2000] <- 2000
-plot_data$extended_size[plot_data$extended_size >= 2000] <- 2000
 
 plot_data$Source <- factor(plot_data$Source, 
                            levels = c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer",  
@@ -200,11 +136,11 @@ plot_data_summary <- plot_data %>% group_by(Source) %>% summarise(n = n())
 
 
 plot_data <- pivot_longer(plot_data, 
-                          cols = c("all_size", "inNet_size", "extended_size"), 
+                          cols = c("all_size", "inNet_size"), 
                           names_to = "type", 
                           values_to = "size")
 
-plot_data$type <- factor(plot_data$type, levels = c("all_size", "inNet_size", "extended_size"))
+plot_data$type <- factor(plot_data$type, levels = c("all_size", "inNet_size"))
 
 ggplot() +
   geom_boxplot(data = plot_data, 
@@ -243,6 +179,60 @@ if(!dir.exists("OutputFiles/Tables/")){
 }
 write.xlsx(library_size, "OutputFiles/Tables/Enrichment_library_size.xlsx")
 
+
+
+
+# Shortened plot for publication
+
+if(!dir.exists("OutputFiles/Plots_publication/")){
+  dir.create("OutputFiles/Plots_publication/", recursive = TRUE)
+}
+tiff("OutputFiles/Plots_publication/Publication_Enrichment_library_size.tiff",
+     width = 8, height = 4,
+     units = "cm", compression = "lzw", res = 1200)
+
+
+
+plot_data <- plot_data[plot_data$Source %in% c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer", 
+                                               "Efficacy_OvaryCancer", "Efficacy_ProstateCancer", "Efficacy_SkinCancer", 
+                                               "Safety"), ]
+plot_data$Source <- droplevels(plot_data$Source)
+plot_data_summary <- plot_data_summary[plot_data_summary$Source %in% plot_data$Source, ]
+
+plot_data$size[plot_data$size >= 1000] <- 1000
+
+
+ggplot() +
+  geom_boxplot(data = plot_data, 
+               aes(x = Source, y = size, fill = type), 
+               width = 0.5, 
+               lwd = 0.1,
+               outlier.shape = 3,
+               outlier.size = 0.5,
+               outlier.stroke = 0.1) +
+  geom_text(data = plot_data_summary,
+            aes(x = Source, y = Inf, label = n),
+            color = "red", size = 1, vjust = 2) +
+  theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
+        panel.grid = element_blank(),
+        panel.spacing = unit(0.1, "cm"),
+        text = element_text(size = 3),
+        axis.text.x = element_text(size = 3, angle = 45, vjust = 1, hjust = 1),
+        axis.ticks = element_line(colour = "black", linewidth = 0.2),
+        legend.position = "bottom",
+        legend.key = element_blank(),
+        legend.key.size = unit(0.1, 'cm'),
+        legend.title = element_text(size = 2),
+        legend.text = element_text(size = 2),
+        legend.margin = margin(1,1,1,1),
+        legend.box.spacing = unit(0.1, 'cm'),
+        legend.box.background = element_rect(colour = "black", linewidth = 0.25)) +
+  labs(x = "Library",
+       y = "Library size",
+       fill = "Type")
+
+
+dev.off()
 
 
 print(warnings())
