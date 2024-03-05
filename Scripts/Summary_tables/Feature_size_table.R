@@ -197,6 +197,16 @@ plot_data <- plot_data[plot_data$Source %in% c("Efficacy_BreastCancer", "Efficac
                                                "Efficacy_OvaryCancer", "Efficacy_ProstateCancer", "Efficacy_SkinCancer", 
                                                "Safety"), ]
 plot_data$Source <- droplevels(plot_data$Source)
+
+plot_data$Source <- factor(x = plot_data$Source, 
+                           levels = c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer", 
+                                      "Efficacy_OvaryCancer", "Efficacy_ProstateCancer", "Efficacy_SkinCancer", 
+                                      "Safety"), 
+                           labels = c("BreastCancer", "KidneyCancer", "LungCancer", 
+                                      "OvaryCancer", "ProstateCancer", "SkinCancer", 
+                                      "Safety") )
+
+plot_data_summary$Source <- gsub("^Efficacy_", "", plot_data_summary$Source)
 plot_data_summary <- plot_data_summary[plot_data_summary$Source %in% plot_data$Source, ]
 
 plot_data$size[plot_data$size >= 1000] <- 1000
@@ -212,27 +222,27 @@ ggplot() +
                outlier.stroke = 0.1) +
   geom_text(data = plot_data_summary,
             aes(x = Source, y = Inf, label = n),
-            color = "red", size = 1, vjust = 2) +
+            color = "red", size = 2, vjust = 2) +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
-        text = element_text(size = 3),
-        axis.text.x = element_text(size = 3, angle = 45, vjust = 1, hjust = 1),
+        text = element_text(size = 4),
+        axis.text.x = element_text(size = 4, angle = 45, vjust = 1, hjust = 1),
         axis.ticks = element_line(colour = "black", linewidth = 0.2),
         legend.position = "bottom",
         legend.key = element_blank(),
         legend.key.size = unit(0.1, 'cm'),
-        legend.title = element_text(size = 2),
-        legend.text = element_text(size = 2),
+        legend.title = element_text(size = 3),
+        legend.text = element_text(size = 3),
         legend.margin = margin(1,1,1,1),
         legend.box.spacing = unit(0.1, 'cm'),
         legend.box.background = element_rect(colour = "black", linewidth = 0.25)) +
   labs(x = "Library",
        y = "Library size",
-       fill = "Type")
-
-
-dev.off()
+       fill = "Type") 
+  
+  
+  dev.off()
 
 
 print(warnings())
