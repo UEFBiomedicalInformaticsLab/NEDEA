@@ -1,7 +1,7 @@
 set.seed(5081)
 
 
-# Script to plot/tabulate the number of drug combinations based on the categories and their interaction
+# Script to plot/tabulate the number of drug combinations based on the categories and their interaction (ADR vs SL)
 
 
 # Load libraries
@@ -16,14 +16,14 @@ DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
 
 plot_list <- list()
 
-
+print("% of ADR positive combinations: ")
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   DrugBank_ddi_select <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease))]
   
   drugCombs_data <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
-  drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level", "class_synergyScore")]
-
+  drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level")]
+  
   drugCombs_cat <- merge(DrugBank_ddi_select, drugCombs_data, 
                          by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id"),
                          all.y = TRUE)
@@ -33,26 +33,36 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease)), 
               ~replace_na(., "unknown"))
   
-
+  
   row.names(drugCombs_cat) <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
-  drugCombs_cat <- drugCombs_cat[, c("Syn_level", "class_synergyScore", "class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease))]
+  drugCombs_cat <- drugCombs_cat[, c("Syn_level", paste0("ADR_", disease))]
   
   category_combinations <- combn(x = colnames(drugCombs_cat), m = 2, simplify = FALSE)
   
+  
+  print(paste0(disease, " : ", 
+               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] == "adr_positive", ]) / 
+                         nrow(drugCombs_cat) ) * 100, 2)
+  ))
+  
   for(i in (category_combinations)){
     plot_data <- as.data.frame(table(drugCombs_cat[, i[1]], drugCombs_cat[,i[2]], useNA = "ifany"))
-
+    
     plot_list[[disease]][[ paste(i, collapse = "__") ]] <- ggplot(plot_data, aes(x = Var1, y = Var2, )) + 
       geom_tile(aes(fill = Freq)) +
-      geom_text(aes(label = Freq), size = 1) + 
+      geom_text(aes(label = Freq), size = 0.75) + 
       labs(title = paste0(disease, " (", nrow(drugCombs_cat), ")"),
-           x = i[1],
-           y = i[2]) +
+           x = "Synergy level",
+           y = "ADR status") +
       scale_fill_gradient(low = "white", high = "lightblue") +
       theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
-            text = element_text(size = 4), 
-            axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5), 
-            axis.ticks = element_line(colour = "black", linewidth = 0.2),
+            panel.grid = element_blank(),
+            text = element_text(size = 2), 
+            plot.title = element_text(size = 2.5, hjust = 0.5, face = "bold", margin = margin(2, 1, 1, 1, "pt")),
+            plot.margin = margin(1, 2, 1, 2, "pt"),
+            axis.title = element_text(size = 2.5), 
+            axis.text = element_text(size = 2.5, angle = 0, vjust = 0, hjust = 0.5), 
+            axis.ticks = element_line(colour = "black", linewidth = 0.1),
             legend.position = "none"
       )
   }
@@ -60,29 +70,17 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 }
 
 
-
-# Plot for all the cancers in single plot
-if(!dir.exists("OutputFiles/Plots/drugComb_category_distribution/")){
-  dir.create("OutputFiles/Plots/drugComb_category_distribution/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots_publication/")){
+  dir.create("OutputFiles/Plots_publication/", recursive = TRUE)
 }
-tiff("OutputFiles/Plots/drugComb_category_distribution/drugComb_category_distribution_xCancer.tiff",
-     width = 30, height = 15,
+tiff("OutputFiles/Plots_publication/drugComb_category_distribution_xCancer_ADRxSL.tiff",
+     width = 8, height = 4,
      units = "cm", compression = "lzw", res = 1200)
 
-ggarrange(plotlist = unlist(plot_list, recursive = FALSE), ncol = 10, nrow = 6)
+ggarrange(plotlist = unlist(plot_list, recursive = FALSE), ncol = 3, nrow = 2)
+
 
 dev.off()
-
-
-# Plot separately for each cancer
-for(disease in names(plot_list)){
-  tiff(paste0("OutputFiles/Plots/drugComb_category_distribution/drugComb_category_distribution_", disease, ".tiff"),
-       width = 15, height = 10,
-       units = "cm", compression = "lzw", res = 1200)
-  print(ggarrange(plotlist = plot_list[[disease]]))
-  dev.off()
-}
-
 
 
 print(warnings())

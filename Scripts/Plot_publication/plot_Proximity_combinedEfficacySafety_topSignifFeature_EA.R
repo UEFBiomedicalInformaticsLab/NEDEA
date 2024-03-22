@@ -127,6 +127,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
              vjust = 0.5, 
              color = "blue") +
     scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
+    labs(x = "Feature", 
+         y = "Separation distance") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -166,6 +168,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 # plot by drug target type
 plot_list <- list()
+signif_feature <- list()
+
 for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
   
   plot_data <- data.frame()
@@ -220,6 +224,7 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
     stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.05, ]
     stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE), ]
     
+    signif_feature[[drug_target_type]][[disease]] <- stat_res_final
     
     # Select the feature
     safety_feature_select <- stat_res_final[grep("^\\[ADR\\]", stat_res_final$feature), ]
@@ -272,6 +277,8 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
              vjust = 0.5, 
              color = "blue") +
     scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
+    labs(x = "Feature", 
+         y = "Separation distance") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -305,6 +312,14 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
   
 }
 
+
+
+signif_feature <- unlist(signif_feature, recursive = FALSE)
+signif_feature <- bind_rows(signif_feature, .id = "disease")
+signif_feature <- separate(signif_feature, col = "disease", into = c("drug_target_type", "disease"), sep = "\\.")
+
+
+write.csv(signif_feature, paste0("OutputFiles/Plots_publication/Proximity", proximity_type, "_", feature_type, "_boxplot_topSignifFeatures_EA/Proximity", proximity_type, "_", feature_type, "_WilcoxTest_rest.csv"), row.names = FALSE)
 
 
 print(warnings())
