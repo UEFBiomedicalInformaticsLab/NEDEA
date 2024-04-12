@@ -63,7 +63,10 @@ model <- readRDS(file = paste0("OutputFiles/Predictive_model/model_NES_combinedE
 
 # Read the drug combinations for validation
 valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
-valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "comb_name", "class_EffAdv")]
+valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", 
+                                               "comb_name", "class_EffAdv", 
+                                               "Drug1_indications", "Drug2_indications", 
+                                               "DDI_description")]
 
 
 # Read the FGSEA results
