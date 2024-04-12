@@ -86,45 +86,14 @@ cancer_drug_list <- cancer_drug_list[grep(pattern = grep_pattern, x = cancer_dru
 #####
 
 
-# # Read the DDI data
-# DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
-# DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", paste0("ADR_", disease))]
-# DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi[, paste0("ADR_", disease)] == "adr_positive", ]
-# 
-# 
-# # Keep only combinations involving licensed anti-cancer drugs
-# DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id & DrugBank_ddi$Drug2_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id, ]
-
-
-
-
-
-
 # Read the DDI data
-DrugBank_ddi <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
-DrugBank_ddi <- DrugBank_ddi$drugs$drug_interactions
-colnames(DrugBank_ddi)[c(1,4)] <- c("Drug1_DrugBank_id", "Drug2_DrugBank_id")
+DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
+DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", paste0("ADR_", disease))]
+DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi[, paste0("ADR_", disease)] == "adr_positive", ]
 
-# Extract DDI with toxicity
-DrugBank_ddi <- DrugBank_ddi[grep(".+toxicity can be increased|increase the .+toxic activities", DrugBank_ddi$description, ignore.case = TRUE), ]
-
-tmp1 <- gsub(pattern = ".*(risk or severity of .+toxicity can be increased).*|.*(increase the .+toxic activities).*", 
-             replacement = "\\1\\2", 
-             x = DrugBank_ddi$description, 
-             ignore.case = TRUE)
-
-sort(table(tmp1), decreasing = TRUE)
-rm(tmp1)
-
-DrugBank_ddi <- unique(DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")])
 
 # Keep only combinations involving licensed anti-cancer drugs
-DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id | DrugBank_ddi$Drug2_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id, ]
-
-
-
-
-
+DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id & DrugBank_ddi$Drug2_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id, ]
 
 
 # Extract unique list of DDIs
@@ -319,7 +288,7 @@ colnames(DrugBank_ddi)[c(1,4)] <- c("Drug1_DrugBank_id", "Drug2_DrugBank_id")
 
 valid_drugCombs_cat$DDI_description <- NA
 for(i in 1:nrow(valid_drugCombs_cat)){
-  tmp1 <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id == valid_drugCombs_cat[i, ]$Drug1_DrugBank_id &
+  tmp1 <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id == valid_drugCombs_cat[i, ]$Drug1_DrugBank_id & 
                          DrugBank_ddi$Drug2_DrugBank_id == valid_drugCombs_cat[i, ]$Drug2_DrugBank_id, "description", drop = TRUE]
   valid_drugCombs_cat[i, "DDI_description"] <- paste(tmp1, collapse = "; ")
 }
