@@ -334,6 +334,17 @@ FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_l
 FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_level <= -3)] <- "antagonism"
 
 
+
+# Read the drug type information
+DrugBank_drug_type <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_type <- DrugBank_drug_type$drugs$general_information
+DrugBank_drug_type <- DrugBank_drug_type[DrugBank_drug_type$type == "small molecule", ] # retain only small molecular drugs
+
+
+FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[(FimmDrugComb_drugCombCat$Drug1_DrugBank_id %in% DrugBank_drug_type$primary_key) &
+                                                       (FimmDrugComb_drugCombCat$Drug2_DrugBank_id %in% DrugBank_drug_type$primary_key), ]
+
+
 if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)
 saveRDS(FimmDrugComb_drugCombCat, "InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
 

@@ -109,6 +109,15 @@ risk_sev_res <- find_top_k_sequences_with_keyword(DrugBank_ddi$description,
                                                   keyword = "The risk or severity", n = 6, k = 50)
 
 
+### UPDATE ###
+# new term included
+
+other_tox_res <- find_top_k_sequences_with_keyword(DrugBank_ddi$description, 
+                                                   keyword = "toxic activities", n = 2, k = 50)
+
+
+### UPDATE ###
+
 
 # Plot the extracted terms as word cloud
 tiff("OutputFiles/Plots/DDI_freq_ngram.tiff",
@@ -149,14 +158,37 @@ test_scdec <- grepl("The serum concentration of", DrugBank_ddi$description) & gr
 test_meinc <- grepl("The metabolism of", DrugBank_ddi$description) & grepl("can be increased", DrugBank_ddi$description)
 test_medec <- grepl("The metabolism of", DrugBank_ddi$description) & grepl("can be decreased", DrugBank_ddi$description)
 test_absde <- grepl("a decrease in the absorption ", DrugBank_ddi$description)
-test_all_risk <- grepl("risk or severity", DrugBank_ddi$description)
 
+
+
+### UPDATE ###
+# including only increased risk
+
+
+# test_all_risk <- grepl("risk or severity", DrugBank_ddi$description)
+# list_tox_test = list()
+# for(i in 1:length(risk_sev_res$ngrams)){
+#   list_tox_test[[length(list_tox_test) + 1]] <- grepl(risk_sev_res$ngrams[i], DrugBank_ddi$description)
+# }
+# names(list_tox_test) <- risk_sev_res$ngrams
+
+
+test_all_risk <- grepl("risk or severity of .+ can be increased", DrugBank_ddi$description)
 list_tox_test = list()
-for(i in 1:length(risk_sev_res$ngrams)){
-  list_tox_test[[length(list_tox_test) + 1]] <- grepl(risk_sev_res$ngrams[i], DrugBank_ddi$description)
+for(i in risk_sev_res$ngrams){
+  list_tox_test[[i]] <- grepl(paste0(i, ".+can be increased"), DrugBank_ddi$description)
 }
-names(list_tox_test) <- risk_sev_res$ngrams
 
+
+list_tox_test_2 = list()
+for(i in other_tox_res$ngrams){
+  list_tox_test_2[[i]] <- grepl(paste0("increase the.+", i), DrugBank_ddi$description)
+}
+
+list_tox_test <- c(list_tox_test, list_tox_test_2)
+
+
+### UPDATE ###
 
 
 
@@ -195,110 +227,171 @@ DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "increased"
 # Literature based identification of cancer specific adverse reactions
 
 #### For all cancers
-# The risk or severity of adverse effect (not specific)
-# The risk or severity of QTc
-# The risk or severity of hypertension
-# The risk or severity of Tachycardia
-# The risk or severity of hyperglycemia
-# The risk or severity of hypotension
-# The risk or severity of renal
-# The risk or severity of infection
-# The risk or severity of CNS
-# The risk or severity of edema
-# The risk or severity of neutropenia
-# The risk or severity of myelosuppression
-# The risk or severity of cardiotoxicity
-# The risk or severity of liver 
-# The risk or severity of hyperthermia
+# The risk or severity of adverse effect (not specific) 1
+# The risk or severity of QTc 2
+# The risk or severity of hypertension 4
+# The risk or severity of Tachycardia 10
+# The risk or severity of hyperglycemia 6
+# The risk or severity of hypotension 12
+# The risk or severity of renal 13
+# The risk or severity of infection 18
+# The risk or severity of CNS 17
+# The risk or severity of edema 19
+# The risk or severity of neutropenia 29
+# The risk or severity of myelosuppression 34
+# The risk or severity of cardiotoxicity 40
+# The risk or severity of liver 41
+# The risk or severity of hyperthermia 50
+# neurotoxic activities 51
+# cardiotoxic activities 53
+# hepatotoxic activities 54
 
-set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49) 
+
+### UPDATE ###
+
+# set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49) 
+set_adv_ids <- c(1, 2, 4, 6, 10, 12, 13, 18, 17, 19, 29, 34, 40, 41, 50, 51, 53, 54) 
+
+### UPDATE ###
 
 
 
 
 
 #### Breast cancer adverse effects
-# The risk or severity of Cardiac Arrhythmia
-# The risk or severity of peripheral neuropathy 
-# The risk or severity of electrolyte imbalance
+# The risk or severity of Cardiac Arrhythmia 26
+# The risk or severity of peripheral neuropathy 48
+# The risk or severity of electrolyte imbalance 30
 
-names(list_tox_test)[c(set_adv_ids, 25, 31, 47)]
-sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 25, 31, 47)]))
+
+
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 25, 31, 47)]
+# sapply(list_tox_test[c(set_adv_ids, 25, 31, 47)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 25, 31, 47)]))
+# DrugBank_ddi$ADR_BreastCancer <- rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "adr_positive"
+
+names(list_tox_test)[c(set_adv_ids, 26, 30, 48)]
+sapply(list_tox_test[c(set_adv_ids, 26, 30, 48)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids, 26, 30, 48)]))
 DrugBank_ddi$ADR_BreastCancer <- rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 25, 47)])] <- "adr_positive"
+DrugBank_ddi$ADR_BreastCancer[Reduce("|",list_tox_test[c(set_adv_ids, 26, 30, 48)])] <- "adr_positive"
 
+### UPDATE ###
 
 
 
 
 #### Lung cancer adverse effects
-# The risk or severity of bleeding
-# The risk or severity of Thrombosis
-# The risk or severity of Cardiac Arrhythmia
-# The risk or severity of respiratory
-# The risk or severity of hyponatremia
-# The risk or severity of electrolyte imbalance
+# The risk or severity of bleeding 3
+# The risk or severity of Thrombosis 20
+# The risk or severity of Cardiac Arrhythmia 26
+# The risk or severity of respiratory 47
+# The risk or severity of hyponatremia 36
+# The risk or severity of electrolyte imbalance 30
 
-names(list_tox_test)[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]
-sapply(list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]))
+
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]
+# sapply(list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)]))
+# DrugBank_ddi$ADR_LungCancer = rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "adr_positive"
+
+
+names(list_tox_test)[c(set_adv_ids, 3, 20, 26, 30, 36, 47)]
+sapply(list_tox_test[c(set_adv_ids,  3, 20, 26, 30, 36, 47)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids,  3, 20, 26, 30, 36, 47)]))
 DrugBank_ddi$ADR_LungCancer = rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 19, 25, 31, 34, 46)])] <- "adr_positive"
+DrugBank_ddi$ADR_LungCancer[Reduce("|",list_tox_test[c(set_adv_ids,  3, 20, 26, 30, 36, 47)])] <- "adr_positive"
 
+### UPDATE ###
 
 
 
 
 
 #### Prostate cancer adverse effects
-# The risk or severity of fluid retention
-# The risk or severity of urinary retention
-# The risk or severity of hypercalcemia
+# The risk or severity of fluid retention 39
+# The risk or severity of urinary retention 45
+# The risk or severity of hypercalcemia 43
 
-names(list_tox_test)[c(set_adv_ids, 31, 38, 42, 43)]
-sapply(list_tox_test[c(set_adv_ids, 31, 38, 42, 43)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)]))
+
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 31, 38, 42, 43)]
+# sapply(list_tox_test[c(set_adv_ids, 31, 38, 42, 43)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)]))
+# DrugBank_ddi$ADR_ProstateCancer = rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "adr_positive"                
+
+names(list_tox_test)[c(set_adv_ids, 39, 43, 45)]
+sapply(list_tox_test[c(set_adv_ids, 39, 43, 45)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids, 39, 43, 45)]))
 DrugBank_ddi$ADR_ProstateCancer = rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 31, 38, 42, 43)])] <- "adr_positive"                
+DrugBank_ddi$ADR_ProstateCancer[Reduce("|",list_tox_test[c(set_adv_ids, 39, 43, 45)])] <- "adr_positive"  
 
-
+### UPDATE ###
 
 
 
 #### Ovarian cancer adverse effects  
-# The risk or severity of bleeding
-# The risk or severity of Cardiac Arrhythmia
-# The risk or severity of urinary retention
-# The risk or severity of hypercalcemia
-# The risk or severity of respiratory
+# The risk or severity of bleeding 3
+# The risk or severity of Cardiac Arrhythmia 26
+# The risk or severity of urinary retention 46
+# The risk or severity of hypercalcemia 43
+# The risk or severity of respiratory 47
 
-names(list_tox_test)[c(set_adv_ids, 3, 25, 42, 43, 46)]
-sapply(list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)]))
+
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 3, 25, 42, 43, 46)]
+# sapply(list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)]))
+# DrugBank_ddi$ADR_OvaryCancer = rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "adr_positive"                
+
+
+names(list_tox_test)[c(set_adv_ids, 3, 26, 43, 46, 47)]
+sapply(list_tox_test[c(set_adv_ids, 3, 26, 43, 46, 47)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 26, 43, 46, 47)]))
 DrugBank_ddi$ADR_OvaryCancer = rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 25, 42, 43, 46)])] <- "adr_positive"                
+DrugBank_ddi$ADR_OvaryCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 26, 43, 46, 47)])] <- "adr_positive"    
 
-
-
+### UPDATE ###
 
 
 
 #### Kidney/renal cancer adverse effects  
-# The risk or severity of bleeding
-# The risk or severity of nephrotoxicity
-# The risk or severity of electrolyte
-# The risk or severity of fluid retention
-# The risk or severity of hyperkalemia
-# The risk or severity of hyponatremia
-# The risk or severity of urinary
-# The risk or severity of hypercalcemia
+# The risk or severity of bleeding 3
+# The risk or severity of nephrotoxicity 9
+# The risk or severity of electrolyte 30
+# The risk or severity of fluid retention 39
+# The risk or severity of hyperkalemia 7
+# The risk or severity of hyponatremia 36
+# The risk or severity of urinary 45
+# The risk or severity of hypercalcemia 43
+# nephrotoxic activities 52
 
-names(list_tox_test)[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]
-sapply(list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]))
+
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]
+# sapply(list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)]))
+# DrugBank_ddi$ADR_KidneyCancer = rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "adr_positive"   
+
+names(list_tox_test)[c(set_adv_ids, 3, 7, 9, 30, 36, 39, 43, 45, 52)]
+sapply(list_tox_test[c(set_adv_ids, 3, 7, 9, 30, 36, 39, 43, 45, 52)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids, 3, 7, 9, 30, 36, 39, 43, 45, 52)]))
 DrugBank_ddi$ADR_KidneyCancer = rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 31, 34, 38, 42, 43)])] <- "adr_positive"   
+DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 7, 9, 30, 36, 39, 43, 45, 52)])] <- "adr_positive"  
+
+### UPDATE ###
 
 
 
@@ -306,14 +399,24 @@ DrugBank_ddi$ADR_KidneyCancer[Reduce("|",list_tox_test[c(set_adv_ids, 3, 5, 8, 3
 
 
 #### Skin cancer adverse effects  
-# The risk or severity of respiratory: if skin cancer metastasizes to the lungs, some treatments might have respiratory side effects.
+# The risk or severity of respiratory: if skin cancer metastasizes to the lungs, some treatments might have respiratory side effects. 47
 
-names(list_tox_test)[c(set_adv_ids, 46)]
-sapply(list_tox_test[c(set_adv_ids, 46)], sum)
-sum(Reduce("|",list_tox_test[c(set_adv_ids, 46)]))
+### UPDATE ###
+
+# names(list_tox_test)[c(set_adv_ids, 46)]
+# sapply(list_tox_test[c(set_adv_ids, 46)], sum)
+# sum(Reduce("|",list_tox_test[c(set_adv_ids, 46)]))
+# DrugBank_ddi$ADR_SkinCancer = rep("unknown", nrow(DrugBank_ddi))
+# DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "adr_positive"   
+
+
+names(list_tox_test)[c(set_adv_ids, 47)]
+sapply(list_tox_test[c(set_adv_ids, 47)], sum)
+sum(Reduce("|",list_tox_test[c(set_adv_ids, 47)]))
 DrugBank_ddi$ADR_SkinCancer = rep("unknown", nrow(DrugBank_ddi))
-DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 46)])] <- "adr_positive"   
+DrugBank_ddi$ADR_SkinCancer[Reduce("|",list_tox_test[c(set_adv_ids, 47)])] <- "adr_positive"  
 
+### UPDATE ###
 
 
 
