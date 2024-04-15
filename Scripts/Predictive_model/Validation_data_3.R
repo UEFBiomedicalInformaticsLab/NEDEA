@@ -173,13 +173,15 @@ valid_drugCombs_cat <- valid_drugCombs_cat %>%
   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
   left_join(drugTarget_list, by = c("Drug2_DrugBank_id" = "drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_2 = drugTarget_ensembl_id) %>%
+  left_join(drugTarget_list, by = c("Drug3_DrugBank_id" = "drugbank_drug_id")) %>%
+  dplyr::rename(drugTarget_ensembl_id_3 = drugTarget_ensembl_id) %>%
   filter(!is.na(drugTarget_ensembl_id_1), !is.na(drugTarget_ensembl_id_2)) %>%   
   dplyr::rowwise() %>%
   dplyr::mutate(
-    drugTarget_ensembl_id =  list(unique(unlist(strsplit(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2), ",")))),
+    drugTarget_ensembl_id =  list(unique(unlist(strsplit(na.exclude(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2, drugTarget_ensembl_id_3)), ",")))),
     drugTarget_count = length(unlist(drugTarget_ensembl_id))
   ) %>%
-  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2) 
+  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_3) 
 
 valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$drugTarget_count > 1, ]
 

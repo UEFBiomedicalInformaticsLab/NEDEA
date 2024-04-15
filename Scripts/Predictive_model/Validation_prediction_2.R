@@ -66,7 +66,7 @@ valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_2/drugC
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", 
                                                "comb_name", "class_EffAdv", 
                                                "Drug1_indications", "Drug2_indications", 
-                                               "DDI_description")]
+                                               "DDI_description", "DDI_type")]
 
 
 # Read the FGSEA results
@@ -106,62 +106,24 @@ write.csv(predict_result, file = paste0("OutputFiles/Validation_data_2/Predictio
 #####
 
 
-# Calculate prediction accuracy
-metrics <- metric_set(accuracy, f_meas, sensitivity, specificity, recall, precision, bal_accuracy, ppv, npv)
-predict_metrics <- bind_rows( metrics(data = predict_result, truth = class_EffAdv, estimate = predicted_category), 
-                              roc_auc(data = predict_result, truth = class_EffAdv, predicted_probEff),
-                              pr_auc(data = predict_result, truth = class_EffAdv, predicted_probEff) )
+# Calculate prediction accuracy for each DDI type
+
+predict_metrics <- data.frame("DDI_type" = "all", 
+                              "Specificity" = specificity_vec(truth = predict_result$class_EffAdv, estimate = predict_result$predicted_category), 
+                              "Number_of_combinations" = nrow(predict_result))
+
+for(DDI_type in unique(predict_result$DDI_type)){
+  predict_result_select <- predict_result[predict_result$DDI_type %in% DDI_type, ]
+  specificity_vec(truth = predict_result_select$class_EffAdv, estimate = predict_result_select$predicted_category)
+  tmp1 <- data.frame("DDI_type" = DDI_type,  
+                     "Specificity" = specificity_vec(truth = predict_result_select$class_EffAdv, estimate = predict_result_select$predicted_category), 
+                     "Number_of_combinations" = nrow(predict_result_select))
+  predict_metrics <- rbind(predict_metrics, tmp1)
+}
 
 
 if(!dir.exists("OutputFiles/Validation_data_2/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_2/Prediction_metrics/", recursive = TRUE) }
 write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_2/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
-
-
-# Plot the ROC-AUC and PR-AUC
-
-if(!is.na(predict_metrics[predict_metrics$.metric == "roc_auc", ".estimate", drop = TRUE]) & !is.na(predict_metrics[predict_metrics$.metric == "pr_auc", ".estimate", drop = TRUE])){
-  
-  roc_plot <- roc_curve(data = predict_result, truth = class_EffAdv, predicted_probEff) %>%
-    ggplot(aes(x = 1 - specificity, y = sensitivity)) +
-    geom_path(size = 0.25) +
-    geom_abline(lty = 3, size = 0.2) +
-    # coord_equal() +
-    xlim(0, 1) +
-    ylim(0, 1) +
-    ggtitle("ROC Curve") +
-    theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
-          panel.grid = element_blank(),
-          panel.spacing = unit(0.1, "cm"),
-          text = element_text(size = 4),
-          plot.title = element_text(size = 5, hjust = 0.5, face = "plain", margin = margin(2, 1, 1, 1, "pt")),
-          axis.ticks = element_line(colour = "black", linewidth = 0.2)
-    )
-  
-  pr_plot <- pr_curve(data = predict_result, truth = class_EffAdv, predicted_probEff) %>%
-    ggplot(aes(x = recall, y = precision)) +
-    geom_path(size = 0.25) +
-    # coord_equal() +
-    xlim(0, 1) +
-    ylim(0, 1) +
-    ggtitle("PR Curve") +
-    theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
-          panel.grid = element_blank(),
-          panel.spacing = unit(0.1, "cm"),
-          text = element_text(size = 4),
-          plot.title = element_text(size = 5, hjust = 0.5, face = "plain", margin = margin(2, 1, 1, 1, "pt")),
-          axis.ticks = element_line(colour = "black", linewidth = 0.2)
-    )
-
-  if(!dir.exists("OutputFiles/Plots/validation_metrics/")){ dir.create("OutputFiles/Plots/validation_metrics/", recursive = TRUE) }
-  tiff(paste0("OutputFiles/Plots/validation_metrics/plot_validation2_predictionAUC_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
-       width = 8,
-       height = 4,
-       units = "cm", compression = "lzw", res = 1200)
-  
-  grid.arrange(roc_plot, pr_plot, ncol = 2)
-  
-  dev.off()
-}
 
 
 

@@ -2,9 +2,9 @@ set.seed(5081)
 
 
 
-# Generate validation data 2
+# Generate validation data 4
 # Notes:
-# (a) Includes only adverse drug combinations
+# (a) Based on clinical data
 
 
 
@@ -57,17 +57,34 @@ cat(paste0("\nDisease: ", disease, "\n"))
 #####
 
 
-# Download list of licensed anti-cancer drugs
-if(!dir.exists("Databases/Cancer_Drug_Database/")){dir.create("Databases/Cancer_Drug_Database/", recursive = TRUE)}
-if(!file.exists("Databases/Cancer_Drug_Database/cancerdrugsdb.txt")){
-  download.file(url = "https://sciencedata.anticancerfund.org/pages//cancerdrugsdb.txt",
-                destfile = "Databases/Cancer_Drug_Database/cancerdrugsdb.txt", method = "wget")
+
+# Download the C-DCDB combinations
+if(!dir.exists("Databases/CDCDB/")){dir.create("Databases/CDCDB/", recursive = TRUE)}
+if(!file.exists("Databases/CDCDB/09.04.2024.zip")){
+ cat("\n\nNOTE: Manually download the file '09.04.2024.zip' from the 'Downloads' page in https://icc.ise.bgu.ac.il/medical_ai/CDCDB/ and place it within 'Databases/CDCDB/'. \n\n")
+}
+if(!file.exists("Databases/CDCDB/web_preview.csv")){
+  unzip(zipfile = "Databases/CDCDB/09.04.2024.zip", exdir = "Databases/CDCDB/")
 }
 
-cancer_drug_list <- read.table("Databases/Cancer_Drug_Database/cancerdrugsdb.txt", sep = "\t", 
-                               fill = TRUE, header = TRUE, strip.white = TRUE, check.names = FALSE)
-cancer_drug_list <- cancer_drug_list[, c("Product", "DrugBank ID", "Indications")]
-cancer_drug_list <- cancer_drug_list %>% mutate(DrugBank_drug_id = gsub("<.*>(DB\\d{5})</.*", "\\1", `DrugBank ID`))
+
+
+# Read the drug combinations
+valid_drugCombs_cat <- read.csv("Databases/CDCDB/web_preview.csv")
+valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$source == "clinicaltrials.gov", c("drugs", "drugbank_identifiers", "source_id")] # Keep only those from clinical trials
+valid_drugCombs_cat <- valid_drugCombs_cat %>%
+  filter(str_count(drugbank_identifiers, ";") %in% c(1, 2)) %>%
+  filter(!str_detect(drugbank_identifiers, "NA|PLACEBO")) 
+
+valid_drugCombs_cat <- separate(valid_drugCombs_cat,
+                                col = "drugbank_identifiers", 
+                                into = c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id"), 
+                                sep = ";", fill = "right")
+
+
+# Add info about condition for the trials
+CDCDB_conditions <- read.csv("Databases/CDCDB/conditions_df.csv")
+valid_drugCombs_cat$condition <- CDCDB_conditions$condition_downcase[match(valid_drugCombs_cat$source_id, CDCDB_conditions$nct_id)]
 
 
 # Extract the cancer specific drug list
@@ -75,51 +92,44 @@ grep_pattern <- switch (disease,
                         "BreastCancer" = "breast cancer|breast carcinoma",
                         "KidneyCancer" = "renal cell cancer|renal cell carcinoma",
                         "LungCancer" = "lung cancer|lung carcinoma",
-                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer",
-                        "ProstateCancer" = "prostate Cancer|carcinoma of the prostate",
-                        "SkinCancer" = "carcinoma of the skin|melanoma"
+                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial",
+                        "ProstateCancer" = "prostate Cancer|prostate carcinoma|prostate adenocarcinoma",
+                        "SkinCancer" = "skin cancer|melanoma"
 )
 
-cancer_drug_list <- cancer_drug_list[grep(pattern = grep_pattern, x = cancer_drug_list$Indications, ignore.case = TRUE), ]
+valid_drugCombs_cat <- valid_drugCombs_cat[grep(pattern = grep_pattern, x = valid_drugCombs_cat$condition, ignore.case = TRUE), ]
+
+
+
+
+# Read the drug type information
+DrugBank_drug_type <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_type <- DrugBank_drug_type$drugs$general_information
+DrugBank_drug_type <- DrugBank_drug_type[DrugBank_drug_type$type == "small molecule", ] # retain only small molecular drugs
+
+
+# Keep combinations involving small molecular drugs
+valid_drugCombs_cat <- valid_drugCombs_cat[(valid_drugCombs_cat$Drug1_DrugBank_id %in% DrugBank_drug_type$primary_key) & 
+                                             (valid_drugCombs_cat$Drug2_DrugBank_id %in% DrugBank_drug_type$primary_key) & 
+                                             (valid_drugCombs_cat$Drug3_DrugBank_id %in% c(DrugBank_drug_type$primary_key, NA)), ]
 
 
 #####
 
 
-# Read the DDI data
-DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
-DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", paste0("ADR_", disease))]
-DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi[, paste0("ADR_", disease)] == "adr_positive", ]
+# Add information about clinical trial outcomes
+CDCDB_trials <- read.csv("Databases/CDCDB/trials_df.csv")
+valid_drugCombs_cat <- left_join(x = valid_drugCombs_cat, y = CDCDB_trials[, c("nct_id", "overall_status", "phase", "why_stopped")], by = c("source_id" = "nct_id"))
 
 
-# Keep only combinations involving licensed anti-cancer drugs
-DrugBank_ddi <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id & DrugBank_ddi$Drug2_DrugBank_id %in% cancer_drug_list$DrugBank_drug_id, ]
+# Assign class labels
+valid_drugCombs_cat$class_EffAdv <- NA
+valid_drugCombs_cat[valid_drugCombs_cat$phase %in% c("Phase 3", "Phase 4") & valid_drugCombs_cat$overall_status %in% c("Completed"), "class_EffAdv"] <- "Eff"
+valid_drugCombs_cat[valid_drugCombs_cat$overall_status %in% c("Terminated", "Withdrawn") & grepl("toxic", valid_drugCombs_cat$why_stopped, ignore.case = TRUE), "class_EffAdv"] <- "Adv"
+valid_drugCombs_cat <- valid_drugCombs_cat[!is.na(valid_drugCombs_cat$class_EffAdv), ]
 
 
-# Extract unique list of DDIs
-# DrugBank_ddi <- DrugBank_ddi[sample(1: nrow(DrugBank_ddi), 500), ]
-
-DrugBank_ddi$keep <- NA
-for(i in 1:nrow(DrugBank_ddi)){
-  if(is.na(DrugBank_ddi[i,"keep"])){
-    DrugBank_ddi[i,"keep"] <- TRUE
-    
-    drug1 <- DrugBank_ddi[i, "Drug1_DrugBank_id"]
-    drug2 <- DrugBank_ddi[i, "Drug2_DrugBank_id"]
-    
-    DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% drug2 & DrugBank_ddi$Drug2_DrugBank_id %in% drug1, "keep"] <- FALSE
-  }
-}
-
-valid_drugCombs_cat <- DrugBank_ddi[DrugBank_ddi$keep == "TRUE", ]
-
-
-# Assign labels
-valid_drugCombs_cat$class_EffAdv <- "Adv"
-valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
-
-
-######
+#####
 
 
 # Read the drug combination used in the training 
@@ -146,7 +156,8 @@ if(length(remove_rows) > 0){
 }
 
 
-valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, valid_drugCombs_cat$Drug3_DrugBank_id, sep = "_")
+valid_drugCombs_cat$comb_name <- gsub("_NA$", "", valid_drugCombs_cat$comb_name)
 
 
 #####
@@ -184,13 +195,15 @@ valid_drugCombs_cat <- valid_drugCombs_cat %>%
   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
   left_join(drugTarget_list, by = c("Drug2_DrugBank_id" = "drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_2 = drugTarget_ensembl_id) %>%
+  left_join(drugTarget_list, by = c("Drug3_DrugBank_id" = "drugbank_drug_id")) %>%
+  dplyr::rename(drugTarget_ensembl_id_3 = drugTarget_ensembl_id) %>%
   filter(!is.na(drugTarget_ensembl_id_1), !is.na(drugTarget_ensembl_id_2)) %>%   
   dplyr::rowwise() %>%
   dplyr::mutate(
-    drugTarget_ensembl_id =  list(unique(unlist(strsplit(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2), ",")))),
+    drugTarget_ensembl_id =  list(unique(unlist(strsplit(na.exclude(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2, drugTarget_ensembl_id_3)), ",")))),
     drugTarget_count = length(unlist(drugTarget_ensembl_id))
   ) %>%
-  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2) 
+  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_3) 
 
 valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$drugTarget_count > 1, ]
 
@@ -274,32 +287,8 @@ valid_drugCombs_cat$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$e
 valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
 
-#####
-
-
-# Add annotations to the combinations
-valid_drugCombs_cat$Drug1_indications <- cancer_drug_list$Indications[match(valid_drugCombs_cat$Drug1_DrugBank_id, cancer_drug_list$DrugBank_drug_id)]
-valid_drugCombs_cat$Drug2_indications <- cancer_drug_list$Indications[match(valid_drugCombs_cat$Drug2_DrugBank_id, cancer_drug_list$DrugBank_drug_id)]
-
-# Read the raw DDI information
-DrugBank_ddi <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
-DrugBank_ddi <- DrugBank_ddi$drugs$drug_interactions
-colnames(DrugBank_ddi)[c(1,4)] <- c("Drug1_DrugBank_id", "Drug2_DrugBank_id")
-
-valid_drugCombs_cat$DDI_description <- NA
-for(i in 1:nrow(valid_drugCombs_cat)){
-  tmp1 <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id == valid_drugCombs_cat[i, ]$Drug1_DrugBank_id & 
-                         DrugBank_ddi$Drug2_DrugBank_id == valid_drugCombs_cat[i, ]$Drug2_DrugBank_id, "description", drop = TRUE]
-  valid_drugCombs_cat[i, "DDI_description"] <- paste(tmp1, collapse = "; ")
-}
-rm(tmp1)
-
-
-#####
-
-
-if(!dir.exists("InputFiles/Validation_data_2/")){dir.create("InputFiles/Validation_data_2/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_4/")){dir.create("InputFiles/Validation_data_4/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 
