@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate the features for validation data 4 and check applicability domain
+# Generate the features for validation data 3 and check applicability domain
 
 
 
@@ -80,7 +80,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ",
 
 
 # Read the drug combinations
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
 
 
 # Select the column containing the drug target based on th user input
@@ -96,8 +96,10 @@ switch(drug_target_type,
                                       "ext_RI_targets", "ext_KEGG_targets") })
 
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name", 
-                                               "Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id", 
-                                               "condition", "source_id", "overall_status", "phase", "why_stopped", 
+                                               "Drug1_name", "Drug1_DrugBank_id", 
+                                               "Drug2_name", "Drug2_DrugBank_id",                                                
+                                               "Drug3_name", "Drug3_DrugBank_id", 
+                                               "Disease", "Source", "Notes", 
                                                "class_EffAdv", drug_target_col)]
 
 
@@ -214,8 +216,8 @@ for(drugComb in colnames(rwr_result)){
 
 # Save the results
 
-if(!dir.exists("OutputFiles/Validation_data_4/Features/")){dir.create("OutputFiles/Validation_data_4/Features/", recursive = TRUE)}
-saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_4/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+if(!dir.exists("OutputFiles/Validation_data_3/Features/")){dir.create("OutputFiles/Validation_data_3/Features/", recursive = TRUE)}
+saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_3/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 #####
@@ -250,10 +252,10 @@ if(nrow(efficacy_feature_select) > 0){
 
 # Get the FGSEA results for the train and test data
 train_fgsea_result <- train_fgsea_result[row.names(train_fgsea_result) %in% c(safety_feature_select, efficacy_feature_select), 
-                                         colnames(train_fgsea_result) %in% train_drugCombs_cat$comb_name, drop = FALSE]
+                                         colnames(train_fgsea_result) %in% train_drugCombs_cat$comb_name]
 
 valid_fgsea_result <- valid_fgsea_result[row.names(valid_fgsea_result) %in% c(safety_feature_select, efficacy_feature_select), 
-                                         colnames(valid_fgsea_result) %in% valid_drugCombs_cat$comb_name, drop = FALSE]
+                                         colnames(valid_fgsea_result) %in% valid_drugCombs_cat$comb_name]
 
 
 train_fgsea_result <- as.data.frame(t(train_fgsea_result))
@@ -281,7 +283,7 @@ if(!dir.exists("OutputFiles/Plots/validation_data_applicibility_domain/")){
   dir.create("OutputFiles/Plots/validation_data_applicibility_domain/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation4_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation3_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 7, height = 6,
      units = "cm", compression = "lzw", res = 1200)
 

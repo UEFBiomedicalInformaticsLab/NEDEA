@@ -231,7 +231,8 @@ DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "increased"
 # The risk or severity of QTc 2
 # The risk or severity of hypertension 4
 # The risk or severity of Tachycardia 10
-# The risk or severity of hyperglycemia 6
+# The risk or severity of hypoglycemia 6
+# The risk or severity of hyperglycemia 11
 # The risk or severity of hypotension 12
 # The risk or severity of renal 13
 # The risk or severity of infection 18
@@ -250,7 +251,7 @@ DrugBank_ddi$class_metabolicEffect[test_medec | test_scinc] <- "increased"
 ### UPDATE ###
 
 # set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 15, 16, 20, 28, 33, 35, 39, 48, 49) 
-set_adv_ids <- c(1, 2, 4, 6, 10, 12, 13, 18, 17, 19, 29, 34, 40, 41, 50, 51, 53, 54) 
+set_adv_ids <- c(1, 2, 4, 6, 10, 11, 12, 13, 18, 17, 19, 29, 34, 40, 41, 50, 51, 53, 54) 
 
 ### UPDATE ###
 
