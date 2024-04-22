@@ -63,7 +63,7 @@ model <- readRDS(file = paste0("OutputFiles/Predictive_model/model_NES_combinedE
 
 
 # Read the drug combinations for validation
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name", 
                                                "Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id", 
                                                "condition", "source_id", "overall_status", "phase", "why_stopped", 
@@ -71,7 +71,7 @@ valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name",
 
 
 # Read the FGSEA results
-fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_4/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_3/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 # Read the important features 
@@ -83,7 +83,8 @@ selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_Efficacy
 
 # Extract the prediction data
 predict_data <- fgsea_result[row.names(fgsea_result) %in% selected_features$feature, 
-                             colnames(fgsea_result) %in% valid_drugCombs_cat$comb_name]
+                             colnames(fgsea_result) %in% valid_drugCombs_cat$comb_name, 
+                             drop = FALSE]
 predict_data <- as.data.frame(t(predict_data))
 
 
@@ -94,14 +95,15 @@ predict_result$predicted_category <- predict(object = model, newdata = predict_d
 
 
 # Merge the actual classes
-predict_result <- merge(y = predict_result, 
-                        x = valid_drugCombs_cat, 
-                        by.y = 0, by.x = "comb_name")
+predict_result <- merge(x = valid_drugCombs_cat,
+                        y = predict_result, 
+                        by.y = 0, by.x = "comb_name", 
+                        all = TRUE)
 predict_result$class_EffAdv <- factor(x = predict_result$class_EffAdv, levels = c("Eff", "Adv"))
 predict_result$predicted_category <- factor(x = predict_result$predicted_category, levels = c("Eff", "Adv"))
 
-if(!dir.exists("OutputFiles/Validation_data_4/Predictions/")){ dir.create("OutputFiles/Validation_data_4/Predictions/", recursive = TRUE) }
-write.csv(predict_result, file = paste0("OutputFiles/Validation_data_4/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_3/Predictions/")){ dir.create("OutputFiles/Validation_data_3/Predictions/", recursive = TRUE) }
+write.csv(predict_result, file = paste0("OutputFiles/Validation_data_3/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -114,8 +116,8 @@ predict_metrics <- bind_rows( metrics(data = predict_result, truth = class_EffAd
                               pr_auc(data = predict_result, truth = class_EffAdv, predicted_probEff) )
 
 
-if(!dir.exists("OutputFiles/Validation_data_4/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_4/Prediction_metrics/", recursive = TRUE) }
-write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_4/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_3/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_3/Prediction_metrics/", recursive = TRUE) }
+write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 # Plot the ROC-AUC and PR-AUC
@@ -154,7 +156,7 @@ if(!is.na(predict_metrics[predict_metrics$.metric == "roc_auc", ".estimate", dro
     )
   
   if(!dir.exists("OutputFiles/Plots/validation_metrics/")){ dir.create("OutputFiles/Plots/validation_metrics/", recursive = TRUE) }
-  tiff(paste0("OutputFiles/Plots/validation_metrics/plot_validation4_predictionAUC_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+  tiff(paste0("OutputFiles/Plots/validation_metrics/plot_validation3_predictionAUC_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
        width = 8,
        height = 4,
        units = "cm", compression = "lzw", res = 1200)

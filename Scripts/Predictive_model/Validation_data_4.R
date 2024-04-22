@@ -265,8 +265,8 @@ valid_drugCombs_cat$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$e
 valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
 
-if(!dir.exists("InputFiles/Validation_data_3/")){dir.create("InputFiles/Validation_data_3/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_4/")){dir.create("InputFiles/Validation_data_4/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 

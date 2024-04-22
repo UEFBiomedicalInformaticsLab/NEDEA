@@ -1,7 +1,7 @@
 set.seed(5081)
 
 
-# Script to plot the accuracy scores from validation 1
+# Script to plot the accuracy scores from validation 3
 
 
 # Load libraries
@@ -15,8 +15,9 @@ drug_target_type <- "known"
 # Read the all the metrics
 predict_metrics <- list()
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
-  if(file.exists(paste0("OutputFiles/Validation_data_1/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"))){
-    predict_metrics[[disease]] <- read.csv(file = paste0("OutputFiles/Validation_data_1/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), header = TRUE)
+  
+  if(file.exists(paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"))){
+    predict_metrics[[disease]] <- read.csv(file = paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), header = TRUE)
   }
 }
 predict_metrics <- bind_rows(predict_metrics, .id = "disease")
@@ -38,7 +39,7 @@ plot_data$.metric <- gsub("pr_auc", "PR-AUC", plot_data$.metric)
 if(!dir.exists("OutputFiles/Plots_publication/Validation/")){
   dir.create("OutputFiles/Plots_publication/Validation/", recursive = TRUE)
 }
-tiff(paste0("OutputFiles/Plots_publication/Validation/Validation1_predictionMetrics_NES_combinedEfficacySafety_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots_publication/Validation/Validation3_predictionMetrics_NES_combinedEfficacySafety_", drug_target_type, ".tiff"),
      width = 8,
      height = 10,
      units = "cm", compression = "lzw", res = 1200)

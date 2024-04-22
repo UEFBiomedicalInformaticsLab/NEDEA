@@ -41,7 +41,7 @@ if(!opt$disease %in% c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCance
 disease <- opt$disease
 
 cat("\n\nUsing the following parameters: ")
-cat(paste0("\nDisease: ", disease))
+cat(paste0("\nDisease: ", disease, "\n"))
 
 
 # Read the synergy level of the  drug combination

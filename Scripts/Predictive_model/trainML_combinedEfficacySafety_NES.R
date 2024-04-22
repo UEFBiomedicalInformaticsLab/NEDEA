@@ -69,65 +69,76 @@ trainData <- fgsea_result_select[, !colnames(fgsea_result_select) %in% c("catego
 trainClass <- fgsea_result_select$category
 
 
-# Tune the hyper-parameters 
-# Doing separately as caret does not allow tuning the number of trees in random forest
-tune_grid <- expand.grid(mtry = c(1:10), 
-                         ntree = seq(50, 1000, 50))
-
-tuning_folds <- createFolds(y = trainClass, 
-                            k = 5, 
-                            list = TRUE, 
-                            returnTrain = TRUE)
-
-cl <- makeCluster(nproc)
-registerDoParallel(cl) 
-
-tune_result <- data.frame()
-for(i in 1:nrow(tune_grid)){
-  tmp1 <- train(x = trainData,
-                y = trainClass,
-                method = "rf",
-                metric = "F",
-                ntree = tune_grid[i, "ntree"],
-                allowParallel = TRUE,
-                tuneGrid = data.frame(mtry = tune_grid[i, "mtry"]),
-                trControl = trainControl(index = tuning_folds, 
-                                         method = "cv",
-                                         number = 5,
-                                         summaryFunction = prSummary,
-                                         classProbs = TRUE,
-                                         savePredictions = TRUE))
-  tmp1 <- tmp1$results
-  tmp1$ntree <- tune_grid[i, "ntree"]
-  tune_result <- rbind(tune_result, tmp1)
-}
-rm(tmp1)
-
-stopCluster(cl)
-unregister_dopar()
-
-
-
-# Select the best tune 
-best_tune <- tune_result[tune_result$F == max(tune_result$F, na.rm = TRUE), ]
-if(nrow(best_tune) > 1){
-  best_tune <- best_tune[best_tune$FSD == min(best_tune$F, na.rm = TRUE), ]
-}
-
-best_tune <- best_tune[, c("mtry", "ntree")]
-
-cat(paste0("\n\nSelected mtry: ", best_tune$mtry, "\n"))
-cat(paste0("\n\nSelected ntree: ", best_tune$ntree, "\n"))
+# # Tune the hyper-parameters 
+# # Doing separately as caret does not allow tuning the number of trees in random forest
+# tune_grid <- expand.grid(mtry = c(1:10), 
+#                          ntree = seq(50, 1000, 50))
+# 
+# tuning_folds <- createFolds(y = trainClass, 
+#                             k = 5, 
+#                             list = TRUE, 
+#                             returnTrain = TRUE)
+# 
+# cl <- makeCluster(nproc)
+# registerDoParallel(cl) 
+# 
+# tune_result <- data.frame()
+# for(i in 1:nrow(tune_grid)){
+#   tmp1 <- train(x = trainData,
+#                 y = trainClass,
+#                 method = "rf",
+#                 metric = "F",
+#                 ntree = tune_grid[i, "ntree"],
+#                 allowParallel = TRUE,
+#                 tuneGrid = data.frame(mtry = tune_grid[i, "mtry"]),
+#                 trControl = trainControl(index = tuning_folds, 
+#                                          method = "cv",
+#                                          number = 5,
+#                                          summaryFunction = prSummary,
+#                                          classProbs = TRUE,
+#                                          savePredictions = TRUE))
+#   tmp1 <- tmp1$results
+#   tmp1$ntree <- tune_grid[i, "ntree"]
+#   tune_result <- rbind(tune_result, tmp1)
+# }
+# rm(tmp1)
+# 
+# stopCluster(cl)
+# unregister_dopar()
+# 
+# 
+# 
+# # Select the best tune 
+# best_tune <- tune_result[tune_result$F == max(tune_result$F, na.rm = TRUE), ]
+# if(nrow(best_tune) > 1){
+#   best_tune <- best_tune[best_tune$FSD == min(best_tune$F, na.rm = TRUE), ]
+# }
+# 
+# best_tune <- best_tune[, c("mtry", "ntree")]
+# 
+# cat(paste0("\n\nSelected mtry: ", best_tune$mtry, "\n"))
+# cat(paste0("\n\nSelected ntree: ", best_tune$ntree, "\n"))
 
 
 # Final model training
+# model <- train(x = trainData,
+#                y = trainClass,
+#                method = "rf",
+#                metric = "F",
+#                ntree = best_tune$ntree,
+#                allowParallel = TRUE,
+#                tuneGrid = data.frame(mtry = best_tune$mtry),
+#                trControl = trainControl(method = "none"))
+
+# Using mtry = 2 since only one efficacy and one safety feature should be sufficient 
+
 model <- train(x = trainData,
                y = trainClass,
                method = "rf",
                metric = "F",
-               ntree = best_tune$ntree,
+               ntree = 500,
                allowParallel = TRUE,
-               tuneGrid = data.frame(mtry = best_tune$mtry),
+               tuneGrid = data.frame(mtry = 2),
                trControl = trainControl(method = "none"))
 
 

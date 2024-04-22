@@ -27,7 +27,7 @@ option_list = list(
   make_option(c("--drug_target_type"), type = "character", default = "known",
               help = "The type of drug target to use. Possible values: known, PS, SIGNOR, NPA, RI, KEGG, all. Default: known", metavar = "character"),
   make_option(c("--select_top_combs"), type = "numeric", default = 10,
-              help = "The final number of drug combinations to be selected. Default: 10", metavar = "numeric"),
+              help = "The final number of drug combinations to be selected. Default: 10", metavar = "numeric")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -149,7 +149,7 @@ priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfM
 
 
 if(!dir.exists("OutputFiles/DeNovo_data_1/Priority_drug_combinations/")){ dir.create("OutputFiles/DeNovo_data_1/Priority_drug_combinations/", recursive = TRUE) }
-write.csv(predict_result, file = paste0("OutputFiles/DeNovo_data_1/Priority_drug_combinations/priorityDrugCombs_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+write.csv(priority_drugCombs, file = paste0("OutputFiles/DeNovo_data_1/Priority_drug_combinations/priorityDrugCombs_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 # tmp1 <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 2, function(x){ rank(x) })

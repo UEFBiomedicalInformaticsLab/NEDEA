@@ -82,7 +82,8 @@ selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_Efficacy
 
 # Extract the prediction data
 predict_data <- fgsea_result[row.names(fgsea_result) %in% selected_features$feature, 
-                             colnames(fgsea_result) %in% valid_drugCombs_cat$comb_name]
+                             colnames(fgsea_result) %in% valid_drugCombs_cat$comb_name, 
+                             drop = FALSE]
 predict_data <- as.data.frame(t(predict_data))
 
 
