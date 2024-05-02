@@ -122,8 +122,8 @@ for(i in 1:nrow(DrugBank_ddi)){
   if(is.na(DrugBank_ddi[i,"keep"])){
     DrugBank_ddi[i,"keep"] <- TRUE
     
-    drug1 <- DrugBank_ddi[i, "Drug1_DrugBank_id"]
-    drug2 <- DrugBank_ddi[i, "Drug2_DrugBank_id"]
+    drug1 <- DrugBank_ddi[i, "Drug1_DrugBank_id", drop = TRUE]
+    drug2 <- DrugBank_ddi[i, "Drug2_DrugBank_id", drop = TRUE]
     
     DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id %in% drug2 & DrugBank_ddi$Drug2_DrugBank_id %in% drug1, "keep"] <- FALSE
   }
@@ -148,8 +148,8 @@ train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, tr
 # Check for overlapping drug combinations
 remove_rows <- c()
 for(i in 1:nrow(valid_drugCombs_cat)){
-  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id"]
-  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id"]
+  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug1 & train_drugCombs_cat$Drug2_DrugBank_id == drug2, ]
   tmp2 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug2 & train_drugCombs_cat$Drug2_DrugBank_id == drug1, ]
@@ -302,6 +302,13 @@ valid_drugCombs_cat$Drug2_indications <- cancer_drug_list$Indications[match(vali
 
 #####
 
+
+# Remove DDI types with 10 or less than 10 drug combinations
+keep_DDI_type <- names(which(table(valid_drugCombs_cat$DDI_type, useNA = "ifany") > 10))
+valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$DDI_type %in% keep_DDI_type, ]
+
+
+#####
 
 if(!dir.exists("InputFiles/Validation_data_2/")){dir.create("InputFiles/Validation_data_2/", recursive = TRUE)}
 saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))

@@ -218,6 +218,8 @@ saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_2/Feat
 #####
 
 
+# Plot the applicibility domain with the top feature from each category 
+
 # Read the training set drug combination 
 train_drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
 train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, train_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
@@ -311,7 +313,6 @@ ggplot() +
        shape = "Group")
 
 dev.off()
-
 
 
 print(warnings())

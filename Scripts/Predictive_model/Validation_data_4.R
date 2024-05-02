@@ -78,9 +78,9 @@ DrugBank_ddi$comb_name <- paste(DrugBank_ddi$Drug1_DrugBank_id, DrugBank_ddi$Dru
 valid_drugCombs_cat$class_EffAdv <- NA
 for(i in 1:nrow(valid_drugCombs_cat)){
   
-  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id"]
-  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id"]
-  drug3 <- valid_drugCombs_cat[i, "Drug3_DrugBank_id"]
+  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
+  drug3 <- valid_drugCombs_cat[i, "Drug3_DrugBank_id", drop = TRUE]
   
   if(is.na(drug3)){
     
@@ -118,8 +118,8 @@ train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, tr
 # Check for overlapping drug combinations
 remove_rows <- c()
 for(i in 1:nrow(valid_drugCombs_cat)){
-  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id"]
-  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id"]
+  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug1 & train_drugCombs_cat$Drug2_DrugBank_id == drug2, ]
   tmp2 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug2 & train_drugCombs_cat$Drug2_DrugBank_id == drug1, ]

@@ -110,7 +110,7 @@ for(lib_name in unique(stat_data$feature)){
                                                      "p_val" = stat_res$p.value))
 }
 
-stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.05, ]
+stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.001, ]
 stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE), ]
 
 

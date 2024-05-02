@@ -99,8 +99,8 @@ train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, tr
 # Check for overlapping drug combinations
 remove_rows <- c()
 for(i in 1:nrow(valid_drugCombs_cat)){
-  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id"]
-  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id"]
+  drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug1 & train_drugCombs_cat$Drug2_DrugBank_id == drug2, ]
   tmp2 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug2 & train_drugCombs_cat$Drug2_DrugBank_id == drug1, ]

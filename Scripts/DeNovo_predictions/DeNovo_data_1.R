@@ -106,8 +106,8 @@ train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, tr
 # Check for overlapping drug combinations
 remove_rows <- c()
 for(i in 1:nrow(denovo_drugCombs)){
-  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id"]
-  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id"]
+  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug1 & train_drugCombs_cat$Drug2_DrugBank_id == drug2, ]
   tmp2 <- train_drugCombs_cat[train_drugCombs_cat$Drug1_DrugBank_id == drug2 & train_drugCombs_cat$Drug2_DrugBank_id == drug1, ]
@@ -172,8 +172,8 @@ CDCDB_drugCombs <- CDCDB_drugCombs[grep(pattern = grep_pattern, x = CDCDB_drugCo
 # Remove the new drug pairs which has already been used in clinical trials
 remove_rows <- c()
 for(i in 1:nrow(denovo_drugCombs)){
-  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id"]
-  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id"]
+  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- CDCDB_drugCombs[CDCDB_drugCombs$Drug1_DrugBank_id == drug1 & CDCDB_drugCombs$Drug2_DrugBank_id == drug2, ]
   tmp2 <- CDCDB_drugCombs[CDCDB_drugCombs$Drug1_DrugBank_id == drug2 & CDCDB_drugCombs$Drug2_DrugBank_id == drug1, ]
@@ -206,8 +206,8 @@ DrugBank_ddi <- DrugBank_ddi[grep("risk or severity of .+toxicity can be increas
 # Add annotation of known DDI
 denovo_drugCombs$DDI_description <- NA
 for(i in 1:nrow(denovo_drugCombs)){
-  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id"]
-  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id"]
+  drug1 <- denovo_drugCombs[i, "Drug1_DrugBank_id", drop = TRUE]
+  drug2 <- denovo_drugCombs[i, "Drug2_DrugBank_id", drop = TRUE]
   
   tmp1 <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id == drug1 & DrugBank_ddi$Drug2_DrugBank_id == drug2, "description"]
   tmp2 <- DrugBank_ddi[DrugBank_ddi$Drug1_DrugBank_id == drug2 & DrugBank_ddi$Drug2_DrugBank_id == drug1, "description"]
