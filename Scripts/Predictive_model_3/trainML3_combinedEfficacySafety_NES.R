@@ -64,8 +64,8 @@ drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat$class_EffAdv), ]
 
 
 # Read the list of selected features
-selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_EfficacySafety_selectedFeatures_", disease, "_known.csv"))
-selected_features <- selected_features[order(selected_features$feature), ]
+selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_EfficacySafety_selectedFeatures_", disease, "_", drug_target_type, ".csv"))
+# selected_features <- selected_features[order(selected_features$feature), ]
 
 # Sub-set the FGSEA results for only the selected drug combinations and features
 fgsea_result_select <- fgsea_result[row.names(fgsea_result) %in% selected_features$feature, 
@@ -124,7 +124,12 @@ for(fold in names(data_folds)){
     fit_data$category <- factor(fit_data$category, levels = c("1", "0"))
     roc_curve_data <- roc_curve(data = fit_data, truth = category, predicted_probability)
     roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-    best_probability_threshold <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ".threshold", drop = TRUE]
+    roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+    if(nrow(roc_curve_data) > 1){
+      roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
+    }
+    best_probability_threshold <- roc_curve_data$.threshold
+    
     
     # Get the actual feature threshold using model coefficients and the selected probability
     best_feature_threshold <- (log(best_probability_threshold / (1 - best_probability_threshold)) - as.numeric(coef(model)[1])) / as.numeric(coef(model)[2]) ### RECHECK
@@ -133,20 +138,21 @@ for(fold in names(data_folds)){
                                            "feature" = feature_name, 
                                            "threshold" = best_feature_threshold))
     
+    
     # Generate predictions for training
     tmp1 <- fit_data
     
     if(grepl("^\\[DISEASE\\]", feature_name)){
-      tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 1, 0)
+      tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 1, -1)
     }
     if(grepl("^\\[ADR\\]", feature_name)){
-      tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 0, 1)
+      tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, -1, 1)
     } 
     
     
     tmp2 <- tmp1[, c("category", "predicted_category")]
-    tmp2$category <- factor(tmp2$category, levels = c(1, 0), labels = c("Eff", "Adv"))
-    tmp2$predicted_category <- factor(tmp2$predicted_category, levels = c(1, 0), labels = c("Eff", "Adv"))
+    tmp2$category <- factor(tmp2$category, levels = c("1", "0"), labels = c("Eff", "Adv"))
+    tmp2$predicted_category <- factor(tmp2$predicted_category, levels = c(1, -1), labels = c("Eff", "Adv"))
     feature_level_accuracy <- rbind(feature_level_accuracy, 
                                     data.frame("fold" = fold, 
                                                "feature" = feature_name, 
@@ -168,16 +174,16 @@ for(fold in names(data_folds)){
     colnames(predict_data)[1] <- "feature"
     
     if(grepl("^\\[DISEASE\\]", feature_name)){
-      predict_data$predicted_category <- ifelse(predict_data$feature >= best_feature_threshold, 1, 0)
+      predict_data$predicted_category <- ifelse(predict_data$feature >= best_feature_threshold, 1, -1)
     }
     if(grepl("^\\[ADR\\]", feature_name)){
-      predict_data$predicted_category <- ifelse(predict_data$feature >= best_feature_threshold, 0, 1)
+      predict_data$predicted_category <- ifelse(predict_data$feature >= best_feature_threshold, -1, 1)
     } 
     
     
     tmp2 <- predict_data[, c("category", "predicted_category")]
     tmp2$category <- factor(tmp2$category, levels = c("Eff", "Adv"), labels = c("Eff", "Adv"))
-    tmp2$predicted_category <- factor(tmp2$predicted_category, levels = c(1, 0), labels = c("Eff", "Adv"))
+    tmp2$predicted_category <- factor(tmp2$predicted_category, levels = c(1, -1), labels = c("Eff", "Adv"))
     feature_level_accuracy <- rbind(feature_level_accuracy, 
                                     data.frame("fold" = fold, 
                                                "feature" = feature_name, 
@@ -199,10 +205,12 @@ for(fold in names(data_folds)){
   # Calculate accuracy metrics for training 
   train_prediction_df <- column_to_rownames(train_prediction_df, "drugCombs")
   
-  train_prediction_df <- train_prediction_df %>% 
-    mutate(efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
-           safety_score = rowMeans(select(., starts_with("[ADR]")))) 
-  train_prediction_df$final_score <- train_prediction_df$efficacy_score - train_prediction_df$safety_score
+  # train_prediction_df <- train_prediction_df %>% 
+  #   mutate(efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
+  #          safety_score = rowMeans(select(., starts_with("[ADR]")))) 
+  # train_prediction_df$final_score <- train_prediction_df$efficacy_score - train_prediction_df$safety_score
+  
+  train_prediction_df$final_score <- rowMeans(train_prediction_df)   
   
   train_prediction_df$final_predicted_category <- ifelse(train_prediction_df$final_score > 0, "Eff", "Adv")
   train_prediction_df$final_predicted_category <- factor(train_prediction_df$final_predicted_category, levels = c("Eff", "Adv"))
@@ -216,10 +224,12 @@ for(fold in names(data_folds)){
   # Calculate accuracy metrics for test 
   test_prediction_df <- column_to_rownames(test_prediction_df, "drugCombs")
   
-  test_prediction_df <- test_prediction_df %>% 
-    mutate(efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
-           safety_score = rowMeans(select(., starts_with("[ADR]")))) 
-  test_prediction_df$final_score <- test_prediction_df$efficacy_score - test_prediction_df$safety_score
+  # test_prediction_df <- test_prediction_df %>% 
+  #   mutate(efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
+  #          safety_score = rowMeans(select(., starts_with("[ADR]")))) 
+  # test_prediction_df$final_score <- test_prediction_df$efficacy_score - test_prediction_df$safety_score
+  
+  test_prediction_df$final_score <- rowMeans(test_prediction_df)
   
   test_prediction_df$final_predicted_category <- ifelse(test_prediction_df$final_score > 0, "Eff", "Adv")
   test_prediction_df$final_predicted_category <- factor(test_prediction_df$final_predicted_category, levels = c("Eff", "Adv"))
@@ -358,6 +368,7 @@ ggpubr::ggarrange(plot_list$feature_level_accuracy,
                   ncol = 2)
 
 dev.off()
+rm(list = c("plot_data", "plot_list"))
 
 
 #####
@@ -367,7 +378,7 @@ dev.off()
 allData_prediction_df <- data.frame("drugCombs" = row.names(fgsea_result_select))
 model_list <- list()
 selected_threshold <- data.frame()
-
+plot_list <- list()
 
 for(feature_name in selected_features$feature){
   
@@ -392,25 +403,74 @@ for(feature_name in selected_features$feature){
   fit_data$category <- factor(fit_data$category, levels = c("1", "0"))
   roc_curve_data <- roc_curve(data = fit_data, truth = category, predicted_probability)
   roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-  best_probability_threshold <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ".threshold", drop = TRUE]
-  
+  roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+  if(nrow(roc_curve_data) > 1){
+    roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
+  }
+  best_probability_threshold <- roc_curve_data$.threshold
+
   
   # Get the actual feature threshold using model coefficients and the selected probability
   best_feature_threshold <- (log(best_probability_threshold / (1 - best_probability_threshold)) - as.numeric(coef(model)[1])) / as.numeric(coef(model)[2]) ### RECHECK
   selected_threshold <- rbind(selected_threshold, 
                               data.frame("feature" = feature_name, 
                                          "threshold" = best_feature_threshold))
-  
+
   
   # Generate predictions for all data
   tmp1 <- fit_data
   
   if(grepl("^\\[DISEASE\\]", feature_name)){
-    tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 1, 0)
+    tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 1, -1)
   }
   if(grepl("^\\[ADR\\]", feature_name)){
-    tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, 0, 1)
+    tmp1$predicted_category <- ifelse(fit_data$feature >= best_feature_threshold, -1, 1)
   } 
+  
+  
+  # Plot the partition
+  plot_data <- tmp1
+  plot_data$feature_name <- feature_name
+
+  plot_data$category <- factor(plot_data$category, levels = c("1", "0"), labels = c("Eff", "Adv"))
+  plot_data$predicted_category <- factor(plot_data$predicted_category, levels = c("1", "-1"), labels = c("Eff", "Adv"))
+
+
+  plot_list[[feature_name]] <- ggplot(plot_data, aes(x = feature_name, y = feature, group = category)) +
+    geom_boxplot(fill = "grey",
+                 width = 0.5,
+                 lwd = 0.1,
+                 outliers = FALSE) +
+    geom_jitter(aes(shape = category,
+                    color = predicted_category),
+                size = 1) +
+    geom_hline(yintercept = best_feature_threshold,
+               linewidth = 0.1,
+               linetype = "dashed",
+               color = "red") +
+    scale_x_discrete(labels = function(x) scales::label_wrap(40)(x)) +
+    scale_color_manual(values = c("Adv" = "#E69F00", "Eff" = "#56B4E9")) +
+    scale_shape_manual(values = c("Adv" = 1, "Eff" = 3)) +
+    labs(x = "Feature",
+         y = "NES",
+         shape = "Acual cat.",
+         color = "Predicted cat.") +
+    theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
+          panel.grid = element_blank(),
+          panel.spacing = unit(0.1, "cm"),
+          # strip.background = element_rect(color = "black", linewidth = 0.25,),
+          # strip.text = element_text(size = 5, margin = margin(1,1,1,1)),
+          text = element_text(size = 5),
+          # plot.title = element_text(size = 4, hjust = 0.5, face = "plain"),
+          axis.text.x = element_text(size = 5, angle = 0, vjust = 0, hjust = 0.5),
+          axis.ticks = element_line(colour = "black", linewidth = 0.2),
+          legend.position = "bottom",
+          legend.key = element_blank(),
+          legend.key.size = unit(0.1, 'cm'),
+          legend.text = element_text(size = 4),
+          legend.margin = margin(1,1,1,1),
+          legend.box.spacing = unit(0.1, 'cm'),
+          legend.box.background = element_rect(colour = "black", linewidth = 0.1))
   
   
   tmp1 <- tmp1[, c("predicted_category"), drop = FALSE]
@@ -420,6 +480,18 @@ for(feature_name in selected_features$feature){
   rm(tmp1)
   
 }
+
+
+if(!dir.exists("OutputFiles/Predictive_model_3/")){ dir.create("OutputFiles/Predictive_model_3/") }
+
+tiff(paste0("OutputFiles/Predictive_model_3/partition_PredictiveModel3_", disease, "_", drug_target_type, ".tiff"), 
+     width = 20,
+     height = 15,
+     units = "cm", compression = "lzw", res = 1200)
+
+ggpubr::ggarrange(plotlist = plot_list, common.legend = TRUE, legend = "bottom")
+
+dev.off()
 
 
 #####

@@ -149,7 +149,12 @@ for(fold in names(data_folds)){
   
   roc_curve_data <- roc_curve(data = train_prediction_df, truth = class_EffAdv, final_predicted_probability)
   roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-  best_probability_threshold <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ".threshold", drop = TRUE]
+  roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+  if(nrow(roc_curve_data) > 1){
+    roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
+  }
+  best_probability_threshold <- roc_curve_data$.threshold
+  
   
   train_prediction_df$final_predicted_category <- ifelse(train_prediction_df$final_predicted_probability > best_probability_threshold, "Eff", "Adv")
   train_prediction_df$final_predicted_category <- factor(train_prediction_df$final_predicted_category, levels = c("Eff", "Adv"))
@@ -271,7 +276,11 @@ allData_prediction_df$class_EffAdv <- factor(allData_prediction_df$class_EffAdv,
 
 roc_curve_data <- roc_curve(data = allData_prediction_df, truth = class_EffAdv, final_predicted_probability)
 roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-best_probability_threshold <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ".threshold", drop = TRUE]
+roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+if(nrow(roc_curve_data) > 1){
+  roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
+}
+best_probability_threshold <- roc_curve_data$.threshold
 
 allData_prediction_df$final_predicted_category <- ifelse(allData_prediction_df$final_predicted_probability > best_probability_threshold, "Eff", "Adv")
 allData_prediction_df$final_predicted_category <- factor(allData_prediction_df$final_predicted_category, levels = c("Eff", "Adv"))
