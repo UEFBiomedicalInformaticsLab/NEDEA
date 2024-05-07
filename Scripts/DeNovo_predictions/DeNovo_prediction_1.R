@@ -1,8 +1,8 @@
 set.seed(5081)
 
 
-# Use the trained model to predict the labels on the de novo data 1
 
+# Use the trained model to predict the labels on the de novo data 1
 
 
 # Load libraries
@@ -40,7 +40,7 @@ if(is.null(opt$disease)){
 
 if(!opt$drug_target_type %in% c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "all")){
   print_help(opt_parser)
-  stop("--drug_target_type should be: known, PS, SIGNOR, NPA, RI, KEGG, all", call.=FALSE)
+  stop("--drug_target_type should be: known, PS, SIGNOR, NPA, RI, KEGG, all", call. = FALSE)
 }
 
 
@@ -62,6 +62,7 @@ cat(paste0("\nNumber of drug combinations to select: ", select_top_combs))
 
 # Import the model for the selected disease and the drug target type
 model <- readRDS(file = paste0("OutputFiles/Predictive_model/model_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+feature_threshold <- model$feature_threshold
 
 
 # Read the drug combinations for de novo predictions
@@ -79,31 +80,55 @@ denovo_drugCombs <- denovo_drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id
 denovo_fgsea_result <- readRDS(file = paste0("OutputFiles/DeNovo_data_1/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
-# Read the important features 
-selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_EfficacySafety_selectedFeatures_", disease, "_", drug_target_type, ".csv"))
+# Check if all the features needed for prediction are present in the FGSEA result
+if(!all(feature_threshold$feature %in% row.names(denovo_fgsea_result))){
+  stop("Missing feature in the input FGSEA results", call. = TRUE)
+}
 
 
 #####
 
 
 # Extract the prediction data
-predict_data <- denovo_fgsea_result[row.names(denovo_fgsea_result) %in% selected_features$feature, 
-                                    colnames(denovo_fgsea_result) %in% denovo_drugCombs$comb_name]
+predict_data <- denovo_fgsea_result[row.names(denovo_fgsea_result) %in% feature_threshold$feature, 
+                             colnames(denovo_fgsea_result) %in% denovo_drugCombs$comb_name, 
+                             drop = FALSE]
 predict_data <- as.data.frame(t(predict_data))
 
 
-# Generate predictions
-predict_result <- predict(object = model, newdata = predict_data, type = "prob")
-colnames(predict_result) <- paste0("predicted_prob", colnames(predict_result))
-predict_result$predicted_category <- predict(object = model, newdata = predict_data, type = "raw")
+#####
+
+
+# Assign category based on each feature
+for(feature_name in feature_threshold$feature){
+  
+  best_feature_threshold <- feature_threshold[feature_threshold$feature == feature_name, "threshold"]
+  
+  if(grepl("^\\[DISEASE\\]", feature_name)){
+    predict_data[, feature_name] <- ifelse(predict_data[, feature_name] >= best_feature_threshold, 1, -1)
+  }
+  if(grepl("^\\[ADR\\]", feature_name)){
+    predict_data[, feature_name] <- ifelse(predict_data[, feature_name] >= best_feature_threshold, -1, 1)
+  }
+  
+}
+
+
+# Compile and generate final classification
+predict_data <- predict_data %>%
+  mutate( efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
+          safety_score = rowMeans(select(., starts_with("[ADR]"))) ) %>% 
+  mutate( final_score = rowMeans(select(., c(efficacy_score, safety_score))) )
+
+
+predict_data$final_predicted_category <- ifelse(predict_data$final_score > 0, "Eff", "Adv")
+predict_data$final_predicted_category <- factor(predict_data$final_predicted_category, levels = c("Eff", "Adv"))
 
 
 # Merge the actual classes
-predict_result <- merge(y = predict_result, 
-                        x = denovo_drugCombs, 
+predict_result <- merge(x = denovo_drugCombs, 
+                        y = predict_data[, c("efficacy_score", "safety_score", "final_score", "final_predicted_category")], 
                         by.y = 0, by.x = "comb_name")
-# predict_result$class_EffAdv <- factor(x = predict_result$class_EffAdv, levels = c("Eff", "Adv"))
-predict_result$predicted_category <- factor(x = predict_result$predicted_category, levels = c("Eff", "Adv"))
 
 if(!dir.exists("OutputFiles/DeNovo_data_1/Predictions/")){ dir.create("OutputFiles/DeNovo_data_1/Predictions/", recursive = TRUE) }
 write.csv(predict_result, file = paste0("OutputFiles/DeNovo_data_1/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
@@ -114,53 +139,51 @@ write.csv(predict_result, file = paste0("OutputFiles/DeNovo_data_1/Predictions/p
 
 # Identify the drugs to prioritize
 priority_drugCombs <- as.data.frame(t(denovo_fgsea_result))
-priority_drugCombs <- priority_drugCombs[row.names(priority_drugCombs) %in% predict_result[predict_result$predicted_category == "Eff", "comb_name"], ]
+priority_drugCombs <- priority_drugCombs[row.names(priority_drugCombs) %in% predict_result[predict_result$final_score >= 1, "comb_name"], ]
 
 
 # Select drugs by comparing the mean efficacy score and mean safety score
-priority_drugCombs$mean_efficacy_score <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, mean)
-priority_drugCombs$mean_safety_score <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, mean)
-priority_drugCombs$diff_of_means <- priority_drugCombs$mean_efficacy_score  - priority_drugCombs$mean_safety_score
-tmp1 <- sort((priority_drugCombs$diff_of_means), decreasing = TRUE)[1:select_top_combs]
+priority_drugCombs$mean_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, mean)
+priority_drugCombs$mean_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, mean)
+priority_drugCombs$diff_of_means <- priority_drugCombs$mean_efficacy_NES - priority_drugCombs$mean_safety_NES
+tmp1 <- sort(unique(priority_drugCombs$diff_of_means), decreasing = TRUE)[1:select_top_combs]
 priority_drugCombs$isSelected_byDiffOfMean <- ifelse(priority_drugCombs$diff_of_means %in% tmp1, TRUE, FALSE)
 rm(tmp1)
 
 
 # Select drugs by comparing the max efficacy score and max safety score
-priority_drugCombs$max_efficacy_score <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, max)
-priority_drugCombs$max_safety_score <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, max)
-priority_drugCombs$diff_of_maxs <- priority_drugCombs$max_efficacy_score  - priority_drugCombs$max_safety_score
-priority_drugCombs$which_max_efficacy_score <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
-priority_drugCombs$which_max_safety_score <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
-tmp1 <- sort((priority_drugCombs$diff_of_maxs), decreasing = TRUE)[1:select_top_combs]
+priority_drugCombs$max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, max)
+priority_drugCombs$max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, max)
+priority_drugCombs$diff_of_maxs <- priority_drugCombs$max_efficacy_NES - priority_drugCombs$max_safety_NES
+priority_drugCombs$which_max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+priority_drugCombs$which_max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+tmp1 <- sort(unique(priority_drugCombs$diff_of_maxs), decreasing = TRUE)[1:select_top_combs]
 priority_drugCombs$isSelected_byDiffOfMax <- ifelse(priority_drugCombs$diff_of_maxs %in% tmp1, TRUE, FALSE)
 rm(tmp1)
 
 
+# Select drugs by comparing the ratio of max efficacy score and max safety score
+priority_drugCombs$max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, max)
+priority_drugCombs$max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, max)
+priority_drugCombs$ratio_of_maxs <- priority_drugCombs$max_efficacy_NES / priority_drugCombs$max_safety_NES
+priority_drugCombs$which_max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+priority_drugCombs$which_max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+priority_drugCombs$isSelected_byRatioOfMax <- ifelse(priority_drugCombs$ratio_of_maxs >= 2, TRUE, FALSE)
+
+
 # Save list of priority drug combinations
-priority_drugCombs <- priority_drugCombs[, c("mean_efficacy_score", "mean_safety_score", "diff_of_means", 
-                                             "max_efficacy_score", "max_safety_score", "diff_of_maxs", 
-                                             "which_max_efficacy_score", "which_max_safety_score", 
-                                             "isSelected_byDiffOfMean", "isSelected_byDiffOfMax")]
+priority_drugCombs <- priority_drugCombs[, c("mean_efficacy_NES", "mean_safety_NES", "diff_of_means", 
+                                             "max_efficacy_NES", "max_safety_NES", "diff_of_maxs", "ratio_of_maxs",
+                                             "which_max_efficacy_NES", "which_max_safety_NES", 
+                                             "isSelected_byDiffOfMean", "isSelected_byDiffOfMax", "isSelected_byRatioOfMax")]
 priority_drugCombs <- merge(x = predict_result,
                             y = priority_drugCombs, 
                             by.x = "comb_name", by.y = 0)
-priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfMean == "TRUE" | priority_drugCombs$isSelected_byDiffOfMax == "TRUE", ]
+priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfMean == "TRUE" | priority_drugCombs$isSelected_byDiffOfMax == "TRUE" | priority_drugCombs$isSelected_byRatioOfMax == "TRUE" , ]
 
 
 if(!dir.exists("OutputFiles/DeNovo_data_1/Priority_drug_combinations/")){ dir.create("OutputFiles/DeNovo_data_1/Priority_drug_combinations/", recursive = TRUE) }
 write.csv(priority_drugCombs, file = paste0("OutputFiles/DeNovo_data_1/Priority_drug_combinations/priorityDrugCombs_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
-
-
-# tmp1 <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 2, function(x){ rank(x) })
-# tmp2 <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 2, function(x){ rank(-x) })
-# 
-# 
-# priority_drugCombs_ranks <- merge(tmp1, tmp2, by = 0)
-# priority_drugCombs_ranks <- column_to_rownames(priority_drugCombs_ranks, "Row.names")
-# priority_drugCombs_ranks$total_score <- apply(priority_drugCombs_ranks, 1, sum)
-# 
-# priority_drugCombs_ranks <- priority_drugCombs_ranks[, c("total_score"), drop = FALSE]
 
 
 #####
@@ -190,15 +213,16 @@ colnames(plot_data)[colnames(plot_data) %in% safety_feature_select] <- "F2"
 x_axis_label = str_wrap(efficacy_feature_select, 40)
 y_axis_label = str_wrap(safety_feature_select, 40)
 
-plot_data$predicted_probEff <- predict_result$predicted_probEff[match(row.names(plot_data), predict_result$comb_name)]
+plot_data$final_score <- predict_result$final_score[match(row.names(plot_data), predict_result$comb_name)]
 
 plot_data <- plot_data %>% 
   rownames_to_column("comb_name") %>% 
-  left_join(priority_drugCombs[, c("comb_name", "isSelected_byDiffOfMean", "isSelected_byDiffOfMax")], 
+  left_join(priority_drugCombs[, c("comb_name", "isSelected_byDiffOfMean", "isSelected_byDiffOfMax", "isSelected_byRatioOfMax")], 
             by = "comb_name")
 
 plot_data[is.na(plot_data$isSelected_byDiffOfMean), "isSelected_byDiffOfMean"] <- FALSE
 plot_data[is.na(plot_data$isSelected_byDiffOfMax), "isSelected_byDiffOfMax"] <- FALSE
+plot_data[is.na(plot_data$isSelected_byRatioOfMax), "isSelected_byRatioOfMax"] <- FALSE
 
 
 #####
@@ -214,22 +238,27 @@ tiff(paste0("OutputFiles/Plots/DeNovo_predictions/plot_DeNovo_1_predictions_comb
 
 
 ggplot() +
-  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "FALSE" & plot_data$isSelected_byDiffOfMax == "FALSE", ], 
-             mapping = aes(x = F1, y = F2, color = predicted_probEff),  
+  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "FALSE" & plot_data$isSelected_byDiffOfMax == "FALSE" & plot_data$isSelected_byRatioOfMax == "FALSE", ], 
+             mapping = aes(x = F1, y = F2, color = final_score),  
              size = 0.5, 
              stroke = 0.1,
              shape = 3) +
   geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "TRUE", ], # highlight drugs by mean
-             mapping = aes(x = F1, y = F2, color = predicted_probEff), 
+             mapping = aes(x = F1, y = F2, color = final_score), 
              size = 0.5, 
              stroke = 0.2,   
              shape = 1) +
-  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMax == "TRUE", ], # highlight drugs by mean
-             mapping = aes(x = F1, y = F2, color = predicted_probEff), 
+  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMax == "TRUE", ], # highlight drugs by max
+             mapping = aes(x = F1, y = F2, color = final_score), 
              size = 0.6, 
              stroke = 0.2,   
+             shape = 2) +
+  geom_point(data = plot_data[plot_data$isSelected_byRatioOfMax == "TRUE", ], # highlight drugs by ratio
+             mapping = aes(x = F1, y = F2, color = final_score), 
+             size = 0.6, 
+             stroke = 0.4,   
              shape = 5) +
-  scale_color_gradient2(low = "blue", mid = "green", high = "red", midpoint = 0.5) +
+  scale_color_gradient2(low = "red", mid = "orange", high = "darkgreen", midpoint = 0) +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
@@ -247,7 +276,7 @@ ggplot() +
   labs(title = disease,
        x = x_axis_label,
        y = y_axis_label,
-       color = "prob_Eff") 
+       color = "Final score") 
 
 dev.off()
 

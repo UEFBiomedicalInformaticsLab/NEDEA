@@ -440,7 +440,7 @@ if(!dir.exists("OutputFiles/Plots/DeNovo_data_heatmaps/")){
   dir.create("OutputFiles/Plots/DeNovo_data_heatmaps/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/DeNovo_data_heatmaps/plot_denovo2_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/DeNovo_data_heatmaps/plot_denovo1a_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 15, height = 21,
      units = "cm", compression = "lzw", res = 1200)
 
@@ -584,7 +584,7 @@ if(!dir.exists("OutputFiles/Plots/DeNovo_data_heatmaps/")){
   dir.create("OutputFiles/Plots/DeNovo_data_heatmaps/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/DeNovo_data_heatmaps/plot_denovo2_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/DeNovo_data_heatmaps/plot_denovo1b_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 25, height = 21,
      units = "cm", compression = "lzw", res = 1200)
 

@@ -73,9 +73,9 @@ cancer_drug_list <- read.table("Databases/Cancer_Drug_Database/cancerdrugsdb.txt
 
 cancer_drug_list <- cancer_drug_list[, !colnames(cancer_drug_list) %in% c("")]
 cancer_drug_list <- cancer_drug_list %>% mutate(DrugBank_drug_id = gsub("<.*>(DB\\d{5})</.*", "\\1", `DrugBank ID`))
-cancer_drug_list <- cancer_drug_list[, c("DrugBank_drug_id", "EMA", "FDA", "WHO", "Year", "Generic", "Product", "Indications")] # 312
-cancer_drug_list <- cancer_drug_list[cancer_drug_list$EMA == "Y" & cancer_drug_list$FDA == "Y" , ] # 197
-cancer_drug_list <- cancer_drug_list[cancer_drug_list$Generic == "Y", ] # 48
+cancer_drug_list <- cancer_drug_list[, c("DrugBank_drug_id", "EMA", "FDA", "WHO", "Year", "Generic", "Product", "Indications")] 
+cancer_drug_list <- cancer_drug_list[cancer_drug_list$EMA == "Y" & cancer_drug_list$FDA == "Y" , ] 
+# cancer_drug_list <- cancer_drug_list[cancer_drug_list$Generic == "Y", ] 
 cancer_drug_list <- cancer_drug_list[cancer_drug_list$DrugBank_drug_id %in% DrugBank_drug_type$primary_key, ] # retain only small molecular drugs
 
 
