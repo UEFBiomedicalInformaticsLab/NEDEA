@@ -92,7 +92,7 @@ grep_pattern <- switch (disease,
                         "BreastCancer" = "breast cancer|breast carcinoma",
                         "KidneyCancer" = "renal cell cancer|renal cell carcinoma",
                         "LungCancer" = "lung cancer|lung carcinoma",
-                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial",
+                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial|ovarian germ cell cancer|ovarian sarcoma",
                         "ProstateCancer" = "prostate Cancer|prostate carcinoma|prostate adenocarcinoma",
                         "SkinCancer" = "skin cancer|melanoma"
 )

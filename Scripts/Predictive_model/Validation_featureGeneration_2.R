@@ -291,7 +291,7 @@ ggplot() +
              size = 0.5, 
              stroke = 0.1) +
   scale_shape_manual(values = c("Training" = 1, "Validation" = 3)) + 
-  scale_color_manual(values = c("Eff" = "#0000FF", "Adv" = "#FF0000")) + 
+  scale_color_manual(values = c("Eff" = "#77DD77", "Adv" = "#FF6961")) + 
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
@@ -300,12 +300,15 @@ ggplot() +
         axis.text.x = element_text(angle = 0, vjust = 0, hjust = 0.5),
         axis.ticks = element_line(colour = "black", linewidth = 0.2),
         legend.position = "right",
-        legend.key = element_rect(fill = NA), 
+        legend.box.spacing = unit(0.1, "cm"),
+        legend.key = element_rect(fill = NA, linewidth = 0), 
         legend.key.size = unit(0.25, "cm"),
-        legend.title = element_text(size = 2.5),
-        legend.text = element_text(size = 2),
-        legend.margin = margin(1,1,1,1),
-        legend.spacing = unit(0, "cm")  ) +
+        legend.title = element_text(size = 2.5, margin = margin(t = 0, r = 0, b = 2, l = 0)),
+        legend.text = element_text(size = 2, margin = margin(t = 0, r = 0, b = 0, l = 1)),
+        legend.margin = margin(1,0.5,0.5,0.5),
+        legend.spacing.y = unit(0.15, "cm")  ) +
+  guides(color = guide_legend(override.aes = list(size = 1)),
+         shape = guide_legend(override.aes = list(size = 1))) +
   labs(title = disease,
        x = x_axis_label,
        y = y_axis_label,

@@ -117,26 +117,20 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     scale_x_discrete(labels = function(x) scales::label_wrap(30)(x)) +
     stat_summary(fun = "mean",
                  geom = "point",
-                 color = "red",
+                 color = "blue",
                  size = 0.5, 
                  position = position_dodge(width = 0.5), 
                  show.legend = FALSE) +
-    # stat_summary(fun.data = "mean_se",
-    #              geom = "errorbar",
-    #              color = "red",
-    #              width = 0.4,
-    #              linewidth = 0.1,
-    #              position = position_dodge(width = 0.5),
-    #              show.legend = FALSE)  +
     geom_pwc(method = "wilcox_test",
              group.by = "category",
              label = "p.signif", 
              hide.ns = TRUE, 
              vjust = 0.5, 
              color = "blue") +
-    scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
+    scale_fill_manual(values=c("#FF6961", "#77DD77")) +
     labs(x = "Feature", 
-         y = "NES") + 
+         y = "NES", 
+         fill = "Category") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -273,26 +267,20 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
     scale_x_discrete(labels = function(x) scales::label_wrap(30)(x)) +
     stat_summary(fun = "mean",
                  geom = "point",
-                 color = "red",
+                 color = "blue",
                  size = 0.5, 
                  position = position_dodge(width = 0.5), 
                  show.legend = FALSE) +
-    # stat_summary(fun.data = "mean_se",
-    #              geom = "errorbar",
-    #              color = "red",
-    #              width = 0.4,
-    #              linewidth = 0.1,
-    #              position = position_dodge(width = 0.5),
-    #              show.legend = FALSE)  +
     geom_pwc(method = "wilcox_test",
              group.by = "category",
              label = "p.signif", 
              hide.ns = TRUE, 
              vjust = 0.5, 
              color = "blue") +
-    scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
+    scale_fill_manual(values=c("#FF6961", "#77DD77")) +
     labs(x = "Feature", 
-         y = "NES") + 
+         y = "NES",
+         fill = "Category") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -330,6 +318,6 @@ signif_feature <- bind_rows(signif_feature, .id = "disease")
 signif_feature <- separate(signif_feature, col = "disease", into = c("drug_target_type", "disease"), sep = "\\.")
 
 
-write.csv(signif_feature, paste0("OutputFiles/Plots_publication/NES_", feature_type, "_boxplot_topSignifFeatures_EA/NES_", feature_type, "_WilcoxTest_rest.csv"), row.names = FALSE)
+write.csv(signif_feature, paste0("OutputFiles/Plots_publication/NES_", feature_type, "_boxplot_topSignifFeatures_EA/NES_", feature_type, "_WilcoxTest_result.csv"), row.names = FALSE)
 
 print(warnings())

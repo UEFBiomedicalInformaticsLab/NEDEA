@@ -126,7 +126,7 @@ ggplot(data = model_accuracy) +
              stroke = 0.1,
              color = "red") +
   facet_grid(rows = vars(model_accuracy$.metric)) +
-  scale_fill_manual(values=c("Test" = "#E69F00", "Train" = "#56B4E9")) +
+  scale_fill_manual(values=c("Test" = "#FF9F00", "Train" = "#007FFF")) +
   scale_x_discrete(labels = function(x) scales::label_wrap(20)(x)) +
   labs(x = "Disease", 
        y = "Score",

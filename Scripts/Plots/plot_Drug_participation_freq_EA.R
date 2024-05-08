@@ -43,8 +43,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                                  aes(x = Drugs, y = Freq, fill = x)) +
     geom_bar(stat = "identity") + 
     labs(title = disease,
-         fill = "category") +
-    scale_fill_manual(values=c("Adv" = "#E69F00", "Eff" = "#56B4E9")) +
+         fill = "Category") +
+    scale_fill_manual(values=c("Adv" = "#FF6961", "Eff" = "#77DD77")) +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),

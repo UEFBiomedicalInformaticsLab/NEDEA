@@ -242,7 +242,8 @@ ggplot() +
              mapping = aes(x = F1, y = F2, color = final_score),  
              size = 0.5, 
              stroke = 0.1,
-             shape = 3) +
+             shape = 3, 
+             alpha = 0.85) +
   geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "TRUE", ], # highlight drugs by mean
              mapping = aes(x = F1, y = F2, color = final_score), 
              size = 0.5, 
@@ -258,7 +259,7 @@ ggplot() +
              size = 0.6, 
              stroke = 0.4,   
              shape = 5) +
-  scale_color_gradient2(low = "red", mid = "orange", high = "darkgreen", midpoint = 0) +
+  scale_color_gradient2(low = "#FF6961", mid = "#FFD400", high = "#77DD77", midpoint = 0) +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
