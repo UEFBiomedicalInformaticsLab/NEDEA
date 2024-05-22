@@ -3,7 +3,7 @@ set.seed(5081)
 
 
 # Use Wilcoxon's test to identify the features to use for model
-# Only significant (at p <= 0.05) selected
+# Only significant (at p <= 0.001) selected
 
 
 

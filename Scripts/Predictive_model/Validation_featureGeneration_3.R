@@ -195,8 +195,6 @@ for(drugComb in colnames(rwr_result)){
                                          nproc = nproc,
                                          BPPARAM = MulticoreParam(progressbar = FALSE))
     
-    # enrichment_result$NES[which(enrichment_result$padj > 0.05)] <- 0
-    
     enrichment_result_mat[enrichment_result$pathway, drugComb] <- enrichment_result$NES
     
   }, 

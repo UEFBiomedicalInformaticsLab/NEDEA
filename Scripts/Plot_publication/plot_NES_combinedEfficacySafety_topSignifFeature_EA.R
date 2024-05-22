@@ -80,7 +80,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     }
     
     
-    stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.05, ]
+    stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.001, ]
     stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE), ]
     
     
@@ -233,7 +233,7 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
     }
     
     
-    stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.05, ]
+    stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.001, ]
     stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE), ]
     
     signif_feature[[drug_target_type]][[disease]] <- stat_res_final

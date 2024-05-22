@@ -24,15 +24,15 @@ predict_metrics <- bind_rows(predict_metrics, .id = "disease")
 
 
 # Select the metrices to plot
-plot_data <- predict_metrics[predict_metrics$.metric %in% c("bal_accuracy", "f_meas", "sensitivity", "specificity", "pr_auc", "roc_auc"), ]
+plot_data <- predict_metrics[predict_metrics$.metric %in% c("f_meas", "sensitivity", "specificity"), ]
 
 
 plot_data$.metric <- gsub("f_meas", "F1 score", plot_data$.metric)
 plot_data$.metric <- gsub("sensitivity", "Sensitivity", plot_data$.metric)
 plot_data$.metric <- gsub("specificity", "Specificity", plot_data$.metric)
-plot_data$.metric <- gsub("bal_accuracy", "Balanced Accuracy", plot_data$.metric)
-plot_data$.metric <- gsub("roc_auc", "ROC-AUC", plot_data$.metric)
-plot_data$.metric <- gsub("pr_auc", "PR-AUC", plot_data$.metric)
+# plot_data$.metric <- gsub("bal_accuracy", "Balanced Accuracy", plot_data$.metric)
+# plot_data$.metric <- gsub("roc_auc", "ROC-AUC", plot_data$.metric)
+# plot_data$.metric <- gsub("pr_auc", "PR-AUC", plot_data$.metric)
 
 
 #Plot
@@ -41,7 +41,7 @@ if(!dir.exists("OutputFiles/Plots_publication/Validation/")){
 }
 tiff(paste0("OutputFiles/Plots_publication/Validation/Validation3_predictionMetrics_NES_combinedEfficacySafety_", drug_target_type, ".tiff"),
      width = 8,
-     height = 10,
+     height = 3,
      units = "cm", compression = "lzw", res = 1200)
 
 ggplot(plot_data) +
@@ -51,25 +51,25 @@ ggplot(plot_data) +
            width = 0.5, 
            lwd = 0.1) +
   geom_hline(yintercept = 0.7,
-             linetype="dashed",
-             color = "red",
+             linetype="dotted",
+             color = "#006400",
              linewidth = 0.1) +
-  facet_wrap(~ .metric, ncol = 2) +
+  facet_wrap(~ .metric, ncol = 3) +
   labs(x = "Disease", y = "Score") + 
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),
         strip.background = element_rect(color = "black", linewidth = 0.25,),
-        strip.text = element_text(size = 6, margin = margin(1,1,1,1)),
+        strip.text = element_text(size = 4, margin = margin(1,1,1,1)),
         text = element_text(size = 4), 
         plot.title = element_text(size = 4, hjust = 0.5, face = "bold"),
         axis.title = element_text(size = 4), 
-        axis.text.x = element_text(size = 4, angle = 45, vjust = 1, hjust = 1), 
+        axis.text.x = element_text(size = 2.5, angle = 45, vjust = 1, hjust = 1), 
         axis.ticks = element_line(colour = "black", linewidth = 0.2),
         legend.position = "bottom",
         legend.key = element_blank(),
         legend.key.size = unit(0.1, 'cm'),
-        legend.text = element_text(size = 5),
+        legend.text = element_text(size = 4),
         legend.margin = margin(1,1,1,1),
         legend.box.spacing = unit(0.1, 'cm'),
         legend.box.background = element_rect(colour = "black", linewidth = 0.1))

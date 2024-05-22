@@ -5,17 +5,17 @@ library(ggpubr)
 drug_target_type <- "known"
 
 
-
 #####
 
 
 # Plot the threshold selected in during CV and the final threshold
 plot_list <- list()
+final_model_feature_threshold <- list()
 
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   model <- readRDS(file = paste0("OutputFiles/Predictive_model/model_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
-  final_model_feature_threshold <- model$feature_threshold
+  final_model_feature_threshold[[disease]] <- model$feature_threshold
   cv_feature_threshold <- model$internal_CV_results$selected_threshold
   
   plot_list[[disease]] <- ggplot() +
@@ -27,7 +27,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                  outlier.shape = 3, 
                  outlier.size = 0.5, 
                  outlier.stroke = 0.1) +
-    geom_point(data = final_model_feature_threshold, 
+    geom_point(data = final_model_feature_threshold[[disease]], 
                mapping = aes(x = feature, y = threshold),
                size = 1,
                shape = 8,
@@ -68,6 +68,19 @@ ggarrange(plotlist = plot_list)
 dev.off()
 
 
+# Save the thresholds as table
+final_model_feature_threshold <- bind_rows(final_model_feature_threshold, .id = "disease")
+colnames(final_model_feature_threshold) <- c("Disease", "Feature_name", "Threshold")
+final_model_feature_threshold$Feature_type <- gsub("^\\[(.*)\\] .*", "\\1", final_model_feature_threshold$Feature_name)
+final_model_feature_threshold$Feature_type <- factor(final_model_feature_threshold$Feature_type, levels = c("DISEASE", "ADR"), labels = c("Efficacy", "Safety"))
+final_model_feature_threshold <- final_model_feature_threshold[, c("Disease", "Feature_type", "Feature_name", "Threshold")]
+# final_model_feature_threshold$Threshold <- round(final_model_feature_threshold$Threshold , 3)
+  
+  
+if(!dir.exists("OutputFiles/Tables_publication/")){ dir.create("OutputFiles/Tables_publication/", recursive = TRUE) }
+write.csv(final_model_feature_threshold, "OutputFiles/Tables_publication/Predictive_model_feature_threshold.csv", row.names = FALSE)
+
+
 #####
 
 
@@ -105,7 +118,6 @@ model_accuracy$.metric <- factor(model_accuracy$.metric,
                                  labels = c("F1", "Sensitivity", "Specificity"))
 model_accuracy$group <- factor(model_accuracy$group, levels = c("Train", "Test"))
 
-
 if(!dir.exists("OutputFiles/Plots_publication/Predictive_model/")){ dir.create("OutputFiles/Plots_publication/Predictive_model/") }
 
 tiff(paste0("OutputFiles/Plots_publication/Predictive_model/model_accuracy_", drug_target_type, ".tiff"), 
@@ -120,12 +132,16 @@ ggplot(data = model_accuracy) +
                outlier.shape = 3, 
                outlier.size = 0.5, 
                outlier.stroke = 0.1) +
+  geom_hline(yintercept = 0.75,
+             linewidth = 0.1,
+             linetype = "dotted",
+             color = "#006400") +
   geom_point(mapping = aes(x = disease, y = .estimate_final),
              size = 0.5,
              shape = 8,
              stroke = 0.1,
              color = "red") +
-  facet_grid(rows = vars(model_accuracy$.metric)) +
+  facet_grid(.metric ~ .) + 
   scale_fill_manual(values=c("Test" = "#FF9F00", "Train" = "#007FFF")) +
   scale_x_discrete(labels = function(x) scales::label_wrap(20)(x)) +
   labs(x = "Disease", 

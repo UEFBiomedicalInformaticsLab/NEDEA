@@ -142,13 +142,13 @@ priority_drugCombs <- as.data.frame(t(denovo_fgsea_result))
 priority_drugCombs <- priority_drugCombs[row.names(priority_drugCombs) %in% predict_result[predict_result$final_score >= 1, "comb_name"], ]
 
 
-# Select drugs by comparing the mean efficacy score and mean safety score
-priority_drugCombs$mean_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, mean)
-priority_drugCombs$mean_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, mean)
-priority_drugCombs$diff_of_means <- priority_drugCombs$mean_efficacy_NES - priority_drugCombs$mean_safety_NES
-tmp1 <- sort(unique(priority_drugCombs$diff_of_means), decreasing = TRUE)[1:select_top_combs]
-priority_drugCombs$isSelected_byDiffOfMean <- ifelse(priority_drugCombs$diff_of_means %in% tmp1, TRUE, FALSE)
-rm(tmp1)
+# # Select drugs by comparing the mean efficacy score and mean safety score
+# priority_drugCombs$mean_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, mean)
+# priority_drugCombs$mean_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, mean)
+# priority_drugCombs$diff_of_means <- priority_drugCombs$mean_efficacy_NES - priority_drugCombs$mean_safety_NES
+# tmp1 <- sort(unique(priority_drugCombs$diff_of_means), decreasing = TRUE)[1:select_top_combs]
+# priority_drugCombs$isSelected_byDiffOfMean <- ifelse(priority_drugCombs$diff_of_means %in% tmp1, TRUE, FALSE)
+# rm(tmp1)
 
 
 # Select drugs by comparing the max efficacy score and max safety score
@@ -162,24 +162,30 @@ priority_drugCombs$isSelected_byDiffOfMax <- ifelse(priority_drugCombs$diff_of_m
 rm(tmp1)
 
 
-# Select drugs by comparing the ratio of max efficacy score and max safety score
-priority_drugCombs$max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, max)
-priority_drugCombs$max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, max)
-priority_drugCombs$ratio_of_maxs <- priority_drugCombs$max_efficacy_NES / priority_drugCombs$max_safety_NES
-priority_drugCombs$which_max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
-priority_drugCombs$which_max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
-priority_drugCombs$isSelected_byRatioOfMax <- ifelse(priority_drugCombs$ratio_of_maxs >= 2, TRUE, FALSE)
+# # Select drugs by comparing the ratio of max efficacy score and max safety score
+# priority_drugCombs$max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, max)
+# priority_drugCombs$max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, max)
+# priority_drugCombs$ratio_of_maxs <- priority_drugCombs$max_efficacy_NES / priority_drugCombs$max_safety_NES
+# priority_drugCombs$which_max_efficacy_NES <- apply(priority_drugCombs[,grep("^\\[DISEASE\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+# priority_drugCombs$which_max_safety_NES <- apply(priority_drugCombs[,grep("^\\[ADR\\]", colnames(priority_drugCombs))], 1, function(x){ paste(names(which(x == max(x))), collapse = "; ") })
+# priority_drugCombs$isSelected_byRatioOfMax <- ifelse(priority_drugCombs$ratio_of_maxs >= 2, TRUE, FALSE)
 
 
 # Save list of priority drug combinations
-priority_drugCombs <- priority_drugCombs[, c("mean_efficacy_NES", "mean_safety_NES", "diff_of_means", 
-                                             "max_efficacy_NES", "max_safety_NES", "diff_of_maxs", "ratio_of_maxs",
+# priority_drugCombs <- priority_drugCombs[, c("mean_efficacy_NES", "mean_safety_NES", "diff_of_means", 
+#                                              "max_efficacy_NES", "max_safety_NES", "diff_of_maxs", "ratio_of_maxs",
+#                                              "which_max_efficacy_NES", "which_max_safety_NES", 
+#                                              "isSelected_byDiffOfMean", "isSelected_byDiffOfMax", "isSelected_byRatioOfMax")]
+
+priority_drugCombs <- priority_drugCombs[, c("max_efficacy_NES", "max_safety_NES", "diff_of_maxs",
                                              "which_max_efficacy_NES", "which_max_safety_NES", 
-                                             "isSelected_byDiffOfMean", "isSelected_byDiffOfMax", "isSelected_byRatioOfMax")]
+                                             "isSelected_byDiffOfMax")]
 priority_drugCombs <- merge(x = predict_result,
                             y = priority_drugCombs, 
                             by.x = "comb_name", by.y = 0)
-priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfMean == "TRUE" | priority_drugCombs$isSelected_byDiffOfMax == "TRUE" | priority_drugCombs$isSelected_byRatioOfMax == "TRUE" , ]
+# priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfMean == "TRUE" | priority_drugCombs$isSelected_byDiffOfMax == "TRUE" | priority_drugCombs$isSelected_byRatioOfMax == "TRUE" , ]
+priority_drugCombs <- priority_drugCombs[priority_drugCombs$isSelected_byDiffOfMax == "TRUE", ]
+priority_drugCombs <- priority_drugCombs[order(priority_drugCombs$diff_of_maxs, decreasing = TRUE), ]
 
 
 if(!dir.exists("OutputFiles/DeNovo_data_1/Priority_drug_combinations/")){ dir.create("OutputFiles/DeNovo_data_1/Priority_drug_combinations/", recursive = TRUE) }
@@ -217,12 +223,12 @@ plot_data$final_score <- predict_result$final_score[match(row.names(plot_data), 
 
 plot_data <- plot_data %>% 
   rownames_to_column("comb_name") %>% 
-  left_join(priority_drugCombs[, c("comb_name", "isSelected_byDiffOfMean", "isSelected_byDiffOfMax", "isSelected_byRatioOfMax")], 
+  left_join(priority_drugCombs[, c("comb_name", "isSelected_byDiffOfMax")], 
             by = "comb_name")
 
-plot_data[is.na(plot_data$isSelected_byDiffOfMean), "isSelected_byDiffOfMean"] <- FALSE
+# plot_data[is.na(plot_data$isSelected_byDiffOfMean), "isSelected_byDiffOfMean"] <- FALSE
 plot_data[is.na(plot_data$isSelected_byDiffOfMax), "isSelected_byDiffOfMax"] <- FALSE
-plot_data[is.na(plot_data$isSelected_byRatioOfMax), "isSelected_byRatioOfMax"] <- FALSE
+# plot_data[is.na(plot_data$isSelected_byRatioOfMax), "isSelected_byRatioOfMax"] <- FALSE
 
 
 #####
@@ -238,28 +244,36 @@ tiff(paste0("OutputFiles/Plots/DeNovo_predictions/plot_DeNovo_1_predictions_comb
 
 
 ggplot() +
-  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "FALSE" & plot_data$isSelected_byDiffOfMax == "FALSE" & plot_data$isSelected_byRatioOfMax == "FALSE", ], 
+  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMax == "FALSE", ], 
              mapping = aes(x = F1, y = F2, color = final_score),  
              size = 0.5, 
              stroke = 0.1,
              shape = 3, 
              alpha = 0.85) +
-  geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "TRUE", ], # highlight drugs by mean
-             mapping = aes(x = F1, y = F2, color = final_score), 
-             size = 0.5, 
-             stroke = 0.2,   
-             shape = 1) +
+  # geom_point(data = plot_data[plot_data$isSelected_byDiffOfMean == "TRUE", ], # highlight drugs by mean
+  #            mapping = aes(x = F1, y = F2, color = final_score), 
+  #            size = 0.5, 
+  #            stroke = 0.2,   
+  #            shape = 1) +
   geom_point(data = plot_data[plot_data$isSelected_byDiffOfMax == "TRUE", ], # highlight drugs by max
              mapping = aes(x = F1, y = F2, color = final_score), 
              size = 0.6, 
              stroke = 0.2,   
              shape = 2) +
-  geom_point(data = plot_data[plot_data$isSelected_byRatioOfMax == "TRUE", ], # highlight drugs by ratio
-             mapping = aes(x = F1, y = F2, color = final_score), 
-             size = 0.6, 
-             stroke = 0.4,   
-             shape = 5) +
-  scale_color_gradient2(low = "#FF6961", mid = "#FFD400", high = "#77DD77", midpoint = 0) +
+  # geom_point(data = plot_data[plot_data$isSelected_byRatioOfMax == "TRUE", ], # highlight drugs by ratio
+  #            mapping = aes(x = F1, y = F2, color = final_score), 
+  #            size = 0.6, 
+  #            stroke = 0.4,   
+  #            shape = 5) +
+  geom_hline(yintercept = feature_threshold[feature_threshold$feature %in% safety_feature_select, "threshold"], 
+             linetype="dotted",
+             color = "gray",
+             linewidth = 0.25) +
+  geom_vline(xintercept = feature_threshold[feature_threshold$feature %in% efficacy_feature_select, "threshold"], 
+             linetype="dotted",
+             color = "gray",
+             linewidth = 0.25) +
+  scale_color_gradient2(low = "#FF2015", mid = "#FFD600", high = "#3ACE3A", midpoint = 0) +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),

@@ -60,7 +60,18 @@ denovo_drugCombs <- separate(data = denovo_drugCombs, col = "Disease", into = c(
 drugCombs <- bind_rows(validation_drugCombs, denovo_drugCombs)
 
 
-write.csv(drugCombs, "OutputFiles/Tables/Summary_validNdenovo_drugComb_count.csv", row.names = FALSE)
+
+
+drugCombs <- pivot_wider(data = drugCombs,
+                         names_from = c("Disease"), 
+                         values_from = c("Eff", "Adv", "Unk"), 
+                         names_glue = "{Disease}_{.value}")
+
+
+drugCombs <- column_to_rownames(drugCombs, "DataSet")
+drugCombs <- drugCombs[,sort(colnames(drugCombs))]
+
+write.csv(drugCombs, "OutputFiles/Tables/Summary_validNdenovo_drugComb_count.csv", row.names = TRUE)
 
 
 print(warnings())
