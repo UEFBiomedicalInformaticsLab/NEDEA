@@ -49,7 +49,7 @@ signif_feature$lib_size <- library_size$inNet_size[match(signif_feature$feature,
 
 # Filter the data 
 signif_feature <- signif_feature[signif_feature$drug_target_type == "known", ]
-signif_feature <- signif_feature[signif_feature$p_val <= 0.05, ]
+signif_feature <- signif_feature[signif_feature$p_val <= 0.001, ]
 
 
 # Count the number of significant features from each source
