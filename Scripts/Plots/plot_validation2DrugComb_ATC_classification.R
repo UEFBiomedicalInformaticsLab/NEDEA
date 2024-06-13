@@ -93,8 +93,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   
   tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_2/drugCombs_ATCclass_", disease, ".tiff"),
-       width = 10,
-       height = 8,
+       width = 20,
+       height = 18,
        units = "cm", compression = "lzw", res = 1200)
   
   print(plot)

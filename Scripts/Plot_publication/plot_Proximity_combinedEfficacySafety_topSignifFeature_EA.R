@@ -105,7 +105,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                  lwd = 0.1,
                  outlier.shape = 3, 
                  outlier.size = 1) +
-    facet_grid(rows = vars(plot_data$Disease), cols = vars(plot_data$drug_target_type), scales = "free_x") +
+    # facet_grid(rows = vars(plot_data$Disease), cols = vars(plot_data$drug_target_type), scales = "free_x") +
+    facet_grid(cols = vars(plot_data$drug_target_type), scales = "free_x") +
     scale_x_discrete(labels = function(x) scales::label_wrap(30)(x)) +
     stat_summary(fun = "mean",
                  geom = "point",
@@ -119,10 +120,10 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
              hide.ns = TRUE, 
              vjust = 0.5, 
              color = "blue") +
-    scale_fill_manual(values = c("#FF6961", "#77DD77")) +
+    scale_fill_manual(values = c("Adv" = "#FF6961", "Eff" = "#77DD77"), labels = c("Adv" = "Adverse", "Eff" = "Effective")) +
     labs(x = "Feature", 
          y = "Separation distance",
-         fill = "Category") + 
+         fill = "Drug combination type:") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
@@ -249,7 +250,8 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
                  lwd = 0.1,
                  outlier.shape = 3, 
                  outlier.size = 1) +
-    facet_grid(rows = vars(plot_data$drug_target_type), cols = vars(plot_data$Disease), scales = "free_x") +
+    # facet_grid(rows = vars(plot_data$drug_target_type), cols = vars(plot_data$Disease), scales = "free_x") +
+    facet_grid(cols = vars(plot_data$Disease), scales = "free_x", labeller = labeller(.cols = function(x){ gsub("Cancer$", " Cancer", x) })) +
     scale_x_discrete(labels = function(x) scales::label_wrap(30)(x)) +
     stat_summary(fun = "mean",
                  geom = "point",
@@ -263,10 +265,10 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
              hide.ns = TRUE, 
              vjust = 0.5, 
              color = "blue") +
-    scale_fill_manual(values = c("#FF6961", "#77DD77")) +
+    scale_fill_manual(values = c("Adv" = "#FF6961", "Eff" = "#77DD77"), labels = c("Adv" = "Adverse", "Eff" = "Effective")) +
     labs(x = "Feature", 
          y = "Separation distance",
-         fill = "Category") + 
+         fill = "Drug combination type:") + 
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
