@@ -16,7 +16,6 @@ DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
 
 plot_list <- list()
 
-print("% of ADR positive combinations: ")
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   DrugBank_ddi_select <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease))]
@@ -28,10 +27,25 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                          by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id"),
                          all.y = TRUE)
   
-  # Replace the missing categories as unknown
-  drugCombs_cat <- drugCombs_cat %>% 
-    mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease)), 
-              ~replace_na(., "unknown"))
+  
+  # Calculate the number the combinations with positive ADR
+  print(paste0(disease, " :: ADR_positive = ", 
+               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive", ]) / 
+                         nrow(drugCombs_cat) ) * 100, 2), 
+               "; unknown = ", 
+               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown", ]) / 
+                         nrow(drugCombs_cat) ) * 100, 2)
+  ))
+  
+  # # Replace the missing categories as unknown
+  # drugCombs_cat <- drugCombs_cat %>% 
+  #   mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease)), 
+  #             ~replace_na(., "unknown"))
+  
+  
+  # Remove drug combinations with ADR as NA
+  # These were the drug combinations for which absolutely no report present
+  drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, paste0("ADR_", disease)]), ]
   
   
   row.names(drugCombs_cat) <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
@@ -40,10 +54,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   category_combinations <- combn(x = colnames(drugCombs_cat), m = 2, simplify = FALSE)
   
   
-  print(paste0(disease, " : ", 
-               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] == "adr_positive", ]) / 
-                         nrow(drugCombs_cat) ) * 100, 2)
-  ))
+
   
   for(i in (category_combinations)){
     plot_data <- as.data.frame(table(drugCombs_cat[, i[1]], drugCombs_cat[,i[2]], useNA = "ifany"))
@@ -51,7 +62,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     plot_list[[disease]][[ paste(i, collapse = "__") ]] <- ggplot(plot_data, aes(x = Var1, y = Var2, )) + 
       geom_tile(aes(fill = Freq)) +
       geom_text(aes(label = Freq), size = 0.75) + 
-      labs(title = paste0(disease, " (", nrow(drugCombs_cat), ")"),
+      labs(title = disease,
            x = "Synergy level",
            y = "ADR status") +
       scale_fill_gradient(low = "white", high = "lightblue") +

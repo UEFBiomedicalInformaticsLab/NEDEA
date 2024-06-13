@@ -126,6 +126,56 @@ predict_result <- merge(x = valid_drugCombs_cat,
                         by.x = "comb_name", 
                         by.y = 0)
 
+
+#####
+
+
+# Read the drug info from Drug Bank
+DrugBank_drug_info <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_info <- DrugBank_drug_info$drugs$general_information
+DrugBank_drug_info <- DrugBank_drug_info[, c("primary_key", "name")]
+colnames(DrugBank_drug_info) <- c("DrugBank_drug_ID", "name")
+
+
+# Add annotations about drugs
+predict_result <- predict_result %>%
+  left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
+                                               .fn = ~ paste0("Drug1_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
+  left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
+                                               .fn = ~ paste0("Drug2_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
+
+
+# Read the ATC codes of the drugs from Drug Bank
+DrugBank_drug_ATC <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
+colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
+
+
+# Concatenate the ATC codes and level 1 term for each drug into a single string
+DrugBank_drug_ATC <- DrugBank_drug_ATC[, c("DrugBank_drug_ID", "level_1", "atc_code")]
+DrugBank_drug_ATC <- DrugBank_drug_ATC %>% 
+  group_by(DrugBank_drug_ID, level_1)  %>% 
+  summarise(atc_code = paste(atc_code, collapse = "; "), .groups = "keep") %>% 
+  mutate(atc_label = paste(level_1, " (", atc_code, ")", sep = "")) %>%
+  group_by(DrugBank_drug_ID) %>% 
+  summarise(atc_label = paste(atc_label, collapse = "; "))
+
+
+# Add annotations about ATC codes
+predict_result <- predict_result %>%
+  left_join(DrugBank_drug_ATC %>% rename_with(.cols = everything(),
+                                              .fn = ~ paste0("Drug1_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
+  left_join(DrugBank_drug_ATC %>% rename_with(.cols = everything(),
+                                              .fn = ~ paste0("Drug2_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
+
+
+#####
+
+
 if(!dir.exists("OutputFiles/Validation_data_2/Predictions/")){ dir.create("OutputFiles/Validation_data_2/Predictions/", recursive = TRUE) }
 write.csv(predict_result, file = paste0("OutputFiles/Validation_data_2/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 

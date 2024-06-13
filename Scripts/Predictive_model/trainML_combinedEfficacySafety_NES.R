@@ -118,9 +118,14 @@ for(fold in names(data_folds)){
     # Calculate the probability threshold with best separation
     fit_data$category <- factor(fit_data$category, levels = c("1", "0"))
     roc_curve_data <- roc_curve(data = fit_data, truth = category, predicted_probability)
-    roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-    roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
-    if(nrow(roc_curve_data) > 1){
+    
+    roc_curve_data$balanced_accuracy <- (roc_curve_data$specificity + roc_curve_data$sensitivity)/2
+    roc_curve_data <- roc_curve_data[roc_curve_data$balanced_accuracy == max(roc_curve_data$balanced_accuracy), ]
+
+    # roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
+    # roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+   
+     if(nrow(roc_curve_data) > 1){
       roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
     }
     best_probability_threshold <- roc_curve_data$.threshold

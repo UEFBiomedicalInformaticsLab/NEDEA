@@ -24,13 +24,13 @@ predict_metrics <- bind_rows(predict_metrics, .id = "disease")
 
 
 # Select the metrices to plot
-plot_data <- predict_metrics[predict_metrics$.metric %in% c("f_meas", "sensitivity", "specificity"), ]
+plot_data <- predict_metrics[predict_metrics$.metric %in% c("bal_accuracy", "sensitivity", "specificity"), ]
 
 
-plot_data$.metric <- gsub("f_meas", "F1 score", plot_data$.metric)
+# plot_data$.metric <- gsub("f_meas", "F1 score", plot_data$.metric)
 plot_data$.metric <- gsub("sensitivity", "Sensitivity", plot_data$.metric)
 plot_data$.metric <- gsub("specificity", "Specificity", plot_data$.metric)
-# plot_data$.metric <- gsub("bal_accuracy", "Balanced Accuracy", plot_data$.metric)
+plot_data$.metric <- gsub("bal_accuracy", "Balanced Accuracy", plot_data$.metric)
 # plot_data$.metric <- gsub("roc_auc", "ROC-AUC", plot_data$.metric)
 # plot_data$.metric <- gsub("pr_auc", "PR-AUC", plot_data$.metric)
 
