@@ -55,6 +55,7 @@ ggplot(plot_data) +
              linewidth = 0.1) +
   facet_wrap(~ .metric, ncol = 3) +
   labs(x = "Disease", y = "Score") + 
+  scale_x_discrete(labels = function(x){ gsub("Cancer$", " Cancer", x)  } ) +
   theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
         panel.grid = element_blank(),
         panel.spacing = unit(0.1, "cm"),

@@ -43,6 +43,7 @@ plot_data$tile_label <- paste0(round(plot_data$Specificity, 2), "\n(", plot_data
 ggplot(plot_data, aes(x = disease, y = DDI_type, fill = Specificity, label = tile_label)) +
   geom_tile() +
   geom_text(size = 1) + 
+  scale_x_discrete(labels = function(x){ gsub("Cancer$", " Cancer", x)  } ) +
   scale_y_discrete(labels = label_wrap_gen(width = 30))  +
   scale_fill_distiller(palette = "YlGn", direction = 1) +
   labs(x = "Disease", y = "DDI type") +
