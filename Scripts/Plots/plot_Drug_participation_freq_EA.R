@@ -42,22 +42,24 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   plot_list[[disease]] <- ggplot(drug_participation_mat, 
                                  aes(x = Drugs, y = Freq, fill = x)) +
     geom_bar(stat = "identity") + 
-    labs(title = disease,
-         fill = "Category") +
-    scale_fill_manual(values=c("Adv" = "#FF6961", "Eff" = "#77DD77")) +
+    labs(title = gsub("Cancer$", " Cancer", disease),
+         fill = "Drug combination type:") +
+    scale_fill_manual(values = c("Adv" = "#FF6961", "Eff" = "#77DD77"), labels = c("Adv" = "Adverse", "Eff" = "Effective")) +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),
           panel.spacing = unit(0.1, "cm"),
           # strip.background = element_rect(color = "black", linewidth = 0.25,),
           # strip.text = element_text(size = 6, margin = margin(1,1,1,1)),
           text = element_text(size = 5), 
-          plot.title = element_text(size = 6, hjust = 0.5, face = "plain"),
+          plot.title = element_text(size = 6, hjust = 0.5, face = "bold"),
           axis.text.x = element_text(size = 4, angle = 45, vjust = 1, hjust = 1), 
           axis.ticks = element_line(colour = "black", linewidth = 0.2),
           legend.position = "bottom",
+          legend.title = element_text(margin = margin(r = 2)),
           legend.key = element_blank(),
-          legend.key.size = unit(0.1, 'cm'),
-          legend.text = element_text(size = 6),
+          legend.key.size = unit(0.2, 'cm'),
+          legend.key.spacing.x = unit(0.1, "cm"),
+          legend.text = element_text(size = 5, margin = margin(l = 1)),
           legend.margin = margin(1,1,1,1),
           legend.box.spacing = unit(0.1, 'cm'),
           legend.box.background = element_rect(colour = "black", linewidth = 0.1))

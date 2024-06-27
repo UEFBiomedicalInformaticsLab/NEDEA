@@ -109,8 +109,10 @@ size <- reduce(list(size_1, size_2), merge, by = "Description", all = TRUE)
 library_size[["miscellaneous"]] <- size
 
 
+#####
 
-# Plot the library sizes as violin plot
+
+# Plot the library sizes as box plot
 
 if(!dir.exists("OutputFiles/Plots/")){
   dir.create("OutputFiles/Plots/", recursive = TRUE)
@@ -128,7 +130,6 @@ plot_data$Source <- factor(plot_data$Source,
                            levels = c("Efficacy_BreastCancer", "Efficacy_KidneyCancer", "Efficacy_LungCancer",  
                                       "Efficacy_OvaryCancer",  "Efficacy_ProstateCancer","Efficacy_SkinCancer", 
                                       "Safety", "KEGG", "SMPDB_DrugMetabolism", "SMPDB_DrugAction", "miscellaneous"))
-
 
 
 plot_data_summary <- plot_data %>% group_by(Source) %>% summarise(n = n())
@@ -180,6 +181,7 @@ if(!dir.exists("OutputFiles/Tables/")){
 write.xlsx(library_size, "OutputFiles/Tables/Enrichment_library_size.xlsx")
 
 
+#####
 
 
 # Shortened plot for publication
@@ -240,9 +242,55 @@ ggplot() +
   labs(x = "Library",
        y = "Library size",
        fill = "Type") 
-  
-  
-  dev.off()
+
+
+dev.off()
+
+
+#####
+
+
+# Plot the library composition as bar plot
+
+if(!dir.exists("OutputFiles/Plots_publication/")){
+  dir.create("OutputFiles/Plots_publication/", recursive = TRUE)
+}
+tiff("OutputFiles/Plots_publication/Publication_Enrichment_library_list_size.tiff",
+     width = 21, height = 29,
+     units = "cm", compression = "lzw", res = 1200)
+
+ggplot() +
+  geom_bar(data = plot_data, 
+           aes(x = Description, y = size, fill = type), 
+           stat = "identity", 
+           position = "dodge") +
+  facet_wrap(.~Source, scales = "free", ncol = 1, labeller = labeller(.cols = function(x){ gsub("Cancer$", " Cancer", x) })   ) +
+  scale_x_discrete(labels = function(x) scales::label_wrap(28)(x)) +
+  scale_fill_manual(values = c("all_size" = "#FF9F00", "inNet_size" = "#007FFF"), labels = c("all_size" = "All", "inNet_size" = "In network")) +
+  labs(x = "Gene sets", 
+       y = "Library size",
+       fill = "Number of genes:") +
+  theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
+        panel.grid = element_blank(),
+        panel.spacing = unit(0.1, "cm"),
+        strip.background = element_rect(color = "black", linewidth = 0.25,),
+        strip.text = element_text(size = 4, margin = margin(1,1,1,1)),
+        text = element_text(size = 4), 
+        axis.title = element_text(size = 4), 
+        axis.text.x = element_text(size = 4, angle = 45, vjust = 1, hjust = 1), 
+        axis.ticks = element_line(colour = "black", linewidth = 0.2),
+        legend.position = "bottom",
+        legend.title = element_text(margin = margin(r = 2)),
+        legend.key = element_blank(),
+        legend.key.size = unit(0.2, 'cm'),
+        legend.key.spacing.x = unit(0.1, "cm"),
+        legend.text = element_text(size = 5, margin = margin(l = 1)),
+        legend.margin = margin(1,1,1,1),
+        legend.box.spacing = unit(0.1, 'cm'),
+        legend.box.background = element_rect(colour = "black", linewidth = 0.1))
+
+dev.off()
+
 
 
 print(warnings())

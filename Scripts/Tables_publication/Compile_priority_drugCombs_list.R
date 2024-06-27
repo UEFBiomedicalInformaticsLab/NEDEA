@@ -23,7 +23,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
 }
 priority_drugCombs <- bind_rows(priority_drugCombs, .id = "Disease")
-
+priority_drugCombs <- priority_drugCombs[, ! colnames(priority_drugCombs) %in% c("DDI_description", "efficacy_score", "safety_score", "final_score", "isSelected_byDiffOfMax")]
 
 if(!dir.exists("OutputFiles/Tables_publication/")){ dir.create("OutputFiles/Tables_publication/", recursive = TRUE) }
 write.csv(priority_drugCombs, "OutputFiles/Tables_publication/Compiled_priorityDrugCombs_NES_combinedEfficacySafety.csv", row.names = FALSE)

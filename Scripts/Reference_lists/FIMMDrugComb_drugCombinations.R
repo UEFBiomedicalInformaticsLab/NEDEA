@@ -291,8 +291,11 @@ ggplot(data = plot_data, mapping = aes(x = tissue_name, y = synergy_value, color
     shape = 24,
     fill = "red"
   ) +
-  labs(x = "Cancer Type",
-       y = "Average Synergy Value") +
+  scale_x_discrete(labels = c("breast" = "Breast", "kidney" = "Kidney", "lung" = "Lung", 
+                              "ovary" = "Ovary", "prostate" = "Prostate", "skin" = "Skin")) +
+  labs(x = "Cancer type",
+       y = "Average synergy value",
+       color = "Synergy class") +
   theme(panel.background = element_rect(fill = "white", 
                                         colour = "black", 
                                         linewidth = 0.25, 

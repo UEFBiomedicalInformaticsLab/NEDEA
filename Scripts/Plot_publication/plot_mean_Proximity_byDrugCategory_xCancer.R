@@ -91,7 +91,9 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                   position = position_dodge(0.9)) +
     facet_wrap(~ feature, nrow = 1, labeller = label_wrap_gen(width = 30, 
                                                               multi_line = FALSE)) +
-    labs(title = disease,
+    scale_x_discrete(labels = c("Adv" = "Adverse", "Eff" = "Effective")) +
+    labs(title = gsub("Cancer$", " Cancer", disease),
+         x = "Drug combination type",
          y = "Mean distance +/- SE") +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_blank(),

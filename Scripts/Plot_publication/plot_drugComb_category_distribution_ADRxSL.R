@@ -37,12 +37,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
                          nrow(drugCombs_cat) ) * 100, 2)
   ))
   
-  # # Replace the missing categories as unknown
-  # drugCombs_cat <- drugCombs_cat %>% 
-  #   mutate_at(c("class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease)), 
-  #             ~replace_na(., "unknown"))
-  
-  
+
   # Remove drug combinations with ADR as NA
   # These were the drug combinations for which absolutely no report present
   drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, paste0("ADR_", disease)]), ]
@@ -62,9 +57,10 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     plot_list[[disease]][[ paste(i, collapse = "__") ]] <- ggplot(plot_data, aes(x = Var1, y = Var2, )) + 
       geom_tile(aes(fill = Freq)) +
       geom_text(aes(label = Freq), size = 0.75) + 
-      labs(title = disease,
+      labs(title = gsub("Cancer$", " Cancer", disease),
            x = "Synergy level",
            y = "ADR status") +
+      scale_y_discrete(labels = c("adr_positive" = "ADR positive", "unknown" = "Unknown")) +
       scale_fill_gradient(low = "white", high = "lightblue") +
       theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
             panel.grid = element_blank(),
@@ -72,7 +68,9 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
             plot.title = element_text(size = 2.5, hjust = 0.5, face = "bold", margin = margin(2, 1, 1, 1, "pt")),
             plot.margin = margin(1, 2, 1, 2, "pt"),
             axis.title = element_text(size = 2.5), 
-            axis.text = element_text(size = 2.5, angle = 0, vjust = 0, hjust = 0.5), 
+            axis.title.y = element_text(margin = margin(r = 0)),
+            axis.text.x = element_text(size = 2.5, angle = 0, vjust = 1, hjust = 0.5), 
+            axis.text.y = element_text(size = 2.5, hjust = 0.5, margin = margin(l = 1)),
             axis.ticks = element_line(colour = "black", linewidth = 0.1),
             legend.position = "none"
       )
