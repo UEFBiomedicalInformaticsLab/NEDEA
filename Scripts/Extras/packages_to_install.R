@@ -7,7 +7,11 @@ library(devtools)
 required_packages <- system('grep -r "library(" Scripts/ | cut -d: -f2 | sort | uniq | grep -v "#" ', intern = TRUE)
 required_packages <- gsub("library\\((.*)\\)", "\\1", required_packages)
 required_packages <- installed.packages() %>% rownames() %>% package_info() %>% filter(package %in% required_packages)
-write_csv(required_packages[, c("package", "ondiskversion", "source")], file = "pkg_list.csv")
+
+
+tmp1 <- required_packages[, c("package", "ondiskversion", "source")]
+colnames(tmp1) <- c("Package", "Version", "Source")
+write_csv(tmp1, file = "pkg_list.csv")
 
 # List CRAN packages 
 

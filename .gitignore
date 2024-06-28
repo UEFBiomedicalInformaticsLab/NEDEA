@@ -31,6 +31,10 @@ Trash*/
 Run_Vittorio_edits/
 Thumbs.db
 derby.log
-!/Databases/Directory_Structure_Databases.txt
-!Code_execution_sequence.xlsx
 
+
+
+/Databases/Directory_Structure_Databases.txt
+Code_execution_sequence.xlsx
+Visualisation_ShinyApp/
+Manual/
