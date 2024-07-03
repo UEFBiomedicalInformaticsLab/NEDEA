@@ -122,9 +122,6 @@ for(fold in names(data_folds)){
     roc_curve_data$balanced_accuracy <- (roc_curve_data$specificity + roc_curve_data$sensitivity)/2
     roc_curve_data <- roc_curve_data[roc_curve_data$balanced_accuracy == max(roc_curve_data$balanced_accuracy), ]
 
-    # roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-    # roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
-   
      if(nrow(roc_curve_data) > 1){
       roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
     }
@@ -394,8 +391,10 @@ for(feature_name in selected_features$feature){
   # Calculate the probability threshold with best separation
   fit_data$category <- factor(fit_data$category, levels = c("1", "0"))
   roc_curve_data <- roc_curve(data = fit_data, truth = category, predicted_probability)
-  roc_curve_data$Youden_stat <- roc_curve_data$sensitivity + roc_curve_data$specificity - 1
-  roc_curve_data <- roc_curve_data[roc_curve_data$Youden_stat == max(roc_curve_data$Youden_stat), ]
+  
+  roc_curve_data$balanced_accuracy <- (roc_curve_data$specificity + roc_curve_data$sensitivity)/2
+  roc_curve_data <- roc_curve_data[roc_curve_data$balanced_accuracy == max(roc_curve_data$balanced_accuracy), ]
+
   if(nrow(roc_curve_data) > 1){
     roc_curve_data <- roc_curve_data[roc_curve_data$specificity == max(roc_curve_data$specificity), ]
   }
@@ -403,7 +402,7 @@ for(feature_name in selected_features$feature){
   
   
   # Get the actual feature threshold using model coefficients and the selected probability
-  best_feature_threshold <- (log(best_probability_threshold / (1 - best_probability_threshold)) - as.numeric(coef(model)[1])) / as.numeric(coef(model)[2]) ### RECHECK
+  best_feature_threshold <- (log(best_probability_threshold / (1 - best_probability_threshold)) - as.numeric(coef(model)[1])) / as.numeric(coef(model)[2]) 
   final_model_selected_threshold <- rbind(final_model_selected_threshold, 
                                           data.frame("feature" = feature_name, 
                                                      "threshold" = best_feature_threshold))
