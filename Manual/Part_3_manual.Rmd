@@ -1,0 +1,50 @@
+---
+title: 'Part 3: Feature generation and exploration'
+output: html_document
+date: "2024-07-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 3.1. Calculate proximity
+
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Rscript** | [Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R](../Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R) |
+|             |                                                                                                                                                                   |
+|             | [Scripts/Feature_generation/Calculate_proximity_Pathways_for_drugCombs.R](../Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R)       |
+|             |                                                                                                                                                                   |
+|             | [Scripts/Feature_generation/Calculate_proximity_Miscellaneous_for_drugCombs.R](../Scripts/Feature_generation/Calculate_proximity_Miscellaneous_for_drugCombs.R)   |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Input**   |                                                                                                                                                                   |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Output**  |                                                                                                                                                                   |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Summary** |                                                                                                                                                                   |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+### 3.2. Execute RWR
+
+|             |                                                                                                                   |
+|-------------|-------------------------------------------------------------------------------------------------------------------|
+| **Rscript** | [Scripts/Feature_generation/Execute_RWR_on_drugCombs.R](../Scripts/Feature_generation/Execute_RWR_on_drugCombs.R) |
+| **Input**   |                                                                                                                   |
+| **Output**  |                                                                                                                   |
+| **Summary** |                                                                                                                   |
+
+### 3.3. Calculate NES
+
++-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Rscript** | [Scripts/Feature_generation/Execute_FGSEA_EfficacySafety_on_drugCombs.R](../Scripts/Feature_generation/Execute_FGSEA_EfficacySafety_on_drugCombs.R) |
+|             |                                                                                                                                                     |
+|             | [Scripts/Feature_generation/Execute_FGSEA_Pathways_on_drugCombs.R](../Scripts/Feature_generation/Execute_FGSEA_Pathways_on_drugCombs.R)             |
+|             |                                                                                                                                                     |
+|             | [Scripts/Feature_generation/Execute_FGSEA_Miscellaneous_on_drugCombs.R](../Scripts/Feature_generation/Execute_FGSEA_Miscellaneous_on_drugCombs.R)   |
++-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Input**   |                                                                                                                                                     |
++-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Output**  |                                                                                                                                                     |
++-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Summary** |                                                                                                                                                     |
++-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+

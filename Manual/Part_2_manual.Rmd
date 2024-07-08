@@ -1,0 +1,51 @@
+---
+title: 'Part 2: Preparing the enrichment libraries'
+output: html_document
+date: "2024-07-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 2.1. Retrieving the databases for curating the enrichment libraries
+
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Rscript** | [Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_ADR.R](../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_ADR.R)                     |
+|             |                                                                                                                                                                               |
+|             | [Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Diseases.R](../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Diseases.R)           |
+|             |                                                                                                                                                                               |
+|             | [Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_curatedADR.R](../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_curatedADR.R)       |
+|             |                                                                                                                                                                               |
+|             | [Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Miscellaneous.R](../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Miscellaneous.R) |
+|             |                                                                                                                                                                               |
+|             | [Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Pathways.R](../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Pathways.R)           |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Input**   |                                                                                                                                                                               |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Output**  |                                                                                                                                                                               |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Summary** |                                                                                                                                                                               |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+### 2.2. Preparing disease specific libraries
+
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Rscript** | [Scripts/Enrichment_analysis_libraries/Disease2Gene_BreastCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_BreastCancer_lib.R)     |
+|             |                                                                                                                                                       |
+|             | [Scripts/Enrichment_analysis_libraries/Disease2Gene_KidneyCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_KidneyCancer_lib.R)     |
+|             |                                                                                                                                                       |
+|             | [Scripts/Enrichment_analysis_libraries/Disease2Gene_LungCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_LungCancer_lib.R)         |
+|             |                                                                                                                                                       |
+|             | [Scripts/Enrichment_analysis_libraries/Disease2Gene_OvaryCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_OvaryCancer_lib.R)       |
+|             |                                                                                                                                                       |
+|             | [Scripts/Enrichment_analysis_libraries/Disease2Gene_ProstateCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_ProstateCancer_lib.R) |
+|             |                                                                                                                                                       |
+|             | [Scripts/Enrichment_analysis_libraries/Disease2Gene_SkinCancer_lib.R](../Scripts/Enrichment_analysis_libraries/Disease2Gene_SkinCancer_lib.R)         |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Input**   |                                                                                                                                                       |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Output**  |                                                                                                                                                       |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Summary** |                                                                                                                                                       |
++-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
