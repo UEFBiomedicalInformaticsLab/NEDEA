@@ -1,20 +1,7 @@
----
-title: 'Part 5: De novo predictions'
-output:
-  md_document:
-    variant: markdown_github
-  html_document: default
-date: "2024-07-08"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ### 5.1. Data for de novo prediction
 
 |             |                                                                                             |
-|-----------------|-------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | **Rscript** | [Scripts/DeNovo_predictions/DeNovo_data_1.R](../Scripts/DeNovo_predictions/DeNovo_data_1.R) |
 | **Input**   |                                                                                             |
 | **Output**  |                                                                                             |
@@ -23,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### 5.2. Feature generation on de novo data
 
 |             |                                                                                                                       |
-|-----------------|-------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | **Rscript** | [Scripts/DeNovo_predictions/DeNovo_featureGeneration_1.R](../Scripts/DeNovo_predictions/DeNovo_featureGeneration_1.R) |
 | **Input**   |                                                                                                                       |
 | **Output**  |                                                                                                                       |
@@ -32,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### 5.3. Prediction on de novo data
 
 |             |                                                                                                         |
-|------------------|------------------------------------------------------|
+|-------------------|-----------------------------------------------------|
 | **Rscript** | [Scripts/DeNovo_predictions/DeNovo_prediction_1.R](../Scripts/DeNovo_predictions/DeNovo_prediction_1.R) |
 | **Input**   |                                                                                                         |
 | **Output**  |                                                                                                         |

@@ -1,20 +1,7 @@
----
-title: 'Part 4: Training and validation of predictive system'
-output:
-  md_document:
-    variant: markdown_github
-  html_document: default
-date: "2024-07-08"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ### 4.1. Feature selection
 
 |             |                                                                                                                               |
-|--------------|----------------------------------------------------------|
+|---------------|---------------------------------------------------------|
 | **Rscript** | [Scripts/Predictive_model/Feature_selection_EfficacySafety.R](../Scripts/Predictive_model/Feature_selection_EfficacySafety.R) |
 | **Input**   |                                                                                                                               |
 | **Output**  |                                                                                                                               |
@@ -23,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### 4.2. Development of predictive system
 
 |             |                                                                                                                                                                 |
-|-------------|-----------------------------------------------------------|
+|--------------|----------------------------------------------------------|
 | **Rscript** | [Scripts/Predictive_model/train_predictiveSystem_combinedEfficacySafety_NES.R](../Scripts/Predictive_model/train_predictiveSystem_combinedEfficacySafety_NES.R) |
 | **Input**   |                                                                                                                                                                 |
 | **Output**  |                                                                                                                                                                 |

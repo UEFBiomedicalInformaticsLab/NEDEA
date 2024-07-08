@@ -1,6 +1,9 @@
 ---
 title: 'Part 2: Preparing the enrichment libraries'
-output: html_document
+output:
+  md_document:
+    variant: markdown_github
+  html_document: default
 date: "2024-07-08"
 ---
 

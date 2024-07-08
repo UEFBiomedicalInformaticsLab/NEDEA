@@ -12,7 +12,7 @@
 
 <meta name="date" content="2024-07-08" />
 
-<title>Part 3: Feature generation</title>
+<title>Part 3: Feature generation and exploration</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,24 +349,26 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Part 3: Feature generation</h1>
+<h1 class="title toc-ignore">Part 3: Feature generation and
+exploration</h1>
 <h4 class="date">2024-07-08</h4>
 
 </div>
 
 
-<div id="retrieving-the-databases-for-curating-the-enrichment-libraries" class="section level3">
-<h3>3.1. Retrieving the databases for curating the enrichment
-libraries</h3>
+<div id="calculate-proximity" class="section level3">
+<h3>3.1. Calculate proximity</h3>
 <table>
 <colgroup>
-<col width="26%" />
-<col width="73%" />
+<col width="7%" />
+<col width="92%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>Rscript</strong></td>
-<td><a href="Scripts/Network_build/STRING_PPI.R">Scripts/Network_build/STRING_PPI.R</a></td>
+<td><p><a href="../Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R">Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R</a></p>
+<p><a href="../Scripts/Feature_generation/Calculate_proximity_EfficacySafety_for_drugCombs.R">Scripts/Feature_generation/Calculate_proximity_Pathways_for_drugCombs.R</a></p>
+<p><a href="../Scripts/Feature_generation/Calculate_proximity_Miscellaneous_for_drugCombs.R">Scripts/Feature_generation/Calculate_proximity_Miscellaneous_for_drugCombs.R</a></p></td>
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
@@ -383,17 +385,46 @@ libraries</h3>
 </tbody>
 </table>
 </div>
-<div id="preparing-disease-specific-libraries" class="section level3">
-<h3>2.2. Preparing disease specific libraries</h3>
+<div id="execute-rwr" class="section level3">
+<h3>3.2. Execute RWR</h3>
 <table>
 <colgroup>
-<col width="26%" />
-<col width="73%" />
+<col width="10%" />
+<col width="89%" />
 </colgroup>
 <tbody>
 <tr class="odd">
 <td><strong>Rscript</strong></td>
-<td><a href="Scripts/Network_build/STRING_PPI.R">Scripts/Network_build/STRING_PPI.R</a></td>
+<td><a href="../Scripts/Feature_generation/Execute_RWR_on_drugCombs.R">Scripts/Feature_generation/Execute_RWR_on_drugCombs.R</a></td>
+</tr>
+<tr class="even">
+<td><strong>Input</strong></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Output</strong></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Summary</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="calculate-nes" class="section level3">
+<h3>3.3. Calculate NES</h3>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="91%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Rscript</strong></td>
+<td><p><a href="../Scripts/Feature_generation/Execute_FGSEA_EfficacySafety_on_drugCombs.R">Scripts/Feature_generation/Execute_FGSEA_EfficacySafety_on_drugCombs.R</a></p>
+<p><a href="../Scripts/Feature_generation/Execute_FGSEA_Pathways_on_drugCombs.R">Scripts/Feature_generation/Execute_FGSEA_Pathways_on_drugCombs.R</a></p>
+<p><a href="../Scripts/Feature_generation/Execute_FGSEA_Miscellaneous_on_drugCombs.R">Scripts/Feature_generation/Execute_FGSEA_Miscellaneous_on_drugCombs.R</a></p></td>
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>

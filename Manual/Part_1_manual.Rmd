@@ -3,6 +3,7 @@ title: "Part 1: Preparing the data"
 output:
   md_document:
     variant: markdown_github
+  html_document: default
 date: "2024-07-08"
 ---
 
