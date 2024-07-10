@@ -26,5 +26,5 @@ The scripts are detailed in the hyper links in the above list. The scripts are a
 
 ## Contacts
 
--   Arindam Ghosh ([arindam.ghosh\@uef.fi](mailto:arindam.ghosh@uef.fi){.email})
--   Vittorio Fortino ([vittorio.fortino\@uef.fi](mailto:vittorio.fortino@uef.fi){.email})
+-   Arindam Ghosh (arindam.ghosh@uef.fi)
+-   Vittorio Fortino (vittorio.fortino@uef.fi)
