@@ -23,6 +23,9 @@ The scripts could be divided into five parts as listed below:
 -   [Part 5: De novo predictions](Manual/Part_5_manual.md)
 
 The scripts are detailed in the hyper links in the above list. The scripts are arranged in the way they are supposed to be executed.
+The scripts are expected to be executed in the base directory which contains the 'Script' directory. 
+Three main directories would be generated while executing the scripts. The 'Databases' directory to store the data downloaded from various online databases, 
+the 'InputFiles' directory to store the primary input files and the 'OutputFiles' directory to store all results.
 
 ## Contacts
 

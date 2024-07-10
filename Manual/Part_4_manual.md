@@ -138,11 +138,7 @@ href="../Scripts/Predictive_model/Validation_data_2.R">Scripts/Predictive_model/
 </tr>
 <tr class="even">
 <td><strong>Output</strong></td>
-<td><ul>
-<li><p>drugCombs_validation1_[disease].rds</p></li>
-<li><p>drugCombs_validation2_[disease].rds</p></li>
-<li><p>drugCombs_validation3_[disease].rds</p></li>
-</ul></td>
+<td>drugCombs_validation[1/2/3]_[disease].rds</td>
 </tr>
 <tr class="odd">
 <td><strong>Summary</strong></td>
