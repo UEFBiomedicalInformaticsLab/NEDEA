@@ -16,11 +16,11 @@ The scripts have been developed and tested on R 4.2.2. The list of R packages re
 
 The scripts could be divided into five parts as listed below:
 
--   [Part 1: Preparing the data](Manual%20/Part_1_manual.md)
--   [Part 2: Preparing the enrichment libraries](Manual%20/Part_2_manual.md)
--   [Part 3: Feature generation and exploration](Manual%20/Part_3_manual.md)
--   [Part 4: Training and validation of predictive system](Manual%20/Part_4_manual.md)
--   [Part 5: De novo predictions](Manual%20/Part_5_manual.md)
+-   [Part 1: Preparing the data](Manual/Part_1_manual.md)
+-   [Part 2: Preparing the enrichment libraries](Manual/Part_2_manual.md)
+-   [Part 3: Feature generation and exploration](Manual/Part_3_manual.md)
+-   [Part 4: Training and validation of predictive system](Manual/Part_4_manual.md)
+-   [Part 5: De novo predictions](Manual/Part_5_manual.md)
 
 The scripts are detailed in the hyper links in the above list. The scripts are arranged in the way they are supposed to be executed.
 
