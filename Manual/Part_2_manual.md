@@ -27,7 +27,7 @@ href="../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Dis
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>ADRAlert2GENE2ID.xlsx (ADReCS)</p></li>
 <li><p>curated_gene_disease_associations.tsv.gz (DisGeNet)</p></li>
 <li><p>associationByDatatypeDirect (Open Targets)</p></li>
@@ -36,11 +36,11 @@ href="../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Dis
 <li><p>relationships.zip (PharmGKB)</p></li>
 <li><p>CTD_genes_diseases.csv.gz (Comparative Toxicogenomics
 Database)</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>ADReCS_ADR2Gene_level4_lib.rds</p></li>
 <li><p>ADReCS_ADR2Gene_level3_lib.rds</p></li>
 <li><p>DisGeNET_Disease2Gene_lib.rds</p></li>
@@ -54,7 +54,7 @@ Database)</p></li>
 <li><p>Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds</p></li>
 <li><p>PharmGKB_Disease2Gene_lib.rds</p></li>
 <li><p>CTD_Disease2Gene_lib.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
@@ -91,7 +91,7 @@ href="../Scripts/Enrichment_analysis_libraries/Disease2Gene_SkinCancer_lib.R">Sc
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>DisGeNET_Disease2Gene_lib.rds</p></li>
 <li><p>OpenTargets_Disease2Gene_GA_lib.rds</p></li>
 <li><p>OpenTargets_Disease2Gene_RNA_lib.rds</p></li>
@@ -100,18 +100,18 @@ href="../Scripts/Enrichment_analysis_libraries/Disease2Gene_SkinCancer_lib.R">Sc
 <li><p>Enrichr_Disease2Gene_GeoDiseaseSig_lib.rds</p></li>
 <li><p>Intogen_Disease2Gene_lib.rds</p></li>
 <li><p>PharmGKB_Disease2Gene_lib.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>Disease2Gene_BreastCancer_lib.rds</p></li>
 <li><p>Disease2Gene_KidneyCancer_lib.rds</p></li>
 <li><p>Disease2Gene_LungCancer_lib.rds</p></li>
 <li><p>Disease2Gene_OvaryCancer_lib.rds</p></li>
 <li><p>Disease2Gene_ProstateCancer_lib.rds</p></li>
 <li><p>Disease2Gene_SkinCancer_lib.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
@@ -136,21 +136,21 @@ href="../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_cur
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>ADReCS_ADR2Gene_level3_lib.rds</p></li>
 <li><p>ADReCS_ADR2Gene_level4_lib.rds</p></li>
 <li><p>CTD_Disease2Gene_lib.rds</p></li>
 <li><p>DisGeNET_Disease2Gene_lib.rds</p></li>
 <li><p>DisGeNET_DiseaseGroup2Gene_lib.rds</p></li>
 <li><p>DisGeNET_Phenotype2Gene_lib.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>curatedAdr2Gene_lib.rds</p></li>
 <li><p>curatedAdr2Gene_libInfo.xlsx</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
@@ -178,18 +178,18 @@ href="../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Pat
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>PMC7013921/Table_1.xls (PubMed Central)</p></li>
 <li><p>smpdb_proteins.csv.zip (SMPDB)</p></li>
 <li><p>smpdb_pathways.csv.zip (SMPDB)</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>CHG_keggPath2Gene_lib.rds</p></li>
 <li><p>SMPDb_Pathway2Gene_lib.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
@@ -224,12 +224,12 @@ href="../Scripts/Enrichment_analysis_libraries/Enrichment_Analysis_Libraries_Mis
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>categories.tsv (DGIdb)</p></li>
 <li><p>genes.zip (PharmGKB)</p></li>
 <li><p>human_genes.zip (GenAge)</p></li>
 <li><p>suppl_data_baaa045.zip (PubMed)</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>

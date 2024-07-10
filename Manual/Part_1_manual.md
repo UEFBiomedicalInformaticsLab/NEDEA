@@ -27,10 +27,10 @@ href="../Scripts/Network_build/STRING_PPI.R">Scripts/Network_build/STRING_PPI.R<
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>STRING_PPI_Net.rds</p></li>
 <li><p>STRING_PPI_Net_params.csv</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Summary</strong></td>
@@ -95,10 +95,10 @@ href="../Scripts/Reference_lists/FIMMDrugComb_drugCombinations.R">Scripts/Refere
 </tr>
 <tr class="even">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>summary_v_1_5.csv</p></li>
 <li><p>Thesaurus.FLAT.zip</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
@@ -143,18 +143,18 @@ href="../Scripts/Drug_combinations/Extract_drugCombs_and_targets.R">Scripts/Drug
 </tr>
 <tr class="odd">
 <td><strong>Input</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>FimmDrugComb_drugCombinations.rds</p></li>
 <li><p>STRING_PPI_Net.rds</p></li>
 <li><p>DrugBank_Drug_Target_associations.rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="even">
 <td><strong>Output</strong></td>
-<td><ol type="a">
+<td><ul>
 <li><p>Drug_combination_data/drugCombs_data_[disease].rds</p></li>
 <li><p>drugCombs_targets_extended_[disease].rds</p></li>
-</ol></td>
+</ul></td>
 </tr>
 <tr class="odd">
 <td><strong>Summary</strong></td>
