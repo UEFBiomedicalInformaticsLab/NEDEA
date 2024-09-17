@@ -40,7 +40,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
   # Remove drug combinations with ADR as NA
   # These were the drug combinations for which absolutely no report present
-  drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, paste0("ADR_", disease)]), ]
+  # drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, paste0("ADR_", disease)]), ]
   
   
   row.names(drugCombs_cat) <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
