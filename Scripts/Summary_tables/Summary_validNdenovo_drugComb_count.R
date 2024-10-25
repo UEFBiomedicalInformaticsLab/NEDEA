@@ -18,12 +18,24 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     validation_drugCombs[["Validation1"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_1/drugCombs_validation1_", disease, ".rds"))
   }
   
+  if(file.exists(paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))){
+    validation_drugCombs[["Validation1a"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
+  }
+  
   if(file.exists(paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))){
     validation_drugCombs[["Validation2"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
   }
   
+  if(file.exists(paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))){
+    validation_drugCombs[["Validation2a"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))
+  }
+  
   if(file.exists(paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))){
     validation_drugCombs[["Validation3"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
+  }
+  
+  if(file.exists(paste0("InputFiles/Validation_data_3a/drugCombs_validation3a_", disease, ".rds"))){
+    validation_drugCombs[["Validation3a"]][[disease]] <- readRDS(paste0("InputFiles/Validation_data_3a/drugCombs_validation3a_", disease, ".rds"))
   }
   
   if(file.exists(paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))){
