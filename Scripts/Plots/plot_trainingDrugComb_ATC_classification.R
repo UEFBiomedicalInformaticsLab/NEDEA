@@ -25,7 +25,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   drugCombs$comb_name <- paste(drugCombs$Drug1_DrugBank_id, drugCombs$Drug2_DrugBank_id, sep = "_")
   drugCombs <- drugCombs[!is.na(drugCombs$class_EffAdv), c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "comb_name", "class_EffAdv")]
   
-
+  
   # Add the ATC codes at level 1
   # Using many-to-many mapping to map all possible ATC codes to a single drug
   # If the level 1
@@ -44,34 +44,55 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
               relationship = "many-to-many") %>% 
     distinct()
   
-
-  # # Add the ATC codes
-  # drugCombs$Drug1_DrugBank_ATC <- DrugBank_drug_ATC$level_1[match(drugCombs$Drug1_DrugBank_id, DrugBank_drug_ATC$`drugbank-id`)]
-  # drugCombs$Drug2_DrugBank_ATC <- DrugBank_drug_ATC$level_1[match(drugCombs$Drug2_DrugBank_id, DrugBank_drug_ATC$`drugbank-id`)]
-   
   drugCombs[is.na(drugCombs$Drug1_ATC_level_1), "Drug1_ATC_level_1"] <- "MISSING"
   drugCombs[is.na(drugCombs$Drug2_ATC_level_1), "Drug2_ATC_level_1"] <- "MISSING"
   
   
-  # Generate the possible paired labels
-  drugCombs$ATC_pair <- paste(pmin(drugCombs$Drug1_ATC_level_1, drugCombs$Drug2_ATC_level_1), 
-                              pmax(drugCombs$Drug1_ATC_level_1, drugCombs$Drug2_ATC_level_1), 
-                              sep="__")
+  # Get all the listed ATCs
+  all_atc <- sort(unique(c(drugCombs$Drug1_ATC_level_1, drugCombs$Drug2_ATC_level_1)))
+  
+  
+  # Count the ATC occurance for the combinations
+  ATC_count_mat <- matrix(0, 
+                          nrow = length(all_atc), 
+                          ncol = length(all_atc), 
+                          dimnames = list(all_atc, all_atc)
+  )
+  ATC_count_mat[upper.tri(ATC_count_mat, diag = FALSE)] <- NA
+  
+  if(nrow(drugCombs) > 0){
+    for(i in 1:nrow(drugCombs)){
+      
+      atc_1 <- drugCombs[i, "Drug1_ATC_level_1", drop = TRUE]
+      atc_2 <- drugCombs[i, "Drug2_ATC_level_1", drop = TRUE]
+      
+      
+      if(!is.na(ATC_count_mat[atc_1, atc_2])){
+        ATC_count_mat[atc_1, atc_2] <- ATC_count_mat[atc_1, atc_2] + 1
+      }else{
+        ATC_count_mat[atc_2, atc_1] <- ATC_count_mat[atc_2, atc_1] + 1
+        
+      }
+    }
+  }
+  
+  ATC_count_mat <- as.data.frame(ATC_count_mat) %>% 
+    rownames_to_column("ATC1") %>% 
+    pivot_longer(-ATC1, 
+                 names_to = "ATC2", 
+                 values_to = "Count")
   
   
   # Plot the counts of pairs as heatmap
-  plot_data <- as.data.frame(table(drugCombs$ATC_pair) )
-  colnames(plot_data) <- c("ATC_pair", "Freq")
-  plot_data <- separate(plot_data, col = "ATC_pair", into = c("ATC1", "ATC2"), sep = "__")
+  plot_data <- ATC_count_mat %>% filter(!(Count == 0 | is.na(Count)))
+  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = TRUE))
+  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
   
-  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = FALSE))
-  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = TRUE))
-  
-  plot <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Freq, label = Freq)) +
+  plot <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Count, label = Count)) +
     geom_tile() +
-    geom_text(size = 1) + 
+    geom_text(size = 1, na.rm = TRUE) + 
     labs(title = gsub("Cancer$", " Cancer", disease)) +
-    scale_fill_distiller(palette = "YlGn", direction = 1) +
+    scale_fill_distiller(palette = "YlGn", direction = 1, na.value = "white") +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_line(color = "gray", linewidth = 0.05),
           panel.spacing = unit(0.1, "cm"),
@@ -109,18 +130,50 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   plot_list <- list()
   
-  plot_data <- as.data.frame(table(drugCombs[drugCombs$class_EffAdv %in% "Eff", ]$ATC_pair) )
-  colnames(plot_data) <- c("ATC_pair", "Freq")
-  plot_data <- separate(plot_data, col = "ATC_pair", into = c("ATC1", "ATC2"), sep = "__")
   
-  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = FALSE))
-  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = TRUE))
   
-  plot_list[["Eff"]] <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Freq, label = Freq)) +
+  # Count for effective
+  drugCombs_eff <- drugCombs[drugCombs$class_EffAdv %in% "Eff", ]
+  all_atc <- sort(unique(c(drugCombs_eff$Drug1_ATC_level_1, drugCombs_eff$Drug2_ATC_level_1)))
+  ATC_count_mat_eff <- matrix(0, 
+                              nrow = length(all_atc), 
+                              ncol = length(all_atc), 
+                              dimnames = list(all_atc, all_atc)
+  )
+  ATC_count_mat_eff[upper.tri(ATC_count_mat_eff, diag = FALSE)] <- NA
+  
+  if(nrow(drugCombs_eff) > 0){
+    for(i in 1:nrow(drugCombs_eff)){
+      
+      atc_1 <- drugCombs_eff[i, "Drug1_ATC_level_1", drop = TRUE]
+      atc_2 <- drugCombs_eff[i, "Drug2_ATC_level_1", drop = TRUE]
+      
+      
+      if(!is.na(ATC_count_mat_eff[atc_1, atc_2])){
+        ATC_count_mat_eff[atc_1, atc_2] <- ATC_count_mat_eff[atc_1, atc_2] + 1
+      }else{
+        ATC_count_mat_eff[atc_2, atc_1] <- ATC_count_mat_eff[atc_2, atc_1] + 1
+        
+      }
+    }
+  }
+  
+  ATC_count_mat_eff <- as.data.frame(ATC_count_mat_eff) %>% 
+    rownames_to_column("ATC1") %>% 
+    pivot_longer(-ATC1, 
+                 names_to = "ATC2", 
+                 values_to = "Count")
+  
+  plot_data <- ATC_count_mat_eff %>% filter(!(Count == 0 | is.na(Count)))
+  
+  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = TRUE))
+  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
+  
+  plot_list[["Eff"]] <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Count, label = Count)) +
     geom_tile() +
-    geom_text(size = 1) + 
-    labs(title = "Effective drug combinations") +
-    scale_fill_distiller(palette = "YlGn", direction = 1) +
+    geom_text(size = 1, na.rm = TRUE) + 
+    labs(title = gsub("Cancer$", " Cancer", disease)) +
+    scale_fill_distiller(palette = "YlGn", direction = 1, na.value = "white") +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_line(color = "gray", linewidth = 0.05),
           panel.spacing = unit(0.1, "cm"),
@@ -142,18 +195,48 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
           legend.box.background = element_rect(colour = "black", linewidth = 0.25))
   
   
-  plot_data <- as.data.frame(table(drugCombs[drugCombs$class_EffAdv %in% "Adv", ]$ATC_pair) )
-  colnames(plot_data) <- c("ATC_pair", "Freq")
-  plot_data <- separate(plot_data, col = "ATC_pair", into = c("ATC1", "ATC2"), sep = "__")
+  # Count for adverse
+  drugCombs_adv <- drugCombs[drugCombs$class_EffAdv %in% "Adv", ]
+  all_atc <- sort(unique(c(drugCombs_adv$Drug1_ATC_level_1, drugCombs_adv$Drug2_ATC_level_1)))
+  ATC_count_mat_adv <- matrix(0, 
+                              nrow = length(all_atc), 
+                              ncol = length(all_atc), 
+                              dimnames = list(all_atc, all_atc)
+  )
+  ATC_count_mat_adv[upper.tri(ATC_count_mat_adv, diag = FALSE)] <- NA
   
-  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = FALSE))
-  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = TRUE))
+  if(nrow(drugCombs_adv) > 0){
+    for(i in 1:nrow(drugCombs_adv)){
+      
+      atc_1 <- drugCombs_adv[i, "Drug1_ATC_level_1", drop = TRUE]
+      atc_2 <- drugCombs_adv[i, "Drug2_ATC_level_1", drop = TRUE]
+      
+      
+      if(!is.na(ATC_count_mat_adv[atc_1, atc_2])){
+        ATC_count_mat_adv[atc_1, atc_2] <- ATC_count_mat_adv[atc_1, atc_2] + 1
+      }else{
+        ATC_count_mat_adv[atc_2, atc_1] <- ATC_count_mat_adv[atc_2, atc_1] + 1
+        
+      }
+    }
+  }
   
-  plot_list[["Adv"]] <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Freq, label = Freq)) +
+  ATC_count_mat_adv <- as.data.frame(ATC_count_mat_adv) %>% 
+    rownames_to_column("ATC1") %>% 
+    pivot_longer(-ATC1, 
+                 names_to = "ATC2", 
+                 values_to = "Count")
+  
+  plot_data <- ATC_count_mat_adv %>% filter(!(Count == 0 | is.na(Count)))
+  
+  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = TRUE))
+  plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
+  
+  plot_list[["Adv"]] <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Count, label = Count)) +
     geom_tile() +
-    geom_text(size = 1) + 
-    labs(title = "Adverse drug combinations") +
-    scale_fill_distiller(palette = "YlGn", direction = 1) +
+    geom_text(size = 1, na.rm = TRUE) + 
+    labs(title = gsub("Cancer$", " Cancer", disease)) +
+    scale_fill_distiller(palette = "YlGn", direction = 1, na.value = "white") +
     theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
           panel.grid = element_line(color = "gray", linewidth = 0.05),
           panel.spacing = unit(0.1, "cm"),
@@ -173,7 +256,6 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
           legend.margin = margin(1,1,1,1),
           legend.box.spacing = unit(0.1, 'cm'),
           legend.box.background = element_rect(colour = "black", linewidth = 0.25))
-  
   
   tiff(paste0("OutputFiles/Plots/ATC_classification/Training/drugCombs_ATCclass_splitted_", disease, ".tiff"),
        width = 20,

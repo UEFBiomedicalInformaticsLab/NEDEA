@@ -5,7 +5,7 @@ set.seed(5081)
 library(tidyverse)
 
 
-# Script to check the drug class in de novo 1 dataset
+# Script to check the drug class in validation 1a dataset
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -14,15 +14,16 @@ DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
 colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
 
 
-if(!dir.exists("OutputFiles/Plots/ATC_classification/DeNovo_data_1/")){
-  dir.create("OutputFiles/Plots/ATC_classification/DeNovo_data_1/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_1a/")){
+  dir.create("OutputFiles/Plots/ATC_classification/Validation_data_1a/", recursive = TRUE)
 }
 
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   # Read the drug combination 
-  drugCombs <- readRDS(paste0("InputFiles/DeNovo_data_1/drugCombs_denovo1_", disease, ".rds"))
+  drugCombs <- readRDS(paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
   drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
+  
   
   # Add the ATC codes at level 1
   # Using many-to-many mapping to map all possible ATC codes to a single drug
@@ -48,9 +49,6 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   # Get all the listed ATCs
   all_atc <- sort(unique(c(drugCombs$Drug1_ATC_level_1, drugCombs$Drug2_ATC_level_1)))
-  
-  
-  ATC_count_list <- list()
   
   
   # Count the ATC occurance for the combinations
@@ -85,8 +83,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   
   # Plot the counts of pairs as heatmap
-  plot_data <- ATC_count_mat
-  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = FALSE))
+  plot_data <- ATC_count_mat %>% filter(!(Count == 0 | is.na(Count)))
+  plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = TRUE))
   plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
   
   plot <- ggplot(plot_data, aes(x = ATC1, y = ATC2, fill = Count, label = Count)) +
@@ -115,9 +113,9 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
           legend.box.background = element_rect(colour = "black", linewidth = 0.25))
   
   
-  tiff(paste0("OutputFiles/Plots/ATC_classification/DeNovo_data_1/drugCombs_ATCclass_", disease, ".tiff"),
-       width = 17,
-       height = 15,
+  tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_1a/drugCombs_ATCclass_", disease, ".tiff"),
+       width = 10,
+       height = 8,
        units = "cm", compression = "lzw", res = 1200)
   
   print(plot)

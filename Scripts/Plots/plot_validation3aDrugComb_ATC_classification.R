@@ -5,7 +5,7 @@ set.seed(5081)
 library(tidyverse)
 
 
-# Script to check the drug class in validation 4 dataset
+# Script to check the drug class in validation 3a dataset
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -14,18 +14,17 @@ DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
 colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
 
 
-if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_4/")){
-  dir.create("OutputFiles/Plots/ATC_classification/Validation_data_4/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_3a/")){
+  dir.create("OutputFiles/Plots/ATC_classification/Validation_data_3a/", recursive = TRUE)
 }
 
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   # Read the drug combination 
-  drugCombs <- readRDS(paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
+  drugCombs <- readRDS(paste0("InputFiles/Validation_data_3a/drugCombs_validation3a_", disease, ".rds"))
   drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
   
   if(nrow(drugCombs) > 0){
-    
     # Add the ATC codes at level 1
     # Using many-to-many mapping to map all possible ATC codes to a single drug
     # If the level 1
@@ -117,7 +116,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
             legend.box.background = element_rect(colour = "black", linewidth = 0.25))
     
     
-    tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_4/drugCombs_ATCclass_", disease, ".tiff"),
+    tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_3a/drugCombs_ATCclass_", disease, ".tiff"),
          width = 10,
          height = 8,
          units = "cm", compression = "lzw", res = 1200)
@@ -126,6 +125,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     
     dev.off()
   }
+  
 }
 
 

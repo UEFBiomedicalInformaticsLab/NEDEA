@@ -4,7 +4,13 @@ set.seed(5081)
 # Script to plot the level_1 ATC codes as heatmap
 
 # Load libraries
+library(unixtools)
 library(tidyverse)
+
+
+# Set temporary directory
+if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
+set.tempdir("tmp_dir/")
 
 
 #####
@@ -23,7 +29,7 @@ colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(
 
 drugCombs_master <- list()
 
-for(dataset in c("Training", "Validation1", "Validation2", "Validation3")){
+for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Validation3")){
   for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
     
     switch(dataset, 
@@ -43,6 +49,12 @@ for(dataset in c("Training", "Validation1", "Validation2", "Validation3")){
            
            "Validation2" = {
              drugCombs <- readRDS(paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
+             drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
+             drugCombs_master[[dataset]][[disease]] <- drugCombs
+           },
+           
+           "Validation2a" = {
+             drugCombs <- readRDS(paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))
              drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
              drugCombs_master[[dataset]][[disease]] <- drugCombs
            },
@@ -105,7 +117,7 @@ ATC_count_list <- list()
 
 # Count the ATC occurance for the combinations
 
-for(dataset in c("Training", "Validation1", "Validation2", "Validation3")){
+for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Validation3")){
   
   for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
     
@@ -119,7 +131,7 @@ for(dataset in c("Training", "Validation1", "Validation2", "Validation3")){
     drugCombs_select <- drugCombs[drugCombs$Dataset %in% dataset & drugCombs$Disease %in% disease, ]
     
     
-    if(nrow(drugCombs_select) > 1){
+    if(nrow(drugCombs_select) > 0){
       for(i in 1:nrow(drugCombs_select)){
         
         atc_1 <- drugCombs_select[i, "Drug1_ATC_code_1"]
@@ -159,9 +171,13 @@ plot_data <- bind_rows(plot_data)
 plot_data$log_count <- log(plot_data$Count, 10)
 plot_data[is.infinite(plot_data$log_count), "log_count"] <- NA
 
-tiff(paste0("OutputFiles/Plots_publication/drugCombs_ATCclass_level1.tiff"),
+if(!dir.exists("OutputFiles/Plots_publication/ATC_classification/")){
+  dir.create("OutputFiles/Plots_publication/ATC_classification/", recursive = TRUE)
+  }
+
+tiff(paste0("OutputFiles/Plots_publication/ATC_classification/drugCombs_ATCclass_level1.tiff"),
      width = 29,
-     height = 20,
+     height = 25,
      units = "cm", compression = "lzw", res = 1200)
 
 

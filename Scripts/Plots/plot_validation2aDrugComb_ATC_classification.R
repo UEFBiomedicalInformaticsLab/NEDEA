@@ -5,7 +5,7 @@ set.seed(5081)
 library(tidyverse)
 
 
-# Script to check the drug class in validation 4 dataset
+# Script to check the drug class in validation 2a dataset
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -14,14 +14,14 @@ DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
 colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
 
 
-if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_4/")){
-  dir.create("OutputFiles/Plots/ATC_classification/Validation_data_4/", recursive = TRUE)
+if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_2a/")){
+  dir.create("OutputFiles/Plots/ATC_classification/Validation_data_2a/", recursive = TRUE)
 }
 
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
   # Read the drug combination 
-  drugCombs <- readRDS(paste0("InputFiles/Validation_data_4/drugCombs_validation4_", disease, ".rds"))
+  drugCombs <- readRDS(paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))
   drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
   
   if(nrow(drugCombs) > 0){
@@ -87,7 +87,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     
     
     # Plot the counts of pairs as heatmap
-    plot_data <- ATC_count_mat %>% filter(!(Count == 0 | is.na(Count)))
+    plot_data <- ATC_count_mat  %>% filter(!(Count == 0 | is.na(Count)))
     plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = TRUE))
     plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
     
@@ -117,9 +117,9 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
             legend.box.background = element_rect(colour = "black", linewidth = 0.25))
     
     
-    tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_4/drugCombs_ATCclass_", disease, ".tiff"),
-         width = 10,
-         height = 8,
+    tiff(paste0("OutputFiles/Plots/ATC_classification/Validation_data_2a/drugCombs_ATCclass_", disease, ".tiff"),
+         width = 20,
+         height = 20,
          units = "cm", compression = "lzw", res = 1200)
     
     print(plot)
