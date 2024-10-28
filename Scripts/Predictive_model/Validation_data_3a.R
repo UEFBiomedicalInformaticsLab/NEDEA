@@ -162,12 +162,12 @@ valid_drugCombs_cat$condition <- CDCDB_conditions$condition_downcase[match(valid
 
 # Extract the cancer specific drug list
 grep_pattern <- switch (disease,
-                        "BreastCancer" = "breast cancer|breast carcinoma",
-                        "KidneyCancer" = "renal cell cancer|renal cell carcinoma",
-                        "LungCancer" = "lung cancer|lung carcinoma",
-                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial|ovarian germ cell cancer|ovarian sarcoma",
-                        "ProstateCancer" = "prostate Cancer|prostate carcinoma|prostate adenocarcinoma",
-                        "SkinCancer" = "skin cancer|melanoma"
+                        "BreastCancer" = "breast cancer|breast carcinoma|cancer breast|carcinoma breast",
+                        "KidneyCancer" = "renal cancer|renal cell cancer|renal cell carcinoma|carcinoma, renal cell|kidney cancer|kidney carcinoma",
+                        "LungCancer" = "lung cancer|lung carcinoma|lung adenocarcinoma|carcinoma, non small cell lung|carcinoma, small cell lung|adenocarcinoma of the lung|lung non-small cell carcinoma",
+                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial|ovarian germ cell cancer|ovarian sarcoma|ovarian adenocarcinoma|cancer, ovarian",
+                        "ProstateCancer" = "prostate Cancer|prostate carcinoma|prostate adenocarcinoma|adenocarcinoma of the prostate|cancer, prostate",
+                        "SkinCancer" = "skin cancer|cutaneous melanoma|melanoma \\(skin\\)"
 )
 
 valid_drugCombs_cat <- valid_drugCombs_cat[grep(pattern = grep_pattern, x = valid_drugCombs_cat$condition, ignore.case = TRUE), ]
@@ -229,6 +229,8 @@ valid_drugCombs_cat <- valid_drugCombs_cat[paste(valid_drugCombs_cat$Drug1_ATC_c
 
 valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(Drug1_ATC_code_1, Drug2_ATC_code_1)) %>% distinct()
 
+if(nrow(valid_drugCombs_cat) == 0){ stop("No drug combinations found") }
+
 
 #####
 
@@ -271,12 +273,58 @@ if(length(remove_rows) > 0){
   valid_drugCombs_cat <- valid_drugCombs_cat[-remove_rows,]
 }
 
+if(nrow(valid_drugCombs_cat) == 0){ stop("No drug combinations found") }
 
-# valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$source_id, valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, valid_drugCombs_cat$Drug3_DrugBank_id, sep = "_")
 
-valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$source_id, valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+#####
 
-# valid_drugCombs_cat$comb_name <- gsub("_NA$", "", valid_drugCombs_cat$comb_name)
+
+# Get list all unique combinations
+
+all_drugs <- sort(unique(c(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id)))
+
+all_drug_combs <- matrix(NA, 
+                         nrow = length(all_drugs), 
+                         ncol = length(all_drugs), 
+                         dimnames = list(all_drugs, all_drugs)
+)
+all_drug_combs[upper.tri(all_drug_combs, diag = FALSE)] <- NA
+
+
+if(nrow(valid_drugCombs_cat) > 0){
+  for(i in 1:nrow(valid_drugCombs_cat)){
+    
+    drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+    drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
+    comb_info <- paste( unlist(valid_drugCombs_cat[i, c("source_id", "condition", "overall_status", "phase", "why_stopped", "class_EffAdv"), drop = TRUE], use.names = FALSE) , collapse = "___")
+    comb_info <- paste0("[", comb_info, "]")
+    
+    if(!is.na(all_drug_combs[drug1, drug2])){
+      all_drug_combs[drug1, drug2] <- paste(na.exclude(c(all_drug_combs[drug1, drug2], comb_info)), collapse = ";")
+    }else{
+      all_drug_combs[drug2, drug1] <- paste(na.exclude(c(all_drug_combs[drug2, drug1], comb_info)), collapse = ";")
+    }
+  }
+}
+
+all_drug_combs <- as.data.frame(all_drug_combs) %>% 
+  rownames_to_column("Drug1_DrugBank_id") %>% 
+  pivot_longer(-Drug1_DrugBank_id, 
+               names_to = "Drug2_DrugBank_id", 
+               values_to = "drugCombs") %>% 
+  filter(!is.na(drugCombs))
+
+
+all_drug_combs <- all_drug_combs %>% separate_rows(drugCombs, sep = "\\];\\[") %>% 
+  separate(drugCombs, into = c("source_id", "condition", "overall_status", "phase", "why_stopped", "class_EffAdv"), sep = "___") 
+
+all_drug_combs$source_id <- str_replace(all_drug_combs$source_id, "^\\[", "")
+all_drug_combs$class_EffAdv <- str_replace(all_drug_combs$class_EffAdv, "\\]$", "")
+
+all_drug_combs$comb_name <- paste(all_drug_combs$Drug1_DrugBank_id, all_drug_combs$Drug2_DrugBank_id, sep = "_")
+
+
+valid_drugCombs_cat <- all_drug_combs %>% group_by(comb_name) %>%  summarise(across(everything(), ~ toString(unique(.x))))
 
 
 #####

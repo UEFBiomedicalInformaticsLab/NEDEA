@@ -154,23 +154,59 @@ DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
 colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
 
 
-# Concatenate the ATC codes and level 1 term for each drug into a single string
-DrugBank_drug_ATC <- DrugBank_drug_ATC[, c("DrugBank_drug_ID", "level_1", "atc_code")]
-DrugBank_drug_ATC <- DrugBank_drug_ATC %>% 
+# Concatenate the ATC level 1 term for each drug into a single string
+ATC_l1 <- DrugBank_drug_ATC[, c("DrugBank_drug_ID", "level_1", "code_1")]
+ATC_l1 <- ATC_l1 %>% 
   group_by(DrugBank_drug_ID, level_1)  %>% 
-  summarise(atc_code = paste(atc_code, collapse = "; "), .groups = "keep") %>% 
-  mutate(atc_label = paste(level_1, " (", atc_code, ")", sep = "")) %>%
+  summarise(code_1 = paste(unique(code_1), collapse = "; "), .groups = "keep") %>% 
+  mutate(ATC_level1 = paste(unique(level_1), " (", unique(code_1), ")", sep = "")) %>%
   group_by(DrugBank_drug_ID) %>% 
-  summarise(atc_label = paste(atc_label, collapse = "; "))
+  summarise(ATC_level1 = paste(unique(ATC_level1), collapse = "; "))
+
+# Add annotations about ATC level 1
+predict_result <- predict_result %>%
+  left_join(ATC_l1 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug1_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
+  left_join(ATC_l1 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug2_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
+
+# Concatenate the ATC level 2 term for each drug into a single string
+ATC_l2 <- DrugBank_drug_ATC[, c("DrugBank_drug_ID", "level_2", "code_2")]
+ATC_l2 <- ATC_l2 %>% 
+  group_by(DrugBank_drug_ID, level_2)  %>% 
+  summarise(code_2 = paste(unique(code_2), collapse = "; "), .groups = "keep") %>% 
+  mutate(ATC_level2 = paste(unique(level_2), " (", unique(code_2), ")", sep = "")) %>%
+  group_by(DrugBank_drug_ID) %>% 
+  summarise(ATC_level2 = paste(unique(ATC_level2), collapse = "; "))
+
+# Add annotations about ATC level 2
+predict_result <- predict_result %>%
+  left_join(ATC_l2 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug1_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
+  left_join(ATC_l2 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug2_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
+
+# Concatenate the ATC level 3 term for each drug into a single string
+ATC_l3 <- DrugBank_drug_ATC[, c("DrugBank_drug_ID", "level_3", "code_3")]
+ATC_l3 <- ATC_l3 %>% 
+  group_by(DrugBank_drug_ID, level_3)  %>% 
+  summarise(code_3 = paste(unique(code_3), collapse = "; "), .groups = "keep") %>% 
+  mutate(ATC_level3 = paste(unique(level_3), " (", unique(code_3), ")", sep = "")) %>%
+  group_by(DrugBank_drug_ID) %>% 
+  summarise(ATC_level3 = paste(unique(ATC_level3), collapse = "; "))
 
 
 # Add annotations about ATC codes
 predict_result <- predict_result %>%
-  left_join(DrugBank_drug_ATC %>% rename_with(.cols = everything(),
-                                              .fn = ~ paste0("Drug1_", .)),
+  left_join(ATC_l3 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug1_", .)),
             by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
-  left_join(DrugBank_drug_ATC %>% rename_with(.cols = everything(),
-                                              .fn = ~ paste0("Drug2_", .)),
+  left_join(ATC_l3 %>% rename_with(.cols = everything(),
+                                   .fn = ~ paste0("Drug2_", .)),
             by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
 
 
