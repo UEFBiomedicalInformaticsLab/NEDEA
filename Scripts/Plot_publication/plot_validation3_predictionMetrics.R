@@ -44,12 +44,12 @@ tiff(paste0("OutputFiles/Plots_publication/Validation/Validation3_predictionMetr
      height = 3,
      units = "cm", compression = "lzw", res = 1200)
 
-ggplot(plot_data) +
-  geom_bar(aes(x = disease, y = .estimate), 
-           stat = "identity", 
+ggplot(plot_data, aes(x = disease, y = .estimate, label = round(.estimate, 2))) +
+  geom_bar(stat = "identity", 
            position = "dodge", 
            width = 0.5, 
            lwd = 0.1) +
+  geom_text(size = 1) +
   geom_hline(yintercept = 0.7,
              linetype="dotted",
              color = "#006400",

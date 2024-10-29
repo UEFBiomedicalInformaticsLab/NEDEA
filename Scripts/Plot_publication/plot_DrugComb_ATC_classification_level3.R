@@ -29,9 +29,9 @@ colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(
 
 drugCombs_master <- list()
 
-for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Validation3")){
+for(dataset in c("Training", "Validation1", "Validation1a", "Validation2", "Validation2a", "Validation3", "Validation3a")){
   for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
-
+    
     switch(dataset, 
            "Training" = {
              # Read the drug combination categories
@@ -43,6 +43,12 @@ for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Vali
            
            "Validation1" = {
              drugCombs <- readRDS(paste0("InputFiles/Validation_data_1/drugCombs_validation1_", disease, ".rds"))
+             drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
+             drugCombs_master[[dataset]][[disease]] <- drugCombs
+           },
+           
+           "Validation1a" = {
+             drugCombs <- readRDS(paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
              drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
              drugCombs_master[[dataset]][[disease]] <- drugCombs
            },
@@ -61,6 +67,12 @@ for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Vali
            
            "Validation3" = {
              drugCombs <- readRDS(paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
+             drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
+             drugCombs_master[[dataset]][[disease]] <- drugCombs
+           },
+           
+           "Validation3a" = {
+             drugCombs <- readRDS(paste0("InputFiles/Validation_data_3a/drugCombs_validation3a_", disease, ".rds"))
              drugCombs <- drugCombs[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id")]
              drugCombs_master[[dataset]][[disease]] <- drugCombs
            }
@@ -117,7 +129,7 @@ ATC_count_list <- list()
 
 # Count the ATC occurance for the combinations
 
-for(dataset in c("Training", "Validation1", "Validation2", "Validation2a", "Validation3")){
+for(dataset in c("Training", "Validation1", "Validation1a", "Validation2", "Validation2a", "Validation3", "Validation3a")){
   
   for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
     
