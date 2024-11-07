@@ -58,6 +58,8 @@ FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$ce
 # FimmDrugComb_drugCombCat <- merge(FimmDrugComb_drugCombCat, FimmDrugComb_cellLine[,c("name", "tissue")],
 #                                   by.x = "cell_line_name", by.y = "name", all.x = TRUE)
 
+used_cellLines <- unique(FimmDrugComb_drugCombCat[, c("cell_line_name", "tissue_name")])
+write.csv(used_cellLines, "OutputFiles/Tables/FIMM_used_cell_lines.csv", row.names = FALSE)
 
 # * ZIP (Zero Interaction Potency):
 # The ZIP model calculates the expected effect of two drugs if there were no interaction between them. 
