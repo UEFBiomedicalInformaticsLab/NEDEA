@@ -46,7 +46,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   diseases <- unique(disease_gene$disease)
   
   # parameters for computing end network
-  dirRes <- paste0(main_exc_dir, "/OutputFiles/Compare_external/SAveRUNNER/Results/", disease, "/")       
+  dirRes <- paste0(main_exc_dir, "/OutputFiles/Compare_external/SAveRUNNER/", disease, "/")       
   
   interaction = "similarity"  # edge-weight = similarity or proximity
   pval_thr = 0.05             # select significative drug-disease association
@@ -121,36 +121,13 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   setwd(main_exc_dir)
   
-  file.copy("External_tools/SAveRUNNER/code/Drug_Disease_network.txt", paste0("OutputFiles/Compare_external/SAveRUNNER/Results/", disease, "/"))  
+  file.copy("External_tools/SAveRUNNER/code/Drug_Disease_network.txt", paste0("OutputFiles/Compare_external/SAveRUNNER/", disease, "/"))  
+  file.remove("External_tools/SAveRUNNER/code/Drug_Disease_network.txt")
   
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#####
 
 
 print(warnings())
