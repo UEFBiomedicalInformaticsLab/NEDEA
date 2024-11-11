@@ -20,6 +20,7 @@
 **/*.txt
 **/*.xlsx
 Databases/
+External_tools/
 InputFiles/
 omnipathr-log/
 OutputFiles/
