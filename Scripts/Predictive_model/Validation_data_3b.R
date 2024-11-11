@@ -2,9 +2,9 @@ set.seed(5081)
 
 
 
-# Generate validation data 1a
+# Generate validation data 3b
 # Notes:
-# (a) Curated using the synergy level
+# (a) Based on clinical data // no three drug combinations
 
 
 
@@ -85,84 +85,64 @@ train_drugCombs_cat <- train_drugCombs_cat %>%
             relationship = "many-to-many") %>%
   distinct()
 
-# Remove those with missing ATC 
-train_drugCombs_cat <- train_drugCombs_cat[!(is.na(train_drugCombs_cat$Drug1_ATC_code_1) | is.na(train_drugCombs_cat$Drug2_ATC_code_1)), ]
+possible_ATC <- as.character(na.exclude(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1))))
 
 
-# Get list of ATC pairs 
-all_atc <- sort(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1)))
-
-ATC_count_mat <- matrix(0, 
-                        nrow = length(all_atc), 
-                        ncol = length(all_atc), 
-                        dimnames = list(all_atc, all_atc)
-)
-ATC_count_mat[upper.tri(ATC_count_mat, diag = FALSE)] <- NA
+#####
 
 
-
-if(nrow(train_drugCombs_cat) > 1){
-  for(i in 1:nrow(train_drugCombs_cat)){
-    
-    atc_1 <- train_drugCombs_cat[i, "Drug1_ATC_code_1"]
-    atc_2 <- train_drugCombs_cat[i, "Drug2_ATC_code_1"]
-    
-    
-    if(!is.na(ATC_count_mat[atc_1, atc_2])){
-      ATC_count_mat[atc_1, atc_2] <- ATC_count_mat[atc_1, atc_2] + 1
-    }else{
-      ATC_count_mat[atc_2, atc_1] <- ATC_count_mat[atc_2, atc_1] + 1
-      
-    }
-  }
+# Download the C-DCDB combinations
+if(!dir.exists("Databases/CDCDB/")){dir.create("Databases/CDCDB/", recursive = TRUE)}
+if(!file.exists("Databases/CDCDB/09.04.2024.zip")){
+  cat("\n\nNOTE: Manually download the file '09.04.2024.zip' from the 'Downloads' page in https://icc.ise.bgu.ac.il/medical_ai/CDCDB/ and place it within 'Databases/CDCDB/'. \n\n")
+}
+if(!file.exists("Databases/CDCDB/web_preview.csv")){
+  unzip(zipfile = "Databases/CDCDB/09.04.2024.zip", exdir = "Databases/CDCDB/")
 }
 
-ATC_count_mat <- as.data.frame(ATC_count_mat) %>% 
-  rownames_to_column("ATC1") %>% 
-  pivot_longer(-ATC1, 
-               names_to = "ATC2", 
-               values_to = "Count")
-
-ATC_count_mat <- ATC_count_mat %>% filter(!is.na(Count)) %>% filter(Count > 0)
-
-possible_ATC_pairs <- unique(paste(ATC_count_mat$ATC1, ATC_count_mat$ATC2, sep = "_"))
 
 
-#####
+# Read the drug combinations
+valid_drugCombs_cat <- read.csv("Databases/CDCDB/web_preview.csv")
+valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$source == "clinicaltrials.gov", c("drugs", "drugbank_identifiers", "source_id")] # Keep only those from clinical trials
+valid_drugCombs_cat <- valid_drugCombs_cat %>%
+  filter(str_count(drugbank_identifiers, ";") %in% c(1, 2)) %>%
+  filter(!str_detect(drugbank_identifiers, "NA|PLACEBO")) 
+
+valid_drugCombs_cat <- separate(valid_drugCombs_cat,
+                                col = "drugbank_identifiers", 
+                                into = c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id"), 
+                                sep = ";", fill = "right")
 
 
-# Read the synergy level of the  drug combination
-drugCombs_data <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
-drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level")]
+# Add info about condition for the trials
+CDCDB_conditions <- read.csv("Databases/CDCDB/conditions_df.csv")
+valid_drugCombs_cat$condition <- CDCDB_conditions$condition_downcase[match(valid_drugCombs_cat$source_id, CDCDB_conditions$nct_id)]
 
 
-# Read the DDI data
-DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
-DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", paste0("ADR_", disease))]
+# Extract the cancer specific drug list
+grep_pattern <- switch (disease,
+                        "BreastCancer" = "breast cancer|breast carcinoma|cancer breast|carcinoma breast",
+                        "KidneyCancer" = "renal cancer|renal cell cancer|renal cell carcinoma|carcinoma, renal cell|kidney cancer|kidney carcinoma",
+                        "LungCancer" = "lung cancer|lung carcinoma|lung adenocarcinoma|carcinoma, non small cell lung|carcinoma, small cell lung|adenocarcinoma of the lung|lung non-small cell carcinoma",
+                        "OvaryCancer" = "ovarian cancer|ovarian carcinoma|ovarian epithelial cancer|carcinoma, ovarian epithelial|ovarian germ cell cancer|ovarian sarcoma|ovarian adenocarcinoma|cancer, ovarian",
+                        "ProstateCancer" = "prostate Cancer|prostate carcinoma|prostate adenocarcinoma|adenocarcinoma of the prostate|cancer, prostate",
+                        "SkinCancer" = "skin cancer|cutaneous melanoma|melanoma \\(skin\\)"
+)
+
+valid_drugCombs_cat <- valid_drugCombs_cat[grep(pattern = grep_pattern, x = valid_drugCombs_cat$condition, ignore.case = TRUE), ]
 
 
-# Merge the data
-valid_drugCombs_cat <- merge(DrugBank_ddi, drugCombs_data, 
-                             by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id"),
-                             all.y = TRUE)
+# Read the drug type information
+DrugBank_drug_type <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_type <- DrugBank_drug_type$drugs$general_information
+DrugBank_drug_type <- DrugBank_drug_type[DrugBank_drug_type$type == "small molecule", ] # retain only small molecular drugs
 
 
-#####
-
-
-# Assign the drug combination categories
-valid_drugCombs_cat$class_EffAdv <- NA
-
-# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
-
-
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
-
-valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
-valid_drugCombs_cat <- valid_drugCombs_cat[!is.na(valid_drugCombs_cat$class_EffAdv), ]
-valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+# Keep combinations involving small molecular drugs
+valid_drugCombs_cat <- valid_drugCombs_cat[(valid_drugCombs_cat$Drug1_DrugBank_id %in% DrugBank_drug_type$primary_key) & 
+                                             (valid_drugCombs_cat$Drug2_DrugBank_id %in% DrugBank_drug_type$primary_key) & 
+                                             (valid_drugCombs_cat$Drug3_DrugBank_id %in% c(DrugBank_drug_type$primary_key, NA)), ]
 
 
 #####
@@ -183,17 +163,48 @@ valid_drugCombs_cat <- valid_drugCombs_cat %>%
                           .fn = ~ paste0("Drug2_ATC_", .)),
             by = c("Drug2_DrugBank_id" = "Drug2_ATC_DrugBank_drug_ID"),
             relationship = "many-to-many") %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug3_ATC_", .)),
+            by = c("Drug3_DrugBank_id" = "Drug3_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
   distinct()
 
 
 # Remove those with missing ATC 
-valid_drugCombs_cat <- valid_drugCombs_cat[!(is.na(valid_drugCombs_cat$Drug1_ATC_code_1) | is.na(valid_drugCombs_cat$Drug2_ATC_code_1)), ]
+valid_drugCombs_cat <- valid_drugCombs_cat[!( is.na(valid_drugCombs_cat$Drug1_ATC_code_1) | 
+                                                is.na(valid_drugCombs_cat$Drug2_ATC_code_1) ), ]
+
+
+# Remove three drug combinations
+valid_drugCombs_cat <- valid_drugCombs_cat %>% 
+  filter(is.na(Drug3_DrugBank_id)) %>% 
+  dplyr::select(!c(Drug3_DrugBank_id, Drug3_ATC_code_1))
+
 
 # Filter to keep only those within the training framework
-valid_drugCombs_cat <- valid_drugCombs_cat[paste(valid_drugCombs_cat$Drug1_ATC_code_1, valid_drugCombs_cat$Drug2_ATC_code_1, sep = "_") %in% possible_ATC_pairs | 
-                                             paste(valid_drugCombs_cat$Drug2_ATC_code_1, valid_drugCombs_cat$Drug1_ATC_code_1, sep = "_") %in% possible_ATC_pairs, ]
+valid_drugCombs_cat <- valid_drugCombs_cat %>% filter((Drug1_ATC_code_1 %in% possible_ATC) & (Drug2_ATC_code_1 %in% possible_ATC))
+
 
 valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(Drug1_ATC_code_1, Drug2_ATC_code_1)) %>% distinct()
+
+if(nrow(valid_drugCombs_cat) == 0){ stop("No drug combinations found") }
+
+
+#####
+
+
+# Add information about clinical trial outcomes
+CDCDB_trials <- read.csv("Databases/CDCDB/trials_df.csv")
+valid_drugCombs_cat <- left_join(x = valid_drugCombs_cat, y = CDCDB_trials[, c("nct_id", "overall_status", "phase", "why_stopped")], by = c("source_id" = "nct_id"))
+
+
+# Assign class labels
+valid_drugCombs_cat$class_EffAdv <- NA
+valid_drugCombs_cat[valid_drugCombs_cat$phase %in% c("Phase 3", "Phase 4") & valid_drugCombs_cat$overall_status %in% c("Completed"), "class_EffAdv"] <- "Eff"
+valid_drugCombs_cat[valid_drugCombs_cat$overall_status %in% c("Terminated", "Withdrawn") & grepl("toxic", valid_drugCombs_cat$why_stopped, ignore.case = TRUE), "class_EffAdv"] <- "Adv"
+valid_drugCombs_cat <- valid_drugCombs_cat[!is.na(valid_drugCombs_cat$class_EffAdv), ]
 
 
 #####
@@ -222,25 +233,58 @@ if(length(remove_rows) > 0){
   valid_drugCombs_cat <- valid_drugCombs_cat[-remove_rows,]
 }
 
+if(nrow(valid_drugCombs_cat) == 0){ stop("No drug combinations found") }
+
 
 #####
 
 
-# Filter duplicates
-valid_drugCombs_cat$keep <- NA
-for(i in 1:nrow(valid_drugCombs_cat)){
-  if(is.na(valid_drugCombs_cat[i,"keep"])){
-    valid_drugCombs_cat[i,"keep"] <- TRUE
+# Get list all unique combinations
+
+all_drugs <- sort(unique(c(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id)))
+
+all_drug_combs <- matrix(NA, 
+                         nrow = length(all_drugs), 
+                         ncol = length(all_drugs), 
+                         dimnames = list(all_drugs, all_drugs)
+)
+all_drug_combs[upper.tri(all_drug_combs, diag = FALSE)] <- NA
+
+
+if(nrow(valid_drugCombs_cat) > 0){
+  for(i in 1:nrow(valid_drugCombs_cat)){
     
     drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
     drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
+    comb_info <- paste( unlist(valid_drugCombs_cat[i, c("source_id", "condition", "overall_status", "phase", "why_stopped", "class_EffAdv"), drop = TRUE], use.names = FALSE) , collapse = "___")
+    comb_info <- paste0("[", comb_info, "]")
     
-    valid_drugCombs_cat[valid_drugCombs_cat$Drug1_DrugBank_id %in% drug2 & valid_drugCombs_cat$Drug2_DrugBank_id %in% drug1, "keep"] <- FALSE
+    if(!is.na(all_drug_combs[drug1, drug2])){
+      all_drug_combs[drug1, drug2] <- paste(na.exclude(c(all_drug_combs[drug1, drug2], comb_info)), collapse = ";")
+    }else{
+      all_drug_combs[drug2, drug1] <- paste(na.exclude(c(all_drug_combs[drug2, drug1], comb_info)), collapse = ";")
+    }
   }
 }
 
-valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$keep == "TRUE", ]
-valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(keep))
+all_drug_combs <- as.data.frame(all_drug_combs) %>% 
+  rownames_to_column("Drug1_DrugBank_id") %>% 
+  pivot_longer(-Drug1_DrugBank_id, 
+               names_to = "Drug2_DrugBank_id", 
+               values_to = "drugCombs") %>% 
+  filter(!is.na(drugCombs))
+
+
+all_drug_combs <- all_drug_combs %>% separate_rows(drugCombs, sep = "\\];\\[") %>% 
+  separate(drugCombs, into = c("source_id", "condition", "overall_status", "phase", "why_stopped", "class_EffAdv"), sep = "___") 
+
+all_drug_combs$source_id <- str_replace(all_drug_combs$source_id, "^\\[", "")
+all_drug_combs$class_EffAdv <- str_replace(all_drug_combs$class_EffAdv, "\\]$", "")
+
+all_drug_combs$comb_name <- paste(all_drug_combs$Drug1_DrugBank_id, all_drug_combs$Drug2_DrugBank_id, sep = "_")
+
+
+valid_drugCombs_cat <- all_drug_combs %>% group_by(comb_name) %>%  summarise(across(everything(), ~ toString(unique(.x))))
 
 
 #####
@@ -273,6 +317,22 @@ drugTarget_list <- drug_target_ixn %>%
 
 # Merge the drug targets information with the drug combinations data
 cat("\nExtracting targets of the drug combinations\n")
+# valid_drugCombs_cat <- valid_drugCombs_cat %>%
+#   left_join(drugTarget_list, by = c("Drug1_DrugBank_id" = "drugbank_drug_id")) %>%
+#   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
+#   left_join(drugTarget_list, by = c("Drug2_DrugBank_id" = "drugbank_drug_id")) %>%
+#   dplyr::rename(drugTarget_ensembl_id_2 = drugTarget_ensembl_id) %>%
+#   left_join(drugTarget_list, by = c("Drug3_DrugBank_id" = "drugbank_drug_id")) %>%
+#   dplyr::rename(drugTarget_ensembl_id_3 = drugTarget_ensembl_id) %>%
+#   filter(!is.na(drugTarget_ensembl_id_1), !is.na(drugTarget_ensembl_id_2)) %>%   
+#   dplyr::rowwise() %>%
+#   dplyr::mutate(
+#     drugTarget_ensembl_id =  list(unique(unlist(strsplit(na.exclude(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2, drugTarget_ensembl_id_3)), ",")))),
+#     drugTarget_count = length(unlist(drugTarget_ensembl_id))
+#   ) %>%
+#   dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_3) 
+
+
 valid_drugCombs_cat <- valid_drugCombs_cat %>%
   left_join(drugTarget_list, by = c("Drug1_DrugBank_id" = "drugbank_drug_id")) %>%
   dplyr::rename(drugTarget_ensembl_id_1 = drugTarget_ensembl_id) %>%
@@ -281,11 +341,13 @@ valid_drugCombs_cat <- valid_drugCombs_cat %>%
   filter(!is.na(drugTarget_ensembl_id_1), !is.na(drugTarget_ensembl_id_2)) %>%   
   dplyr::rowwise() %>%
   dplyr::mutate(
-    drugTarget_ensembl_id =  list(unique(unlist(strsplit(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2), ",")))),
+    drugTarget_ensembl_id =  list(unique(unlist(strsplit(na.exclude(c(drugTarget_ensembl_id_1, drugTarget_ensembl_id_2)), ",")))),
     drugTarget_count = length(unlist(drugTarget_ensembl_id))
   ) %>%
-  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2) 
+  dplyr::select(-drugTarget_ensembl_id_1, -drugTarget_ensembl_id_2, -drugTarget_ensembl_id_2) 
 
+
+valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$drugTarget_count > 1, ]
 
 # Simplify the target column as comma separated string
 valid_drugCombs_cat$drugTarget_ensembl_id <- sapply(valid_drugCombs_cat$drugTarget_ensembl_id, function(x) paste(x, collapse = ","))
@@ -367,9 +429,8 @@ valid_drugCombs_cat$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$e
 valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
 
-
-if(!dir.exists("InputFiles/Validation_data_1a/")){dir.create("InputFiles/Validation_data_1a/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_3b/")){dir.create("InputFiles/Validation_data_3b/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_3b/drugCombs_validation3b_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 

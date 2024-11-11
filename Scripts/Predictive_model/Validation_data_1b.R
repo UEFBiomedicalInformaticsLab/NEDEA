@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate validation data 1a
+# Generate validation data 1b
 # Notes:
 # (a) Curated using the synergy level
 
@@ -85,47 +85,8 @@ train_drugCombs_cat <- train_drugCombs_cat %>%
             relationship = "many-to-many") %>%
   distinct()
 
-# Remove those with missing ATC 
-train_drugCombs_cat <- train_drugCombs_cat[!(is.na(train_drugCombs_cat$Drug1_ATC_code_1) | is.na(train_drugCombs_cat$Drug2_ATC_code_1)), ]
 
-
-# Get list of ATC pairs 
-all_atc <- sort(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1)))
-
-ATC_count_mat <- matrix(0, 
-                        nrow = length(all_atc), 
-                        ncol = length(all_atc), 
-                        dimnames = list(all_atc, all_atc)
-)
-ATC_count_mat[upper.tri(ATC_count_mat, diag = FALSE)] <- NA
-
-
-
-if(nrow(train_drugCombs_cat) > 1){
-  for(i in 1:nrow(train_drugCombs_cat)){
-    
-    atc_1 <- train_drugCombs_cat[i, "Drug1_ATC_code_1"]
-    atc_2 <- train_drugCombs_cat[i, "Drug2_ATC_code_1"]
-    
-    
-    if(!is.na(ATC_count_mat[atc_1, atc_2])){
-      ATC_count_mat[atc_1, atc_2] <- ATC_count_mat[atc_1, atc_2] + 1
-    }else{
-      ATC_count_mat[atc_2, atc_1] <- ATC_count_mat[atc_2, atc_1] + 1
-      
-    }
-  }
-}
-
-ATC_count_mat <- as.data.frame(ATC_count_mat) %>% 
-  rownames_to_column("ATC1") %>% 
-  pivot_longer(-ATC1, 
-               names_to = "ATC2", 
-               values_to = "Count")
-
-ATC_count_mat <- ATC_count_mat %>% filter(!is.na(Count)) %>% filter(Count > 0)
-
-possible_ATC_pairs <- unique(paste(ATC_count_mat$ATC1, ATC_count_mat$ATC2, sep = "_"))
+possible_ATC <- as.character(na.exclude(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1))))
 
 
 #####
@@ -190,8 +151,7 @@ valid_drugCombs_cat <- valid_drugCombs_cat %>%
 valid_drugCombs_cat <- valid_drugCombs_cat[!(is.na(valid_drugCombs_cat$Drug1_ATC_code_1) | is.na(valid_drugCombs_cat$Drug2_ATC_code_1)), ]
 
 # Filter to keep only those within the training framework
-valid_drugCombs_cat <- valid_drugCombs_cat[paste(valid_drugCombs_cat$Drug1_ATC_code_1, valid_drugCombs_cat$Drug2_ATC_code_1, sep = "_") %in% possible_ATC_pairs | 
-                                             paste(valid_drugCombs_cat$Drug2_ATC_code_1, valid_drugCombs_cat$Drug1_ATC_code_1, sep = "_") %in% possible_ATC_pairs, ]
+valid_drugCombs_cat <- valid_drugCombs_cat %>% filter((Drug1_ATC_code_1 %in% possible_ATC) & (Drug2_ATC_code_1 %in% possible_ATC))
 
 valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(Drug1_ATC_code_1, Drug2_ATC_code_1)) %>% distinct()
 
@@ -367,12 +327,15 @@ valid_drugCombs_cat$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$e
 valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
 
+#####
 
-if(!dir.exists("InputFiles/Validation_data_1a/")){dir.create("InputFiles/Validation_data_1a/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
+
+if(!dir.exists("InputFiles/Validation_data_1b/")){dir.create("InputFiles/Validation_data_1b/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1b/drugCombs_validation1b_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 
 
+#####
 
 print(warnings())
