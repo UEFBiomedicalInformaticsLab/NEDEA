@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate validation data 1
+# Generate validation data 1a
 # Notes:
 # (a) Curated using the synergy level
 
@@ -57,6 +57,80 @@ cat(paste0("\nDisease: ", disease, "\n"))
 #####
 
 
+# Read the ATC codes of the drugs from Drug Bank
+DrugBank_drug_ATC <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
+colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
+
+# Read the drug combination used in the training 
+train_drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
+train_drugCombs_cat <- train_drugCombs_cat[!is.na(train_drugCombs_cat$class_EffAdv), ]
+train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, train_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+
+
+# Add the ATC codes at level_1
+# Using many-to-many mapping to map all possible ATC codes to a single drug
+train_drugCombs_cat <- train_drugCombs_cat %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug1_ATC_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug2_ATC_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  distinct()
+
+# Remove those with missing ATC 
+train_drugCombs_cat <- train_drugCombs_cat[!(is.na(train_drugCombs_cat$Drug1_ATC_code_1) | is.na(train_drugCombs_cat$Drug2_ATC_code_1)), ]
+
+
+# Get list of ATC pairs 
+all_atc <- sort(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1)))
+
+ATC_count_mat <- matrix(0, 
+                        nrow = length(all_atc), 
+                        ncol = length(all_atc), 
+                        dimnames = list(all_atc, all_atc)
+)
+ATC_count_mat[upper.tri(ATC_count_mat, diag = FALSE)] <- NA
+
+
+
+if(nrow(train_drugCombs_cat) > 1){
+  for(i in 1:nrow(train_drugCombs_cat)){
+    
+    atc_1 <- train_drugCombs_cat[i, "Drug1_ATC_code_1"]
+    atc_2 <- train_drugCombs_cat[i, "Drug2_ATC_code_1"]
+    
+    
+    if(!is.na(ATC_count_mat[atc_1, atc_2])){
+      ATC_count_mat[atc_1, atc_2] <- ATC_count_mat[atc_1, atc_2] + 1
+    }else{
+      ATC_count_mat[atc_2, atc_1] <- ATC_count_mat[atc_2, atc_1] + 1
+      
+    }
+  }
+}
+
+ATC_count_mat <- as.data.frame(ATC_count_mat) %>% 
+  rownames_to_column("ATC1") %>% 
+  pivot_longer(-ATC1, 
+               names_to = "ATC2", 
+               values_to = "Count")
+
+ATC_count_mat <- ATC_count_mat %>% filter(!is.na(Count)) %>% filter(Count > 0)
+
+possible_ATC_pairs <- unique(paste(ATC_count_mat$ATC1, ATC_count_mat$ATC2, sep = "_"))
+
+
+#####
+
+
 # Read the synergy level of the  drug combination
 drugCombs_data <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
 drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level")]
@@ -79,13 +153,47 @@ valid_drugCombs_cat <- merge(DrugBank_ddi, drugCombs_data,
 # Assign the drug combination categories
 valid_drugCombs_cat$class_EffAdv <- NA
 
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
+# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
+# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
 
+
+valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
+valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
 
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
 valid_drugCombs_cat <- valid_drugCombs_cat[!is.na(valid_drugCombs_cat$class_EffAdv), ]
 valid_drugCombs_cat$comb_name <- paste(valid_drugCombs_cat$Drug1_DrugBank_id, valid_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+
+
+#####
+
+
+# Add the ATC codes at level_1
+# Using many-to-many mapping to map all possible ATC codes to a single drug
+valid_drugCombs_cat <- valid_drugCombs_cat %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug1_ATC_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug2_ATC_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  distinct()
+
+
+# Remove those with missing ATC 
+valid_drugCombs_cat <- valid_drugCombs_cat[!(is.na(valid_drugCombs_cat$Drug1_ATC_code_1) | is.na(valid_drugCombs_cat$Drug2_ATC_code_1)), ]
+
+# Filter to keep only those within the training framework
+valid_drugCombs_cat <- valid_drugCombs_cat[paste(valid_drugCombs_cat$Drug1_ATC_code_1, valid_drugCombs_cat$Drug2_ATC_code_1, sep = "_") %in% possible_ATC_pairs | 
+                                             paste(valid_drugCombs_cat$Drug2_ATC_code_1, valid_drugCombs_cat$Drug1_ATC_code_1, sep = "_") %in% possible_ATC_pairs, ]
+
+valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(Drug1_ATC_code_1, Drug2_ATC_code_1)) %>% distinct()
 
 
 #####
@@ -113,6 +221,26 @@ for(i in 1:nrow(valid_drugCombs_cat)){
 if(length(remove_rows) > 0){
   valid_drugCombs_cat <- valid_drugCombs_cat[-remove_rows,]
 }
+
+
+#####
+
+
+# Filter duplicates
+valid_drugCombs_cat$keep <- NA
+for(i in 1:nrow(valid_drugCombs_cat)){
+  if(is.na(valid_drugCombs_cat[i,"keep"])){
+    valid_drugCombs_cat[i,"keep"] <- TRUE
+    
+    drug1 <- valid_drugCombs_cat[i, "Drug1_DrugBank_id", drop = TRUE]
+    drug2 <- valid_drugCombs_cat[i, "Drug2_DrugBank_id", drop = TRUE]
+    
+    valid_drugCombs_cat[valid_drugCombs_cat$Drug1_DrugBank_id %in% drug2 & valid_drugCombs_cat$Drug2_DrugBank_id %in% drug1, "keep"] <- FALSE
+  }
+}
+
+valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$keep == "TRUE", ]
+valid_drugCombs_cat <- valid_drugCombs_cat %>% dplyr::select(!c(keep))
 
 
 #####
@@ -240,8 +368,8 @@ valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$e
 
 
 
-if(!dir.exists("InputFiles/Validation_data_1/")){dir.create("InputFiles/Validation_data_1/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1/drugCombs_validation1_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_1a/")){dir.create("InputFiles/Validation_data_1a/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 

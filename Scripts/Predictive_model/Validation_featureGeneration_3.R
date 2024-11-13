@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate the features for validation data 3 and check applicability domain
+# Generate the features for validation data 7 and check applicability domain
 
 
 
@@ -80,7 +80,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ",
 
 
 # Read the drug combinations
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_7/drugCombs_validation7_", disease, ".rds"))
 
 
 if(nrow(valid_drugCombs_cat) == 0){
@@ -102,9 +102,9 @@ switch(drug_target_type,
                                       "ext_RI_targets", "ext_KEGG_targets") })
 
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name", 
-                                               "Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id", 
-                                               "condition", "source_id", "overall_status", "phase", "why_stopped", 
-                                               "class_EffAdv", drug_target_col)]
+                                               "Drug1_DrugBank_id", "Drug2_DrugBank_id", 
+                                               "Drug1_name", "Drug2_name", "mean_ECB", 
+                                               "DDI_type", "class_EffAdv", drug_target_col)]
 
 
 #####
@@ -218,8 +218,8 @@ for(drugComb in colnames(rwr_result)){
 
 # Save the results
 
-if(!dir.exists("OutputFiles/Validation_data_3/Features/")){dir.create("OutputFiles/Validation_data_3/Features/", recursive = TRUE)}
-saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_3/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+if(!dir.exists("OutputFiles/Validation_data_7/Features/")){dir.create("OutputFiles/Validation_data_7/Features/", recursive = TRUE)}
+saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_7/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 #####
@@ -285,7 +285,7 @@ if(!dir.exists("OutputFiles/Plots/validation_data_applicibility_domain/")){
   dir.create("OutputFiles/Plots/validation_data_applicibility_domain/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation3_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation7_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 7, height = 6,
      units = "cm", compression = "lzw", res = 1200)
 

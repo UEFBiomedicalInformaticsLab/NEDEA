@@ -2,17 +2,17 @@ set.seed(5081)
 
 
 
-# Use the trained model to predict the labels on the validation data 3
+# Use the trained model to predict the labels on the validation data 7
 
 
 
 # Load libraries
 library(unixtools)
 library(optparse)
+library(ComplexHeatmap)
 library(tidyverse)
 library(yardstick)
 library(gridExtra)
-
 
 
 # Set temporary directory
@@ -65,15 +65,15 @@ feature_threshold <- model$feature_threshold
 
 
 # Read the drug combinations for validation
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_7/drugCombs_validation7_", disease, ".rds"))
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name", 
-                                               "Drug1_DrugBank_id", "Drug2_DrugBank_id", "Drug3_DrugBank_id", 
-                                               "condition", "source_id", "overall_status", "phase", "why_stopped", 
-                                               "class_EffAdv")]
+                                               "Drug1_DrugBank_id", "Drug2_DrugBank_id", 
+                                               "Drug1_name", "Drug2_name", "mean_ECB", 
+                                               "DDI_type", "class_EffAdv")]
 
 
 # Read the FGSEA results
-fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_3/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_7/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 # Check if all the features needed for prediction are present in the FGSEA result
@@ -115,7 +115,7 @@ predict_data <- predict_data %>%
   mutate( efficacy_score = rowMeans(select(., starts_with("[DISEASE]"))), 
           safety_score = rowMeans(select(., starts_with("[ADR]"))) ) %>% 
   mutate( final_score = rowMeans(select(., c(efficacy_score, safety_score))) )
-  
+
 
 predict_data$final_predicted_category <- ifelse(predict_data$final_score > 0, "Eff", "Adv")
 predict_data$final_predicted_category <- factor(predict_data$final_predicted_category, levels = c("Eff", "Adv"))
@@ -131,24 +131,21 @@ predict_result <- merge(x = valid_drugCombs_cat,
 #####
 
 
-# Read the drug info from Drug Bank
-DrugBank_drug_info <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
-DrugBank_drug_info <- DrugBank_drug_info$drugs$general_information
-DrugBank_drug_info <- DrugBank_drug_info[, c("primary_key", "name")]
-colnames(DrugBank_drug_info) <- c("DrugBank_drug_ID", "name")
-
-
-# Add annotations about drugs
-predict_result <- predict_result %>%
-  left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
-                                               .fn = ~ paste0("Drug1_", .)),
-            by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
-  left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
-                                               .fn = ~ paste0("Drug2_", .)),
-            by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) %>% 
-  left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
-                                               .fn = ~ paste0("Drug3_", .)),
-            by = c("Drug3_DrugBank_id" = "Drug3_DrugBank_drug_ID")) 
+# # Read the drug info from Drug Bank
+# DrugBank_drug_info <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+# DrugBank_drug_info <- DrugBank_drug_info$drugs$general_information
+# DrugBank_drug_info <- DrugBank_drug_info[, c("primary_key", "name")]
+# colnames(DrugBank_drug_info) <- c("DrugBank_drug_ID", "name")
+# 
+# 
+# # Add annotations about drugs
+# predict_result <- predict_result %>%
+#   left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
+#                                                .fn = ~ paste0("Drug1_", .)),
+#             by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
+#   left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
+#                                                .fn = ~ paste0("Drug2_", .)),
+#             by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -216,8 +213,8 @@ predict_result <- predict_result %>%
 #####
 
 
-if(!dir.exists("OutputFiles/Validation_data_3/Predictions/")){ dir.create("OutputFiles/Validation_data_3/Predictions/", recursive = TRUE) }
-write.csv(predict_result, file = paste0("OutputFiles/Validation_data_3/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_7/Predictions/")){ dir.create("OutputFiles/Validation_data_7/Predictions/", recursive = TRUE) }
+write.csv(predict_result, file = paste0("OutputFiles/Validation_data_7/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -231,9 +228,118 @@ metrics <- metric_set(accuracy, f_meas, sensitivity, specificity, recall, precis
 predict_metrics <- metrics(data = predict_result, truth = class_EffAdv, estimate = final_predicted_category)
 
 
-if(!dir.exists("OutputFiles/Validation_data_3/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_3/Prediction_metrics/", recursive = TRUE) }
-write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_7/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_7/Prediction_metrics/", recursive = TRUE) }
+write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_7/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
+
+#####
+
+
+# Plot heat map of the NES of the drug combinations with the results
+plot_data <- t(fgsea_result) 
+
+# Create annotation for the rows
+left_annot_color <- list(labelled_class = c("Eff" = "#77DD77", "Adv" = "#FF6961", "Unk" = "#808080"), 
+                         predicted_class = c("Eff" = "#77DD77", "Adv" = "#FF6961", "Unk" = "#808080"))
+
+left_annot <- predict_result[, c("comb_name", "class_EffAdv", "final_predicted_category")]
+colnames(left_annot) <- c("comb_name", "labelled_class", "predicted_class")
+left_annot <- left_annot[match(row.names(plot_data), left_annot$comb_name), ]
+row.names(left_annot) <- NULL
+left_annot <- column_to_rownames(left_annot, "comb_name")
+left_annot <- HeatmapAnnotation(which = "row",
+                                df = left_annot,
+                                col = left_annot_color,
+                                simple_anno_size = unit(0.25, "cm"),
+                                annotation_name_gp = gpar(fontsize = 4),
+                                annotation_name_rot = 45, 
+                                annotation_legend_param = list(title_gp = gpar(fontsize = 4),
+                                                               labels_gp = gpar(fontsize = 4),
+                                                               grid_height = unit(0.25, "cm"),
+                                                               grid_width = unit(0.25, "cm")
+                                ))
+
+
+# Create annotation for the columns
+top_annot_color <- list(Feature_type = c("ADR" = "#FF6961", "DISEASE" = "#77DD77"),
+                        selected_feature = c("Yes" = "#228B22", "No" = "#FF0000"))
+
+top_annot <- as.data.frame(colnames(plot_data))
+colnames(top_annot) <- "Features"
+top_annot$selected_feature <- ifelse(top_annot$Features %in% feature_threshold$feature, "Yes", "No")
+
+top_annot$Feature_type <- gsub("^\\[(.*)\\] .+", "\\1", top_annot$Features)
+top_annot$Features <- gsub("^\\[(.*)\\] ", "", top_annot$Features)
+# top_annot <- top_annot[order(top_annot$Features), ]
+row.names(top_annot) <- NULL
+top_annot$Features<- str_wrap(top_annot$Features, 30)
+top_annot <- column_to_rownames(top_annot, "Features")
+top_annot <- HeatmapAnnotation(which = "column",
+                               df = top_annot,
+                               col = top_annot_color,
+                               simple_anno_size = unit(0.25, "cm"),
+                               annotation_name_gp = gpar(fontsize = 4),
+                               annotation_legend_param = list(title_gp = gpar(fontsize = 4),
+                                                              labels_gp = gpar(fontsize = 4),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              grid_width = unit(0.25, "cm")
+                               ))
+
+
+# Define color function
+col_fun <- circlize::colorRamp2(breaks = c(min(plot_data, na.rm = TRUE), max(plot_data, na.rm = TRUE)),
+                                colors = c("#CCF9FF", "#0080BF"))
+
+colnames(plot_data) <- gsub("^\\[(.*)\\] ", "", colnames(plot_data))
+colnames(plot_data) <- str_wrap(colnames(plot_data), 30)
+
+heatmap <- Heatmap(plot_data,
+                   
+                   # col = col_fun,
+                   cluster_columns = FALSE,
+                   
+                   row_title = "Drug combinations",
+                   column_title = "Features",
+                   row_title_side = "left",
+                   column_title_side = "bottom",
+                   row_title_gp = gpar(fontsize = 5, face = "bold"),
+                   column_title_gp = gpar(fontsize = 5, face = "bold"),
+                   
+                   row_dend_gp = gpar(lwd = 0.5),
+                   column_dend_gp = gpar(lwd = 0.5),
+                   
+                   left_annotation = left_annot,
+                   top_annotation = top_annot,
+                   
+                   show_row_names = TRUE,
+                   show_column_names = TRUE,
+                   row_names_gp = gpar(fontsize = 1),
+                   column_names_gp = gpar(fontsize = 4, linebreak = TRUE),
+                   column_names_rot = 45, 
+                   
+                   heatmap_legend_param = list(title = "NES",
+                                               title_gp = gpar(fontsize = 4),
+                                               labels_gp = gpar(fontsize = 4),
+                                               legend_height = unit(4, "cm"),
+                                               legend_width = unit(0.1, "cm")
+                   ))
+
+
+
+if(!dir.exists("OutputFiles/Plots/Validation_data_heatmaps/")){
+  dir.create("OutputFiles/Plots/Validation_data_heatmaps/", recursive = TRUE)
+}
+
+tiff(paste0("OutputFiles/Plots/Validation_data_heatmaps/plot_validation7_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+     width = 25, height = 21,
+     units = "cm", compression = "lzw", res = 1200)
+
+draw(heatmap)
+
+dev.off()
+
+
+#####
 
 
 print(warnings())

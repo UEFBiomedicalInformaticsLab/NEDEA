@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate the features for validation data 1 and check applicability domain
+# Generate the features for validation data 1a and check applicability domain
 
 
 
@@ -81,7 +81,7 @@ cat(paste0("\n\nInput network size:: vertices = ", vcount(rwr_input_network), ",
 
 
 # Read the drug combinations
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_1/drugCombs_validation1_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
 
 
 # Select the column containing the drug target based on th user input
@@ -210,8 +210,8 @@ for(drugComb in colnames(rwr_result)){
 
 # Save the results
 
-if(!dir.exists("OutputFiles/Validation_data_1/Features/")){dir.create("OutputFiles/Validation_data_1/Features/", recursive = TRUE)}
-saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_1/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+if(!dir.exists("OutputFiles/Validation_data_1a/Features/")){dir.create("OutputFiles/Validation_data_1a/Features/", recursive = TRUE)}
+saveRDS(enrichment_result_mat, file = paste0("OutputFiles/Validation_data_1a/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 #####
@@ -277,7 +277,7 @@ if(!dir.exists("OutputFiles/Plots/validation_data_applicibility_domain/")){
   dir.create("OutputFiles/Plots/validation_data_applicibility_domain/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation1_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/validation_data_applicibility_domain/plot_validation1a_AD_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 7, height = 6,
      units = "cm", compression = "lzw", res = 1200)
 
