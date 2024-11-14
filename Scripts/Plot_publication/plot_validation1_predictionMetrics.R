@@ -48,7 +48,7 @@ ggplot(plot_data, aes(x = disease, y = .estimate, label = round(.estimate, 2))) 
            position = "dodge", 
            width = 0.5, 
            lwd = 0.1) +
-  geom_text(size = 1) +
+  # geom_text(size = 1) +
   geom_hline(yintercept = 0.7,
              linetype = "dotted",
              color = "#006400",

@@ -211,6 +211,18 @@ predict_result <- predict_result %>%
 #####
 
 
+# Add information about the synergy level of the drug combinations
+drugCombs_data <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
+drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level")]
+drugCombs_data$comb_name <- paste(drugCombs_data$Drug1_DrugBank_id, drugCombs_data$Drug2_DrugBank_id, sep = "_")
+
+predict_result <- predict_result %>% 
+  left_join(drugCombs_data, 
+            by = c("comb_name", "Drug1_DrugBank_id", "Drug2_DrugBank_id"))
+
+
+#####
+
 if(!dir.exists("OutputFiles/Validation_data_1/Predictions/")){ dir.create("OutputFiles/Validation_data_1/Predictions/", recursive = TRUE) }
 write.csv(predict_result, file = paste0("OutputFiles/Validation_data_1/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 

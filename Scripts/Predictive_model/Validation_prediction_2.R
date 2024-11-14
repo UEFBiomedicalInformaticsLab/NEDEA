@@ -21,6 +21,8 @@ if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
 
+#####
+
 
 # Get arguments
 option_list = list(
@@ -48,7 +50,6 @@ if(!opt$drug_target_type %in% c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "a
 # Define global options for this script
 disease <- opt$disease
 drug_target_type <- opt$drug_target_type
-
 
 
 cat("\n\nUsing the following parameters: ")

@@ -1,15 +1,15 @@
 set.seed(5081)
 
 
-
 # Script to build protein-protein interaction network from STRING database
-
 
 
 # Load libraries
 library(biomaRt)
 library(igraph)
 
+
+#####
 
 
 # Download the protein-protein interactions from stringdb
@@ -66,9 +66,7 @@ ppi_comps <- components(String_ppi_Net)
 largest_ppi_comp <- which.max(ppi_comps$csize)
 
 # Extract the largest component
-String_ppi_Net <- induced.subgraph(String_ppi_Net, which(ppi_comps$membership == largest_ppi_comp))
-
-
+String_ppi_Net <- induced_subgraph(String_ppi_Net, which(ppi_comps$membership == largest_ppi_comp))
 
 print(paste("Network size (vertices, edges):", vcount(String_ppi_Net), ecount(String_ppi_Net)))
 
@@ -76,6 +74,10 @@ if(!dir.exists("InputFiles/Networks/")){dir.create("InputFiles/Networks/", recur
 saveRDS(String_ppi_Net, "InputFiles/Networks/STRING_PPI_Net.rds")
 
 
+#####
+
+
+# Calculate the network parameters
 network_parameters <- data.frame(t(data.frame(nodeNumber = vcount(String_ppi_Net),
                                               edgeNumber = ecount(String_ppi_Net),
                                               diameter = diameter(graph = String_ppi_Net, directed = FALSE),
@@ -94,10 +96,16 @@ network_parameters <- tibble::rownames_to_column(network_parameters, "Parameters
 colnames(network_parameters) <- c("Parameters", "Value")
 network_parameters$Value <- round(network_parameters$Value, 3)
 
+#####
+
+
 if(!dir.exists("OutputFiles/Tables/")){
   dir.create("OutputFiles/Tables/", recursive = TRUE)
 }
 write.csv(network_parameters, "OutputFiles/Tables/STRING_PPI_Net_params.csv", row.names = FALSE)
+
+
+#####
 
 
 print(warnings())

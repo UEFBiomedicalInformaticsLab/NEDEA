@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Extract the drug-target associations from DrugBank
-
 
 
 # Load libraries
@@ -12,6 +10,8 @@ library(tidyverse)
 library(biomaRt)
 library(dbparser)
 
+
+#####
 
 
 # Download the complete DrugBank database as XML and parse it using dbparser
@@ -33,6 +33,9 @@ if(!file.exists("Databases/DrugBank/parsed_DrugBank_data.rds")){
                          cett_options = cett_nodes_options())
   saveRDS(dvobj, "Databases/DrugBank/parsed_DrugBank_data.rds")
 }
+
+
+#####
 
 
 # Extract the biological entities (BE) id from DrugBank for all targets and map to Ensembl Gene ID
@@ -66,6 +69,8 @@ DrugBank_Drug_Target_Net <- na.exclude(DrugBank_Drug_Target[, c("drugbank_drug_i
 if(!dir.exists("InputFiles/Associations/")){dir.create("InputFiles/Associations/", recursive = TRUE)} 
 saveRDS(DrugBank_Drug_Target_Net, "InputFiles/Associations/DrugBank_Drug_Target_associations.rds")
 
+
+#####
 
 
 print(warnings())
