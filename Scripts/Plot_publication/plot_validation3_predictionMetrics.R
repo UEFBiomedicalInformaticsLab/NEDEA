@@ -14,7 +14,7 @@ drug_target_type <- "known"
 
 # Read the all the metrics
 predict_metrics <- list()
-for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
+for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "SkinCancer")){
   
   if(file.exists(paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"))){
     predict_metrics[[disease]] <- read.csv(file = paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), header = TRUE)

@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Use the trained model to predict the labels on the validation data 2a
+# Use the trained model to predict the labels on the validation data 2
 
 
 
@@ -66,7 +66,7 @@ feature_threshold <- model$feature_threshold
 
 
 # Read the drug combinations for validation
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", 
                                                "comb_name", "class_EffAdv", 
                                                "Drug1_indications", "Drug2_indications", 
@@ -74,7 +74,7 @@ valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugB
 
 
 # Read the FGSEA results
-fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_2a/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_2/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 # Check if all the features needed for prediction are present in the FGSEA result
@@ -213,8 +213,8 @@ predict_result <- predict_result %>%
 #####
 
 
-if(!dir.exists("OutputFiles/Validation_data_2a/Predictions/")){ dir.create("OutputFiles/Validation_data_2a/Predictions/", recursive = TRUE) }
-write.csv(predict_result, file = paste0("OutputFiles/Validation_data_2a/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_2/Predictions/")){ dir.create("OutputFiles/Validation_data_2/Predictions/", recursive = TRUE) }
+write.csv(predict_result, file = paste0("OutputFiles/Validation_data_2/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -238,8 +238,8 @@ for(DDI_type in unique(predict_result$DDI_type)){
 }
 
 
-if(!dir.exists("OutputFiles/Validation_data_2a/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_2a/Prediction_metrics/", recursive = TRUE) }
-write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_2a/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_2/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_2/Prediction_metrics/", recursive = TRUE) }
+write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_2/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -340,7 +340,7 @@ if(!dir.exists("OutputFiles/Plots/Validation_data_heatmaps/")){
   dir.create("OutputFiles/Plots/Validation_data_heatmaps/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/Validation_data_heatmaps/plot_validation2a_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/Validation_data_heatmaps/plot_validation2_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 25, height = 21,
      units = "cm", compression = "lzw", res = 1200)
 

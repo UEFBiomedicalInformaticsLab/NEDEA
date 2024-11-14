@@ -36,7 +36,7 @@ if(!dir.exists("OutputFiles/Plots_publication/Validation/")){
 }
 tiff(paste0("OutputFiles/Plots_publication/Validation/Validation2_predictionMetrics_NES_combinedEfficacySafety_", drug_target_type, ".tiff"),
      width = 8,
-     height = 6,
+     height = 4,
      units = "cm", compression = "lzw", res = 1200)
 
 plot_data$tile_label <- paste0(round(plot_data$Specificity, 2), "\n(", plot_data$Number_of_combinations, ")")

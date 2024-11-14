@@ -1,11 +1,14 @@
 set.seed(5081)
 
 
+# Script to check the drug class in validation 3 dataset
+
+
 # Load libraries
 library(tidyverse)
 
 
-# Script to check the drug class in validation 3 dataset
+#####
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -18,7 +21,7 @@ if(!dir.exists("OutputFiles/Plots/ATC_classification/Validation_data_3/")){
   dir.create("OutputFiles/Plots/ATC_classification/Validation_data_3/", recursive = TRUE)
 }
 
-for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
+for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "SkinCancer")){
   
   # Read the drug combination 
   drugCombs <- readRDS(paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
@@ -125,8 +128,11 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     
     dev.off()
   }
-
+  
 }
+
+
+#####
 
 
 print(warnings())

@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Use the trained model to predict the labels on the validation data 7
+# Use the trained model to predict the labels on the validation data 3
 
 
 
@@ -19,6 +19,8 @@ library(gridExtra)
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
+
+#####
 
 
 # Get arguments
@@ -65,7 +67,7 @@ feature_threshold <- model$feature_threshold
 
 
 # Read the drug combinations for validation
-valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_7/drugCombs_validation7_", disease, ".rds"))
+valid_drugCombs_cat <- readRDS(file = paste0("InputFiles/Validation_data_3/drugCombs_validation3_", disease, ".rds"))
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name", 
                                                "Drug1_DrugBank_id", "Drug2_DrugBank_id", 
                                                "Drug1_name", "Drug2_name", "mean_ECB", 
@@ -73,7 +75,7 @@ valid_drugCombs_cat <- valid_drugCombs_cat[, c("comb_name",
 
 
 # Read the FGSEA results
-fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_7/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
+fgsea_result <- readRDS(file = paste0("OutputFiles/Validation_data_3/Features/fgseaNES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
 
 # Check if all the features needed for prediction are present in the FGSEA result
@@ -129,23 +131,6 @@ predict_result <- merge(x = valid_drugCombs_cat,
 
 
 #####
-
-
-# # Read the drug info from Drug Bank
-# DrugBank_drug_info <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
-# DrugBank_drug_info <- DrugBank_drug_info$drugs$general_information
-# DrugBank_drug_info <- DrugBank_drug_info[, c("primary_key", "name")]
-# colnames(DrugBank_drug_info) <- c("DrugBank_drug_ID", "name")
-# 
-# 
-# # Add annotations about drugs
-# predict_result <- predict_result %>%
-#   left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
-#                                                .fn = ~ paste0("Drug1_", .)),
-#             by = c("Drug1_DrugBank_id" = "Drug1_DrugBank_drug_ID")) %>%
-#   left_join(DrugBank_drug_info %>% rename_with(.cols = everything(),
-#                                                .fn = ~ paste0("Drug2_", .)),
-#             by = c("Drug2_DrugBank_id" = "Drug2_DrugBank_drug_ID")) 
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -213,8 +198,8 @@ predict_result <- predict_result %>%
 #####
 
 
-if(!dir.exists("OutputFiles/Validation_data_7/Predictions/")){ dir.create("OutputFiles/Validation_data_7/Predictions/", recursive = TRUE) }
-write.csv(predict_result, file = paste0("OutputFiles/Validation_data_7/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_3/Predictions/")){ dir.create("OutputFiles/Validation_data_3/Predictions/", recursive = TRUE) }
+write.csv(predict_result, file = paste0("OutputFiles/Validation_data_3/Predictions/predictions_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -228,8 +213,8 @@ metrics <- metric_set(accuracy, f_meas, sensitivity, specificity, recall, precis
 predict_metrics <- metrics(data = predict_result, truth = class_EffAdv, estimate = final_predicted_category)
 
 
-if(!dir.exists("OutputFiles/Validation_data_7/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_7/Prediction_metrics/", recursive = TRUE) }
-write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_7/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
+if(!dir.exists("OutputFiles/Validation_data_3/Prediction_metrics/")){ dir.create("OutputFiles/Validation_data_3/Prediction_metrics/", recursive = TRUE) }
+write.csv(predict_metrics, file = paste0("OutputFiles/Validation_data_3/Prediction_metrics/predictionMetrics_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
 
 #####
@@ -330,7 +315,7 @@ if(!dir.exists("OutputFiles/Plots/Validation_data_heatmaps/")){
   dir.create("OutputFiles/Plots/Validation_data_heatmaps/", recursive = TRUE)
 }
 
-tiff(paste0("OutputFiles/Plots/Validation_data_heatmaps/plot_validation7_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
+tiff(paste0("OutputFiles/Plots/Validation_data_heatmaps/plot_validation3_heatmap_combinedEfficacySafety_", disease, "_", drug_target_type, ".tiff"),
      width = 25, height = 21,
      units = "cm", compression = "lzw", res = 1200)
 

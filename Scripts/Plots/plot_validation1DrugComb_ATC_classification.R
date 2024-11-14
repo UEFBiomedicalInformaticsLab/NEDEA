@@ -1,11 +1,14 @@
 set.seed(5081)
 
 
+# Script to check the drug class in validation 1 dataset
+
+
 # Load libraries
 library(tidyverse)
 
 
-# Script to check the drug class in validation 1 dataset
+#####
 
 
 # Read the ATC codes of the drugs from Drug Bank
@@ -123,6 +126,9 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   dev.off()
   
 }
+
+
+#####
 
 
 print(warnings())

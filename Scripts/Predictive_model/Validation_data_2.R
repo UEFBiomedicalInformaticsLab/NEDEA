@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate validation data 2a (with drugs with ATC codes in the training)
+# Generate validation data 2 (with drugs with ATC codes in the training)
 # Notes:
 # (a) Includes only adverse drug combinations
 
@@ -419,8 +419,8 @@ valid_drugCombs_cat <- valid_drugCombs_cat[valid_drugCombs_cat$DDI_type %in% kee
 
 #####
 
-if(!dir.exists("InputFiles/Validation_data_2a/")){dir.create("InputFiles/Validation_data_2a/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_2a/drugCombs_validation2a_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_2/")){dir.create("InputFiles/Validation_data_2/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_2/drugCombs_validation2_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 

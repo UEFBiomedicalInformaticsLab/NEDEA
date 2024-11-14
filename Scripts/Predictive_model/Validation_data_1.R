@@ -2,7 +2,7 @@ set.seed(5081)
 
 
 
-# Generate validation data 1a
+# Generate validation data 1
 # Notes:
 # (a) Curated using the synergy level
 
@@ -368,8 +368,8 @@ valid_drugCombs_cat$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$e
 
 
 
-if(!dir.exists("InputFiles/Validation_data_1a/")){dir.create("InputFiles/Validation_data_1a/", recursive = TRUE)}
-saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1a/drugCombs_validation1a_", disease, ".rds"))
+if(!dir.exists("InputFiles/Validation_data_1/")){dir.create("InputFiles/Validation_data_1/", recursive = TRUE)}
+saveRDS(valid_drugCombs_cat, file = paste0("InputFiles/Validation_data_1/drugCombs_validation1_", disease, ".rds"))
 
 cat(paste0("\nNumber of drug combinations: ", nrow(valid_drugCombs_cat), "\n"))
 
