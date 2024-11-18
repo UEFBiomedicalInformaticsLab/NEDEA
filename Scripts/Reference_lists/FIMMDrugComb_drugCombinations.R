@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Drug combinations from FIMM DrugComb (https://drugcomb.fimm.fi/)
-
 
 
 # Load libraries
@@ -11,6 +9,9 @@ library(httr)
 library(jsonlite)
 library(tidyverse)
 httr::set_config(config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
+
+
+#####
 
 
 # Download drug combinations from FIMM DrugComb 
@@ -32,8 +33,10 @@ FimmDrugComb_drugCombCat$synergy_loewe <- as.numeric(FimmDrugComb_drugCombCat$sy
 # Get cell line information
 FimmDrugComb_cellLine <- GET("https://api.drugcomb.org/cell_lines")
 FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))
-# FimmDrugComb_cellLine$tissue <- sapply(FimmDrugComb_cellLine$ccle_name, function(x) substr(x, gregexpr('\\_', x)[[1]]+1, nchar(x)))
 write.csv(FimmDrugComb_cellLine, "Databases/FimmDrugComb/cell_lines.csv", quote = TRUE, row.names = FALSE)
+
+
+#####
 
 
 # Download disease IDs from NCI Thesaurus (NCIt) 
@@ -55,11 +58,12 @@ FimmDrugComb_cellLine <- FimmDrugComb_cellLine[FimmDrugComb_cellLine$disease_id 
 
 FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$cell_line_name %in% FimmDrugComb_cellLine$name, ]
 
-# FimmDrugComb_drugCombCat <- merge(FimmDrugComb_drugCombCat, FimmDrugComb_cellLine[,c("name", "tissue")],
-#                                   by.x = "cell_line_name", by.y = "name", all.x = TRUE)
-
 used_cellLines <- unique(FimmDrugComb_drugCombCat[, c("cell_line_name", "tissue_name")])
 write.csv(used_cellLines, "OutputFiles/Tables/FIMM_used_cell_lines.csv", row.names = FALSE)
+
+
+#####
+
 
 # * ZIP (Zero Interaction Potency):
 # The ZIP model calculates the expected effect of two drugs if there were no interaction between them. 
@@ -95,7 +99,6 @@ write.csv(used_cellLines, "OutputFiles/Tables/FIMM_used_cell_lines.csv", row.nam
 #   - S-score (Synergy score): This score reflects the difference between the observed and expected responses. 
 #     A score near zero indicates additivity. A positive score indicates synergy, 
 #     and a negative score may indicate antagonism, although the interpretation of negative scores can sometimes be ambiguous.
-
 
 
 
@@ -162,6 +165,9 @@ ggplot(plot_data, aes(x = tissue_name, y = Value)) +
 
 
 dev.off()
+
+
+#####
 
 
 # Identify synergistic, antagonist and neutral drugs
@@ -319,6 +325,9 @@ ggplot(data = plot_data, mapping = aes(x = tissue_name, y = synergy_value, color
 dev.off()
 
 
+#####
+
+
 # Map drugs to DrugBank drug ID
 FimmDrugComb_drugs <- GET("https://api.drugcomb.org/drugs")
 FimmDrugComb_drugs <- fromJSON(rawToChar(FimmDrugComb_drugs$content))
@@ -339,6 +348,8 @@ FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_l
 FimmDrugComb_drugCombCat$class_synergyScore[which(FimmDrugComb_drugCombCat$Syn_level <= -3)] <- "antagonism"
 
 
+#####
+
 
 # Read the drug type information
 DrugBank_drug_type <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
@@ -353,6 +364,8 @@ FimmDrugComb_drugCombCat <- FimmDrugComb_drugCombCat[(FimmDrugComb_drugCombCat$D
 if(!dir.exists("InputFiles/Reference_list/"))dir.create("InputFiles/Reference_list/", recursive = TRUE)
 saveRDS(FimmDrugComb_drugCombCat, "InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
 
+
+#####
 
 
 print(warnings())

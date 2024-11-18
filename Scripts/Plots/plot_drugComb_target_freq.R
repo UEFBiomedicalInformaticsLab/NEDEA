@@ -8,6 +8,7 @@ set.seed(5081)
 library(tidyverse)
 
 
+#####
 
 
 # Read the drug targets
@@ -26,6 +27,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 
 drugCombs_targets_list <- bind_rows(drugCombs_targets_list, .id = "Disease")
 
+
+#####
 
 
 # Plot histogram of the number of drug targets based on different types
@@ -75,7 +78,7 @@ ggplot(data = plot_data) +
 dev.off()
 
 
-
+#####
 
 
 print(warnings())

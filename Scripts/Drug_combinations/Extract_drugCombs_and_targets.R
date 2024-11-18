@@ -1,10 +1,7 @@
 set.seed(5081)
 
 
-
-
 # Script to extract known drug targets from DrugBank and extend them using various databases
-
 
 
 # Load libraries
@@ -17,6 +14,7 @@ library(readxl)
 source("Scripts/Functions/Functions_drug_target.R")
 
 
+#####
 
 
 # Get arguments
@@ -45,6 +43,9 @@ disease <- opt$disease
 cat(paste0("\n\nExecuting for: ", disease, "\n\n"))
 
 
+#####
+
+
 # Read the FIMM drug combinations
 FimmDrugComb_drugCombCat <- readRDS("InputFiles/Reference_list/FimmDrugComb_drugCombinations.rds")
 
@@ -60,6 +61,9 @@ switch(disease,
 
 drugCombs <- FimmDrugComb_drugCombCat[FimmDrugComb_drugCombCat$tissue_name == tissue_select, ]
 cat(paste0("\n\nNumber of drug combinations: ", nrow(drugCombs), "\n\n"))
+
+
+#####
 
 
 # Read the network
@@ -119,6 +123,9 @@ drugCombs_targets$drugTarget_ensembl_id <- sapply(drugCombs_targets$drugTarget_e
 drugCombs_targets$drugTarget_geneSymbol <- sapply(drugCombs_targets$drugTarget_ensembl_id, convert_ensembl_to_symbol, USE.NAMES = FALSE)
  
 
+#####
+
+
 # Extract known gene/protein interactions from various databases 
 ixns_PS <- import_omnipath_interactions(resources = c("PhosphoSite","phosphoELM","PhosphoNetworks","PhosphoSite_MIMP",
                                                       "PhosphoSite_ProtMapper","phosphoELM_MIMP","PhosphoPoint",
@@ -176,12 +183,6 @@ CHG_pathways <- sort(unique(unlist(str_split(CHG_pathways, "\n"))))
 CHG_pathways <- CHG_pathways[CHG_pathways != ""]
 
 
-# # Extract the gene symbols for all the known targets in drug-target interactions
-# all_drug_target_gene_symbols <- select(org.Hs.eg.db, 
-#                                        keys = unique(drug_target_ixn$ensembl_gene_id), 
-#                                        columns = "SYMBOL", 
-#                                        keytype = "ENSEMBL")
-
 # Download protein interactions from KEGG and filter to keep proteins in the network
 ixns_KEGG <- download_KEGG_ixns(pathway_ids = CHG_pathways)
 ixns_KEGG <- lapply(ixns_KEGG, function(x){x[x$genesymbol_source %in% input_network_nodes & x$genesymbol_target %in% input_network_nodes,]})
@@ -193,6 +194,8 @@ kegg_result_list <- lapply(drugCombs_targets$drugTarget_geneSymbol, function(x) 
 drugCombs_targets$ext_KEGG_targets <- sapply(kegg_result_list, function(x) x$ext_kegg_targets)
 drugCombs_targets$ext_KEGG_tar_cnt <- sapply(kegg_result_list, function(x) x$ext_kegg_tar_cnt)
 
+
+#####
 
 
 # Save the basic information for the extracted drug combinations
@@ -221,6 +224,8 @@ drugCombs_2 <- drugCombs_targets[, c("Drug1_DrugBank_id", "drug_row", "Drug2_Dru
 if(!dir.exists("InputFiles/Drug_combination_targets/")){dir.create("InputFiles/Drug_combination_targets/", recursive = TRUE)}
 saveRDS(drugCombs_2, file = paste0("InputFiles/Drug_combination_targets/drugCombs_targets_extended_", disease, ".rds"))
 
+
+#####
 
 
 print(warnings())

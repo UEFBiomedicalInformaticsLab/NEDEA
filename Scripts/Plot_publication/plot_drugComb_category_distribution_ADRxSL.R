@@ -9,6 +9,8 @@ library(tidyverse)
 library(ggpubr)
 
 
+#####
+
 
 # Read the DDI data
 DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
@@ -18,38 +20,39 @@ plot_list <- list()
 
 for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "ProstateCancer", "SkinCancer")){
   
-  DrugBank_ddi_select <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_therapeuticEfficacy", "class_metabolicEffect", paste0("ADR_", disease))]
+  DrugBank_ddi_select <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "ADR_status")]
   
   drugCombs_data <- readRDS(paste0("InputFiles/Drug_combination_data/drugCombs_data_", disease, ".rds"))
   drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "Syn_level")]
   
-  drugCombs_cat <- merge(DrugBank_ddi_select, drugCombs_data, 
-                         by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id"),
-                         all.y = TRUE)
+  drugCombs_cat <- drugCombs_data %>% 
+    left_join(DrugBank_ddi_select, 
+              by = c("Drug1_DrugBank_id", "Drug2_DrugBank_id")) %>%
+    as.data.frame()
   
   
-  # Calculate the number the combinations with positive ADR
+  # Calculate the percentage of combinations with positive ADR
   print(paste0(disease, " :: ADR_positive = ", 
-               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive", ]) / 
+               round(( nrow(drugCombs_cat[drugCombs_cat$ADR_status %in% "adr_positive", ]) / 
                          nrow(drugCombs_cat) ) * 100, 2), 
-               "; unknown = ", 
-               round(( nrow(drugCombs_cat[drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown", ]) / 
+               "; ADR_negative = ", 
+               round(( nrow(drugCombs_cat[drugCombs_cat$ADR_status %in% "adr_negative", ]) / 
                          nrow(drugCombs_cat) ) * 100, 2)
   ))
   
-
+  
   # Remove drug combinations with ADR as NA
   # These were the drug combinations for which absolutely no report present
-  # drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, paste0("ADR_", disease)]), ]
+  drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat[, "ADR_status"]), ]
   
   
   row.names(drugCombs_cat) <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
-  drugCombs_cat <- drugCombs_cat[, c("Syn_level", paste0("ADR_", disease))]
+  drugCombs_cat <- drugCombs_cat[, c("Syn_level", "ADR_status")]
   
   category_combinations <- combn(x = colnames(drugCombs_cat), m = 2, simplify = FALSE)
   
   
-
+  
   
   for(i in (category_combinations)){
     plot_data <- as.data.frame(table(drugCombs_cat[, i[1]], drugCombs_cat[,i[2]], useNA = "ifany"))
@@ -60,7 +63,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
       labs(title = gsub("Cancer$", " Cancer", disease),
            x = "Synergy level",
            y = "ADR status") +
-      scale_y_discrete(labels = c("adr_positive" = "ADR positive", "unknown" = "Unknown")) +
+      scale_y_discrete(labels = c("adr_positive" = "Positive", "adr_negative" = "Negative")) +
       scale_fill_gradient(low = "white", high = "lightblue") +
       theme(panel.background = element_rect(fill = "white", colour = "black", linewidth = 0.25, linetype = NULL),
             panel.grid = element_blank(),
@@ -90,6 +93,9 @@ ggarrange(plotlist = unlist(plot_list, recursive = FALSE), ncol = 3, nrow = 2)
 
 
 dev.off()
+
+
+#####
 
 
 print(warnings())
