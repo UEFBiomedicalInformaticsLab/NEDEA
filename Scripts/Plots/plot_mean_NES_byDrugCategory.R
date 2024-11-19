@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to plot the mean NES from FGSEA for each drug category
-
 
 
 # Load libraries
@@ -17,6 +15,8 @@ if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
 
+#####
+
 
 # Get arguments
 option_list = list(
@@ -27,7 +27,7 @@ option_list = list(
   make_option(c("--feature_type"), type = "character", default = NULL,
               help = "The feature type to use for plotting. Possible values: efficacy, safety, combinedEfficacySafety, kegg, smpdbDrugMet, smpdbDrugAct, misc. Default: NULL", metavar = "character"),
   make_option(c("--drugComb_category_type"), type = "character", default = NULL,
-              help = "The drug category type that will be plotted. Possible values: SL (synergy level), SS (class synergy score), TE (therapeutic efficacy), ME (metabolic effect), ADR (disease specific ADR status), EA (effective vs adverse). Default: NULL", metavar = "character"),
+              help = "The drug category type that will be plotted. Possible values: SL (synergy level), SS (class synergy score), ADR (ADR status), EA (effective vs adverse). Default: NULL", metavar = "character"),
   make_option(c("--top9varying"), type = "logical", default = TRUE,
               help = "Plots the top nine features with most variance. Set FALSE to plot all features above variance 0.01. Default: TRUE", metavar = "character")
 )
@@ -66,9 +66,9 @@ if(is.null(opt$drugComb_category_type)){
   stop("--drugComb_category_type argument needed", call.=FALSE)
 }
 
-if(!opt$drugComb_category_type %in% c("SL", "SS", "TE", "ME", "ADR", "EA")){
+if(!opt$drugComb_category_type %in% c("SL", "SS", "ADR", "EA")){
   print_help(opt_parser)
-  stop("--drugComb_category_type should be: SL, SS, TE, ME, ADR, EA", call. = FALSE)
+  stop("--drugComb_category_type should be: SL, SS, ADR, EA", call. = FALSE)
 }
 
 
@@ -85,6 +85,9 @@ cat(paste0("\nDisease: ", disease))
 cat(paste0("\nDrug target type: ", drug_target_type))
 cat(paste0("\nFeature type: ", feature_type))
 cat(paste0("\nDrug category type: ", drugComb_category_type, "\n"))
+
+
+#####
 
 
 # Read the FGSEA result
@@ -104,15 +107,15 @@ if(feature_type %in% c("misc")){
 }
 
 
+#####
+
 
 # Read the drug combination category
 
 switch(drugComb_category_type,
        "SL" = {plot_col <- "Syn_level"},
        "SS" = {plot_col <- "class_synergyScore"},
-       "TE" = {plot_col <- "class_therapeuticEfficacy"},
-       "ME" = {plot_col <- "class_metabolicEffect"},
-       "ADR" = {plot_col <- paste0("ADR_", disease)},
+       "ADR" = {plot_col <- "ADR_status"},
        "EA" = {plot_col <- "class_EffAdv"})
 
 
@@ -122,7 +125,7 @@ if(drugComb_category_type %in% c("SL", "SS")){
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
 }
 
-if(drugComb_category_type %in% c("TE", "ME", "ADR")){
+if(drugComb_category_type %in% c("ADR")){
   drugCombs_cat <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
   drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
   drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
@@ -135,11 +138,11 @@ if(drugComb_category_type %in% c("EA")){
 }
 
 
+#####
 
 
 # Get the plot data
 plot_data <- fgsea_result
-# plot_data <- plot_data[, colnames(plot_data) %in% drugCombs_cat$comb_name]
 
 
 # Find the features with top variance (executed only if top9varying is TRUE)
@@ -237,6 +240,9 @@ ggplot(plot_data, aes(x = category, y = value)) +
 dev.off()
 
 
+#####
+
+
 # Calculate the mean and SD for each category for each feature
 plot_data <- plot_data %>% 
   group_by(feature, category) %>% 
@@ -305,6 +311,8 @@ ggplot(plot_data, aes(x = category, y = mean_value)) +
 
 dev.off()
 
+
+#####
 
 
 print(warnings())

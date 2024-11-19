@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to plot the NES of top (by variance) features from FGSEA 
-
 
 
 # Load libraries
@@ -17,6 +15,8 @@ library(ggpubr)
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
+
+#####
 
 
 # Get arguments
@@ -40,13 +40,14 @@ if(!opt$feature_type %in% c("efficacy", "safety", "combinedEfficacySafety",
 }
 
 
-
 # Define global options for this script
 feature_type <- opt$feature_type
 
 cat("\n\nUsing the following parameters: ")
 cat(paste0("\nFeature type: ", feature_type, " \n"))
 
+
+#####
 
 
 plot_list <- list()
@@ -141,6 +142,9 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
 }
 
 
+#####
+
+
 if(!dir.exists("OutputFiles/Plots/top_feature_NES_scatter/")){
   dir.create("OutputFiles/Plots/top_feature_NES_scatter/", recursive = TRUE)
 }
@@ -155,5 +159,9 @@ ggarrange(plotlist = unlist(plot_list, recursive = FALSE),
           common.legend = TRUE, legend = "bottom")
 
 dev.off()
+
+
+#####
+
 
 print(warnings())

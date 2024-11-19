@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to plot the mean NES from FGSEA for EA drug category
-
 
 
 # load libraries
@@ -12,6 +10,12 @@ library(tidyverse)
 library(ggpubr)
 
 
+# Set temporary directory
+if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
+set.tempdir("tmp_dir/")
+
+
+#####
 
 # Set the parameters
 drug_target_type <- "known"
@@ -19,10 +23,8 @@ feature_type <- "combinedEfficacySafety"
 drugComb_category_type <- "EA"
 
 
+#####
 
-# Set temporary directory
-if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
-set.tempdir("tmp_dir/")
 
 # plot for each disease
 plot_list <- list()
@@ -115,6 +117,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 }
 
 
+#####
+
 
 # Save to file
 if(!dir.exists("OutputFiles/Plots_publication/")){
@@ -129,6 +133,9 @@ tiff(paste0("OutputFiles/Plots_publication/meanNES_xCancer_", drug_target_type, 
 ggarrange(plotlist = plot_list, ncol = 1, nrow = 6)
 
 dev.off()
+
+
+#####
 
 
 print(warnings())

@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to plot number of targets for the drug combinations that show enrichment for any features 
-
 
 
 # Load libraries
@@ -17,6 +15,8 @@ library(ggpubr)
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
+
+#####
 
 
 # Get arguments
@@ -40,12 +40,15 @@ if(!opt$feature_type %in% c("efficacy", "safety", "combinedEfficacySafety",
 }
 
 
-
 # Define global options for this script
 feature_type <- opt$feature_type
 
 cat("\n\nUsing the following parameters: ")
 cat(paste0("\nFeature type: ", feature_type, " \n"))
+
+
+#####
+
 
 plot_list <- list()
 
@@ -157,6 +160,7 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR")){
   }}
 
 
+#####
 
 
 if(!dir.exists("OutputFiles/Plots/target_count_enriching_combs/")){
@@ -175,6 +179,9 @@ ggarrange(plotlist = unlist(plot_list, recursive = FALSE),
 
 
 dev.off()
+
+
+#####
 
 
 print(warnings())

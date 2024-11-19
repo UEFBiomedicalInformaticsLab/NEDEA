@@ -76,6 +76,9 @@ ggarrange(plotlist = plot_list)
 dev.off()
 
 
+#####
+
+
 # Save the thresholds as table
 final_model_feature_threshold <- bind_rows(final_model_feature_threshold, .id = "disease")
 colnames(final_model_feature_threshold) <- c("Disease", "Feature_name", "Threshold")
@@ -230,6 +233,9 @@ ggplot(data = model_accuracy) +
         legend.box.background = element_rect(colour = "black", linewidth = 0.1))
 
 dev.off()
+
+
+#####
 
 
 print(warnings())
