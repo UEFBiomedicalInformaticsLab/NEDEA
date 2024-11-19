@@ -67,7 +67,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 if(!dir.exists("OutputFiles/Plots_publication/Predictive_model/")){ dir.create("OutputFiles/Plots_publication/Predictive_model/") }
 
 tiff(paste0("OutputFiles/Plots_publication/Predictive_model/model_selected_thresholds_", drug_target_type, ".tiff"), 
-     width = 20,
+     width = 25,
      height = 10,
      units = "cm", compression = "lzw", res = 1200)
 
@@ -138,7 +138,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 if(!dir.exists("OutputFiles/Plots_publication/Predictive_model/")){ dir.create("OutputFiles/Plots_publication/Predictive_model/") }
 
 tiff(paste0("OutputFiles/Plots_publication/Predictive_model/model_selected_thresholds_", drug_target_type, "_barplot.tiff"), 
-     width = 20,
+     width = 25,
      height = 10,
      units = "cm", compression = "lzw", res = 1200)
 

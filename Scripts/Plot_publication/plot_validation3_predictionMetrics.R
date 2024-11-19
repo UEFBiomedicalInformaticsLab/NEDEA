@@ -8,8 +8,14 @@ set.seed(5081)
 library(tidyverse)
 
 
+#####
+
+
 # Set the parameters
 drug_target_type <- "known"
+
+
+#####
 
 
 # Read the all the metrics
@@ -76,6 +82,9 @@ ggplot(plot_data, aes(x = disease, y = .estimate, label = round(.estimate, 2))) 
         legend.box.background = element_rect(colour = "black", linewidth = 0.1))
 
 dev.off()
+
+
+#####
 
 
 print(warnings())

@@ -138,7 +138,7 @@ drugCombs_data <- drugCombs_data[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "
 
 # Read the DDI data
 DrugBank_ddi <- readRDS("InputFiles/Reference_list/DrugBank_DDI_processed.rds")
-DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", paste0("ADR_", disease))]
+DrugBank_ddi <- DrugBank_ddi[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "ADR_status")]
 
 
 # Merge the data
@@ -153,12 +153,12 @@ valid_drugCombs_cat <- merge(DrugBank_ddi, drugCombs_data,
 # Assign the drug combination categories
 valid_drugCombs_cat$class_EffAdv <- NA
 
-# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
+# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, "ADR_status"] %in% "adr_negative",]$class_EffAdv <- "Eff"
+# valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat$Syn_level < 3 & valid_drugCombs_cat[, "ADR_status"] %in% "adr_positive",]$class_EffAdv <- "Adv"
 
 
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "unknown",]$class_EffAdv <- "Eff"
-valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, paste0("ADR_", disease)] %in% "adr_positive",]$class_EffAdv <- "Adv"
+valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, "ADR_status"] %in% "adr_negative",]$class_EffAdv <- "Eff"
+valid_drugCombs_cat[valid_drugCombs_cat$Syn_level >= 2 & valid_drugCombs_cat[, "ADR_status"] %in% "adr_positive",]$class_EffAdv <- "Adv"
 
 valid_drugCombs_cat <- valid_drugCombs_cat[, c("Drug1_DrugBank_id", "Drug2_DrugBank_id", "class_EffAdv")]
 valid_drugCombs_cat <- valid_drugCombs_cat[!is.na(valid_drugCombs_cat$class_EffAdv), ]

@@ -25,7 +25,7 @@ InputFiles/
 omnipathr-log/
 OutputFiles/
 logs/
-sampo/
+slurm/
 tmp_dir/
 Trash/
 Trash*/

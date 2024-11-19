@@ -4,7 +4,6 @@ set.seed(5081)
 # Script to train predictive model
 
 
-
 # Load libraries
 library(unixtools)
 library(optparse)
@@ -12,10 +11,12 @@ library(tidyverse)
 library(yardstick)
 
 
-
 # Set temporary directory
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
+
+
+#####
 
 
 # Get arguments
@@ -30,11 +31,9 @@ opt_parser = OptionParser(option_list = option_list)
 opt = parse_args(opt_parser)
 
 
-
 # Define global options for this script
 disease <- opt$disease
 drug_target_type <- opt$drug_target_type
-
 
 
 cat("\n\nUsing the following parameters: ")
@@ -59,7 +58,6 @@ drugCombs_cat <- drugCombs_cat[!is.na(drugCombs_cat$class_EffAdv), ]
 
 # Read the list of selected features
 selected_features <- read.csv(paste0("OutputFiles/Feature_selection/NES_EfficacySafety_selectedFeatures_", disease, "_", drug_target_type, ".csv"))
-# selected_features <- selected_features[order(selected_features$feature), ]
 
 # Sub-set the FGSEA results for only the selected drug combinations and features
 fgsea_result_select <- fgsea_result[row.names(fgsea_result) %in% selected_features$feature, 
@@ -533,6 +531,8 @@ final_model <- list("models" = model_list,
 if(!dir.exists("OutputFiles/Predictive_model/")){ dir.create("OutputFiles/Predictive_model/", recursive = TRUE) }
 saveRDS(final_model, file = paste0("OutputFiles/Predictive_model/model_NES_combinedEfficacySafety_", disease, "_", drug_target_type, ".rds"))
 
+
+#####
 
 
 print(warnings())
