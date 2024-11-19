@@ -1,10 +1,8 @@
 set.seed(5081)
 
 
-
 # Use Wilcoxon's test to identify the features to use for model
-# Only significant (at p <= 0.001) selected
-
+# Only significant (at p <= 0.05) selected
 
 
 # Load libraries
@@ -13,11 +11,12 @@ library(unixtools)
 library(optparse)
 
 
-
 # Set temporary directory
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
 
+
+#####
 
 
 # Get arguments
@@ -42,17 +41,17 @@ if(!opt$drug_target_type %in% c("known", "PS", "SIGNOR", "NPA", "RI", "KEGG", "a
 }
 
 
-
 # Define global options for this script 
 disease <- opt$disease
 drug_target_type <- opt$drug_target_type
-
 
 
 cat("\n\nUsing the following parameters: ")
 cat(paste0("\nDisease: ", disease))
 cat(paste0("\nDrug target type: ", drug_target_type, "\n\n"))
 
+
+#####
 
 
 # Read the FGSEA result
@@ -66,8 +65,11 @@ drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat
 drugCombs_cat$comb_name <- paste(drugCombs_cat$Drug1_DrugBank_id, drugCombs_cat$Drug2_DrugBank_id, sep = "_")
 drugCombs_cat <- drugCombs_cat[, c("comb_name", plot_col)]
 
-stat_data <- fgsea_result
 
+#####
+
+
+stat_data <- fgsea_result
 
 # Add the drug combination categories to the stat data
 stat_data <- as.data.frame(t(stat_data))
@@ -110,7 +112,7 @@ for(lib_name in unique(stat_data$feature)){
                                                      "p_val" = stat_res$p.value))
 }
 
-stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.001, ]
+stat_res_final <- stat_res_final[stat_res_final$p_val <= 0.05, ]
 stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE), ]
 
 
@@ -119,6 +121,8 @@ stat_res_final <- stat_res_final[order(stat_res_final$p_val, decreasing = FALSE)
 if(!dir.exists("OutputFiles/Feature_selection/")){dir.create("OutputFiles/Feature_selection/", recursive = TRUE)}
 write.csv(stat_res_final, paste0("OutputFiles/Feature_selection/NES_EfficacySafety_selectedFeatures_", disease, "_", drug_target_type, ".csv"), row.names = FALSE)
 
+
+#####
 
 
 print(warnings())
