@@ -85,7 +85,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   
   # Plot the counts of pairs as heatmap
-  plot_data <- ATC_count_mat
+  plot_data <- ATC_count_mat  %>% filter(!(Count == 0 | is.na(Count)))
   plot_data$ATC1 <- factor(x = plot_data$ATC1, levels = sort(unique(plot_data$ATC1), decreasing = FALSE))
   plot_data$ATC2 <- factor(x = plot_data$ATC2, levels = sort(unique(plot_data$ATC2), decreasing = FALSE))
   
@@ -116,8 +116,8 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   
   
   tiff(paste0("OutputFiles/Plots/ATC_classification/DeNovo_data_1/drugCombs_ATCclass_", disease, ".tiff"),
-       width = 17,
-       height = 15,
+       width = 10,
+       height = 8,
        units = "cm", compression = "lzw", res = 1200)
   
   print(plot)

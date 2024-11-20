@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to generate drug combinations for de novo predictions
-
 
 
 # Load libraries
@@ -17,10 +15,12 @@ library(readxl)
 source("Scripts/Functions/Functions_drug_target.R")
 
 
-
 # Set temporary directory
 if(!dir.exists("tmp_dir/")){dir.create("tmp_dir/", recursive = TRUE)}
 set.tempdir("tmp_dir/")
+
+
+#####
 
 
 # Get arguments
@@ -55,6 +55,79 @@ cat(paste0("\nDisease: ", disease, "\n"))
 #####
 
 
+# Read the ATC codes of the drugs from Drug Bank
+DrugBank_drug_ATC <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
+DrugBank_drug_ATC <- DrugBank_drug_ATC$drugs$atc_codes
+colnames(DrugBank_drug_ATC) <- gsub("drugbank-id", "DrugBank_drug_ID", colnames(DrugBank_drug_ATC))
+
+# Read the drug combination used in the training 
+train_drugCombs_cat <- readRDS(paste0("InputFiles/Drug_combination_class/drugCombs_cat_effVadv_", disease, ".rds"))
+train_drugCombs_cat <- train_drugCombs_cat[!is.na(train_drugCombs_cat$class_EffAdv), ]
+train_drugCombs_cat$comb_name <- paste(train_drugCombs_cat$Drug1_DrugBank_id, train_drugCombs_cat$Drug2_DrugBank_id, sep = "_")
+
+
+# Add the ATC codes at level_1
+# Using many-to-many mapping to map all possible ATC codes to a single drug
+train_drugCombs_cat <- train_drugCombs_cat %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug1_ATC_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug2_ATC_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  distinct()
+
+# Remove those with missing ATC 
+train_drugCombs_cat <- train_drugCombs_cat[!(is.na(train_drugCombs_cat$Drug1_ATC_code_1) | is.na(train_drugCombs_cat$Drug2_ATC_code_1)), ]
+
+
+# Get list of ATC pairs 
+all_atc <- sort(unique(c(train_drugCombs_cat$Drug1_ATC_code_1, train_drugCombs_cat$Drug2_ATC_code_1)))
+
+ATC_count_mat <- matrix(0, 
+                        nrow = length(all_atc), 
+                        ncol = length(all_atc), 
+                        dimnames = list(all_atc, all_atc)
+)
+ATC_count_mat[upper.tri(ATC_count_mat, diag = FALSE)] <- NA
+
+
+if(nrow(train_drugCombs_cat) > 1){
+  for(i in 1:nrow(train_drugCombs_cat)){
+    
+    atc_1 <- train_drugCombs_cat[i, "Drug1_ATC_code_1"]
+    atc_2 <- train_drugCombs_cat[i, "Drug2_ATC_code_1"]
+    
+    
+    if(!is.na(ATC_count_mat[atc_1, atc_2])){
+      ATC_count_mat[atc_1, atc_2] <- ATC_count_mat[atc_1, atc_2] + 1
+    }else{
+      ATC_count_mat[atc_2, atc_1] <- ATC_count_mat[atc_2, atc_1] + 1
+      
+    }
+  }
+}
+
+ATC_count_mat <- as.data.frame(ATC_count_mat) %>% 
+  rownames_to_column("ATC1") %>% 
+  pivot_longer(-ATC1, 
+               names_to = "ATC2", 
+               values_to = "Count")
+
+ATC_count_mat <- ATC_count_mat %>% filter(!is.na(Count)) %>% filter(Count > 0)
+
+possible_ATC_pairs <- unique(paste(ATC_count_mat$ATC1, ATC_count_mat$ATC2, sep = "_"))
+
+
+#####
+
+
 # Read the drug type information
 DrugBank_drug_type <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
 DrugBank_drug_type <- DrugBank_drug_type$drugs$general_information
@@ -83,6 +156,40 @@ cancer_drug_list <- cancer_drug_list[cancer_drug_list$DrugBank_drug_id %in% Drug
 denovo_drugCombs <- as.data.frame(t(combn(cancer_drug_list$DrugBank_drug_id, m = 2, simplify = TRUE)))
 colnames(denovo_drugCombs) <- c("Drug1_DrugBank_id", "Drug2_DrugBank_id")
 denovo_drugCombs <- denovo_drugCombs[denovo_drugCombs$Drug1_DrugBank_id != denovo_drugCombs$Drug2_DrugBank_id, ]
+
+
+#####
+
+
+# Add the ATC codes at level_1
+# Using many-to-many mapping to map all possible ATC codes to a single drug
+denovo_drugCombs <- denovo_drugCombs %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug1_ATC_", .)),
+            by = c("Drug1_DrugBank_id" = "Drug1_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  left_join(DrugBank_drug_ATC %>%
+              dplyr::select(code_1, DrugBank_drug_ID) %>%
+              rename_with(.cols = everything(),
+                          .fn = ~ paste0("Drug2_ATC_", .)),
+            by = c("Drug2_DrugBank_id" = "Drug2_ATC_DrugBank_drug_ID"),
+            relationship = "many-to-many") %>%
+  distinct()
+
+
+# Remove those with missing ATC 
+denovo_drugCombs <- denovo_drugCombs[!(is.na(denovo_drugCombs$Drug1_ATC_code_1) | is.na(denovo_drugCombs$Drug2_ATC_code_1)), ]
+
+# Filter to keep only those within the training framework
+denovo_drugCombs <- denovo_drugCombs[paste(denovo_drugCombs$Drug1_ATC_code_1, denovo_drugCombs$Drug2_ATC_code_1, sep = "_") %in% possible_ATC_pairs | 
+                               paste(denovo_drugCombs$Drug2_ATC_code_1, denovo_drugCombs$Drug1_ATC_code_1, sep = "_") %in% possible_ATC_pairs, ]
+
+denovo_drugCombs <- denovo_drugCombs %>% dplyr::select(!c(Drug1_ATC_code_1, Drug2_ATC_code_1)) %>% distinct()
+
+
+#####
 
 
 # Add annotations to the drug combinations
@@ -355,6 +462,8 @@ saveRDS(denovo_drugCombs, file = paste0("InputFiles/DeNovo_data_1/drugCombs_deno
 
 cat(paste0("\nNumber of drug combinations: ", nrow(denovo_drugCombs), "\n"))
 
+
+#####
 
 
 print(warnings())
