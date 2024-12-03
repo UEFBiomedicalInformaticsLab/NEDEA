@@ -1,4 +1,4 @@
-# Drug Combination 1
+# NEDEA: Network-based Evaluation of Drug Efficacy and Adverse effect
 
 This repository contains the scripts linked to the development of network medicine approach for identification of cancer-specific drug combinations. The scripts could be used calculate the efficacy and safety estimates of dug combinations followed by developing predictive systems for distinguishing effective from adverse drug combinations. It can currently internally compile the data required to develop predictive systems for six cancer types namely breast cancer, kidney cancer, lung cancer, ovary cancer, prostate cancer and skin cancer. The repository also contains scripts to validate the predictive system and identify novel drug combinations.
 
@@ -6,7 +6,7 @@ This repository contains the scripts linked to the development of network medici
 
 The following publications refer to this repository:
 
-(1) Network-based estimation of therapeutic efficacy and adverse reaction potential for prioritisation of anti-cancer drug combinations
+(1) [Network-based estimation of therapeutic efficacy and adverse reaction potential for prioritisation of anti-cancer drug combinations](https://doi.org/10.1101/2024.09.17.613439)
 
 ## Running environment
 
