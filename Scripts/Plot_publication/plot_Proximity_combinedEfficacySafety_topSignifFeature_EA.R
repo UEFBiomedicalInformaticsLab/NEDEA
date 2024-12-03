@@ -1,9 +1,7 @@
 set.seed(5081)
 
 
-
 # Script to plot the proximities (separation) to efficacy and safety gene set
-
 
 
 # Load libraries
@@ -11,12 +9,14 @@ library(tidyverse)
 library(ggpubr)
 
 
+#####
+
 
 feature_type <- "combinedEfficacySafety"
 proximity_type <- "Separation"
 
 
-
+#####
 
 
 # Plot by disease
@@ -26,7 +26,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
   plot_data <- data.frame()
   
   
-  for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
+  for(drug_target_type in c("known")){
     
     # Read the proximity measures
     proximity_result <- readRDS(paste0("OutputFiles/Network_proximity_results/netProx_EfficacySafety_", disease, "_", drug_target_type, ".rds"))
@@ -97,7 +97,7 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
     
   }
   
-  plot_data$drug_target_type <- factor(x = plot_data$drug_target_type, levels = c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")) 
+  plot_data$drug_target_type <- factor(x = plot_data$drug_target_type, levels = c("known")) 
   
   # Create the plots
   tmp2 <- ggplot(plot_data, aes(x = feature, y = value, fill = category)) +
@@ -160,14 +160,14 @@ for(disease in c("BreastCancer", "KidneyCancer", "LungCancer", "OvaryCancer", "P
 }
 
 
-
+#####
 
 
 # plot by drug target type
 plot_list <- list()
 signif_feature <- list()
 
-for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
+for(drug_target_type in c("known")){
   
   plot_data <- data.frame()
   
@@ -244,7 +244,7 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
     
   }
   
-  plot_data$drug_target_type <- factor(x = plot_data$drug_target_type, levels = c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")) 
+  plot_data$drug_target_type <- factor(x = plot_data$drug_target_type, levels = c("known")) 
   
   # Create the plots
   tmp2 <- ggplot(plot_data, aes(x = feature, y = value, fill = category)) +
@@ -307,6 +307,8 @@ for(drug_target_type in c("known", "KEGG", "NPA", "PS", "RI", "SIGNOR","all")){
 }
 
 
+#####
+
 
 signif_feature <- unlist(signif_feature, recursive = FALSE)
 signif_feature <- bind_rows(signif_feature, .id = "disease")
@@ -314,6 +316,9 @@ signif_feature <- separate(signif_feature, col = "disease", into = c("drug_targe
 
 
 write.csv(signif_feature, paste0("OutputFiles/Plots_publication/Proximity", proximity_type, "_", feature_type, "_boxplot_topSignifFeatures_EA/Proximity", proximity_type, "_", feature_type, "_WilcoxTest_result.csv"), row.names = FALSE)
+
+
+#####
 
 
 print(warnings())

@@ -30,6 +30,13 @@ FimmDrugComb_drugCombCat$synergy_loewe[which(FimmDrugComb_drugCombCat$synergy_lo
 FimmDrugComb_drugCombCat$synergy_loewe <- as.numeric(FimmDrugComb_drugCombCat$synergy_loewe)
 
 
+# Count number of drug combinations
+# FimmDrugComb_drugCombCat %>% select(drug_row, drug_col) %>% distinct() %>% count()
+
+# Number of drugs
+# length(unique(c(FimmDrugComb_drugCombCat$drug_row, FimmDrugComb_drugCombCat$drug_col)))
+
+
 # Get cell line information
 FimmDrugComb_cellLine <- GET("https://api.drugcomb.org/cell_lines")
 FimmDrugComb_cellLine <- fromJSON(rawToChar(FimmDrugComb_cellLine$content))

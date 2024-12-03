@@ -57,7 +57,7 @@ cat(paste0("\nDisease: ", disease, "\n"))
 
 #####
 
-# Read the ATC codes of the drugs from Drug Bank
+# Read the DrugBank data
 DrugBank_data <- readRDS("Databases/DrugBank/parsed_DrugBank_data.rds")
 
 
